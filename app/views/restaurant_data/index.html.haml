@@ -1,0 +1,25 @@
+%h1 Listing restaurant_data
+
+%table
+  %thead
+    %tr
+      %th City
+      %th Name
+      %th Rating
+      %th
+      %th
+      %th
+
+  %tbody
+    - @restaurant_data.each do |restaurant_datum|
+      %tr
+        %td= restaurant_datum.city
+        %td= restaurant_datum.name
+        %td= restaurant_datum.rating
+        %td= link_to 'Show', restaurant_datum
+        %td= link_to 'Edit', edit_restaurant_datum_path(restaurant_datum)
+        %td= link_to 'Destroy', restaurant_datum, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Restaurant datum', new_restaurant_datum_path

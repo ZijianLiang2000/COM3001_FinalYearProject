@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b City:
+  = @restaurant_datum.city
+%p
+  %b Name:
+  = @restaurant_datum.name
+%p
+  %b Rating:
+  = @restaurant_datum.rating
+
+= link_to 'Edit', edit_restaurant_datum_path(@restaurant_datum)
+\|
+= link_to 'Back', restaurant_data_path

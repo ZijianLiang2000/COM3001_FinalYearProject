@@ -1,0 +1,26 @@
+- @restaurants["data"].each do |restaurant|
+    .card.mb-3{:style => "max-width: 540px;"}
+    .row.g-0
+        .col-md-4
+        - if  restaurant["photo"] == nil || restaurant["photo"]["images"] == nil
+            %img.img-fluid.rounded-start{:alt => "Restaurant image", :src => "https://thumbs.dreamstime.com/z/not-available-red-rubber-stamp-over-white-background-87242466.jpg", :width =>"256", :height=>"171"}
+        - elsif restaurant["photo"]["images"]["large"] != nil
+            %img.img-fluid.rounded-start{:class=>"centered-and-cropped", :style=>"border-radius:80%", :alt => "Restaurant image", :src => restaurant["photo"]["images"]["large"]["url"], :width =>"256", :height=>"171"}
+        - elsif restaurant["photo"]["images"]["medium"] != nil
+            %img.img-fluid.rounded-start{:class=>"centered-and-cropped", :style=>"border-radius:80%", :alt => "Restaurant image", :src => restaurant["photo"]["images"]["medium"]["url"], :width =>"256", :height=>"171"}            
+        - elsif restaurant["photo"]["images"]["small"] != nil
+            %img.img-fluid.rounded-start{:class=>"centered-and-cropped", :style=>"border-radius:80%", :alt => "Restaurant image", :src => restaurant["photo"]["images"]["small"]["url"], :width =>"256", :height=>"171"}
+        - elsif restaurant["photo"]["images"]["original"] != nil
+            %img.img-fluid.rounded-start{:class=>"centered-and-cropped", :style=>"border-radius:80%", :alt => "Restaurant image", :src => restaurant["photo"]["small"]["original"], :width =>"256", :height=>"171"}          
+        - else
+            %img.img-fluid.rounded-start{:class=>"centered-and-cropped", :style=>"border-radius:80%", :alt => "Restaurant image", :src => "https://thumbs.dreamstime.com/z/not-available-red-rubber-stamp-over-white-background-87242466.jpg", :width =>"256", :height=>"171"}
+        .col-md-8
+        .card-body
+            %h5.card-title #{restaurant["name"]}
+            %p.card-text #{restaurant["location_id"]}
+            %p.card-text #{restaurant["location_id"]}
+            %small.text-muted Last updated 3 mins ago
+
+    %br
+
+
