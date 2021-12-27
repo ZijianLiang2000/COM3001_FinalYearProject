@@ -32,6 +32,7 @@ gem 'bootstrap-sass'
 gem 'modernizr-rails'
 gem 'turbolinks', '~> 5'
 gem 'select2-rails'
+gem 'figaro'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false

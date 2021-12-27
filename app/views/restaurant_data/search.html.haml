@@ -4,11 +4,15 @@
       .mx-auto.mt-5{:style => "width: 400px"}
         = form_with(url: restaurant_result_path, method: 'get', local: true) do
           .form-group
-            = label_tag :lat, 'Longitude'
-            = text_field_tag :lat, nil, placeholder: 'Eg. 12.91285', class: 'form-control'
+
+            = label_tag :address, 'Postcode Address'
+            = text_field_tag :address, nil, placeholder: 'Eg. GU1 4BU', class: 'form-control'
+
+            -# = label_tag :lat, 'Longitude'
+            -# = text_field_tag :lat, nil, placeholder: 'Eg. 12.91285', class: 'form-control'
            
-            = label_tag :lng, 'Latitude'
-            = text_field_tag :lng, nil, placeholder: 'Eg. 100.87808', class: 'form-control'
+            -# = label_tag :lng, 'Latitude'
+            -# = text_field_tag :lng, nil, placeholder: 'Eg. 100.87808', class: 'form-control'
             
             = label_tag :limit, 'Limit'
             = number_field_tag :limit, 30, placeholder: 'Eg. 30', min: 1, max: 30, class: 'form-control'

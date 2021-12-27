@@ -21,22 +21,61 @@ class RestaurantDataController < ApplicationController
 
   def result
     # (lat,lng,limit,dist_radius)
-    lat = params[:lat]
-    lng = params[:lng]
+    address = params[:address]
+
     limit = params[:limit]
     dist_radius = params[:dist_radius]
 
-
-
-    results = request_api(
-      "https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?latitude=#{URI.encode(lat)}&longitude=#{URI.encode(lng)}&limit=#{URI.encode(limit)}&currency=GBP&distance=#{URI.encode(dist_radius)}&lunit=km&lang=en_US"
+    address_coord = request_api(
+      "https://google-maps-geocoding.p.rapidapi.com/geocode/json?address=#{URI.encode(address)}&language=en"
     )
-    puts("restaurant:" + results["data"].first["location_id"])
-    @restaurants = results
+    
+    # if(address_coord) does not respond anything
+    if(address_coord["results"][0] == nil)
+      redirect_to restaurant_search_path, alert: "Address not found"
+      return
+    end
+    
+    # If there is a boundary of coordinates available for the address and restaurants available within the boundary
+    if(address_coord["results"][0]["geometry"]["bounds"] != nil && request_api(
+      "https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary?bl_latitude=#{URI.encode(address_coord["results"][0]["geometry"]["bounds"]["southwest"]["lat"].to_s)} \
+      &tr_latitude=#{URI.encode(address_coord["results"][0]["geometry"]["bounds"]["northeast"]["lat"].to_s)} \
+      &bl_longitude=#{URI.encode(address_coord["results"][0]["geometry"]["bounds"]["southwest"]["lng"].to_s)} \
+      &tr_longitude=#{URI.encode(address_coord["results"][0]["geometry"]["bounds"]["northeast"]["lng"].to_s)} \
+      &limit=#{URI.encode(limit)}&currency=GBP&distance=#{URI.encode(dist_radius)}&lunit=km&lang=en_US"
+    )["data"].first != nil)
 
-    if @restaurants == nil
-      flash[:alert] = 'No restaurants available, please try again'
-      return render action: :search
+      northEast_lat = address_coord["results"][0]["geometry"]["bounds"]["northeast"]["lat"].to_s
+      northEast_lng = address_coord["results"][0]["geometry"]["bounds"]["northeast"]["lng"].to_s
+      southWest_lat = address_coord["results"][0]["geometry"]["bounds"]["southwest"]["lat"].to_s
+      southWest_lng = address_coord["results"][0]["geometry"]["bounds"]["southwest"]["lng"].to_s
+
+      puts("tr_lat: " + northEast_lat + ", tr_lng: " + northEast_lng + ", bl_lat: " + southWest_lat + ", bl_lng: " + southWest_lng)
+
+      restaurant_results = request_api(
+        "https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary?bl_latitude=#{URI.encode(southWest_lat)}&tr_latitude=#{URI.encode(northEast_lat)}&bl_longitude=#{URI.encode(southWest_lng)}&tr_longitude=#{URI.encode(northEast_lng)}&limit=#{URI.encode(limit)}&currency=GBP&distance=#{URI.encode(dist_radius)}&lunit=km&lang=en_US"
+      )
+      puts("RESTAURANT DATA URL: " + restaurant_results["data"].first["location_id"])
+
+    elsif(address_coord["results"][0]["geometry"]["location"] != nil)
+      # If no boundary available for address or no restaurants available within the boundary, just use one coordinate
+      lat = address_coord["results"][0]["geometry"]["location"]["lat"].to_s
+      lng = address_coord["results"][0]["geometry"]["location"]["lng"].to_s
+      restaurant_results = request_api(
+        "https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?latitude=#{URI.encode(lat)}&longitude=#{URI.encode(lng)}&limit=#{URI.encode(limit)}&currency=GBP&distance=#{URI.encode(dist_radius)}&lunit=km&lang=en_US"
+      )
+      puts("restaurant:" + restaurant_results["data"].first["location_id"])
+    else
+      redirect_to restaurant_search_path, alert: "Address not found"
+      return
+    end
+
+    @restaurants = restaurant_results
+
+    if @restaurants["data"] == nil
+      # flash[:alert] = 'No restaurants available, please try again'
+      redirect_to restaurant_search_path, alert: "Restaurant info nearby not found for address"
+      return
     end
 
   end
@@ -85,7 +124,7 @@ class RestaurantDataController < ApplicationController
       url,
       headers: {
         'X-RapidAPI-Host' => URI.parse(url).host,
-        'X-RapidAPI-Key' => '81f17623camshd2b99a09f5ec7b9p1cf6aejsn282365a0a05e'
+        'X-RapidAPI-Key' => ENV["API_KEY"]
       }
     )
     return nil if response.status != 200

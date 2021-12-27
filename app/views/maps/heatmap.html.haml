@@ -1,19 +1,15 @@
+Heatmap
+<br>
+<br>
+<br>
 %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
-
-%select.js-example-placeholder-multiple.js-states.form-control{:multiple => "multiple"}
-
-
-%br
+= button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
 %head
   %title Basic Embed
   %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
   :javascript
     let viz
-    //function for search bar
-    $(".js-example-placeholder-multiple").select2({
-    placeholder: "Select a state"
-    });
     //function for viz
     function initViz(containerDiv, url, options) {
         viz = new tableau.Viz(containerDiv, url, options);
@@ -23,9 +19,9 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:language=gb-EN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "Lsoa11Nm" : "Guildford 001A",
-                width: "1000px",
-                height: "800px",
+                "Lsoa11Nm" : ["Canterbury 006A","Burnley 009B"],
+                width: window.innerWidth,
+                height: window.innerHeight,
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
@@ -34,9 +30,9 @@
             };
 
     initViz(containerDiv, url, options);
-    
     }
 
+    // apply filter after webpage loaded
     function applyFilter(){
         
         // get the values from input
@@ -50,6 +46,21 @@
         
         sheetToFilter.applyFilterAsync("Lsoa11Nm",filterInput,tableau.FilterUpdateType.REPLACE);
         console.log(activeSheet);
+    }
+
+    // Function to listen to adjustment of window
+    window.addEventListener("resize", () => {
+        console.log(
+            `Resizing the window ${window.innerHeight}, ${window.innerWidth}`
+        );
+        autoResize();
+    });
+
+    // Resize dashboard window
+    function autoResize(){
+        const height = window.innerHeight;
+        const width = window.innerWidth;
+        viz.setFrameSize(width, height);
     }
 
     document.getElementById('applyFilter').addEventListener('click',function(){
