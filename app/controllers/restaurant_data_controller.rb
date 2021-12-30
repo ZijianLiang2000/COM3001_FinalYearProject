@@ -19,9 +19,59 @@ class RestaurantDataController < ApplicationController
   def edit
   end
 
+  def google_result
+    address = params[:address]
+    if(params[:address] == nil || params[:address] == "")
+      redirect_to restaurant_search_path, alert: "Address is empty, please input address"
+      return
+    end
+    address_coord = request_api(
+      "https://maps.googleapis.com/maps/api/geocode/json?address=#{URI.encode(address)}&key=#{ENV["GOOGLE_API_KEY"]}"
+    )
+    if(address_coord["results"] == nil)
+      redirect_to restaurant_search_path, alert: "Address not found"
+      return
+    end
+
+    lng = address_coord["results"][0]["geometry"]["location"]["lng"].to_s
+    lat = address_coord["results"][0]["geometry"]["location"]["lat"].to_s
+
+    lng = "151.1957362"
+    lat = "-33.8670522"
+
+    keyword = params[:keyword]
+
+    puts("Longitude: "+ lng + ", Latitude: " + lat);
+
+    if(keyword == nil || keyword == "")
+      nearby = request_api(
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&radius=1500&type=restaurant&keyword=&key=#{ENV["GOOGLE_API_KEY"]}"
+      )
+    else
+      nearby = request_api(
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&keyword=#{URI.encode(keyword)}&radius=1500&type=restaurant&key=#{ENV["GOOGLE_API_KEY"]}"
+      )
+    end
+
+    if(nearby["results"][0] == nil)
+      redirect_to restaurant_search_path, alert: "Nearby info not found"
+      return
+    end
+
+    puts("Nearby location business_status: "+ nearby["results"][0]["business_status"] + ", Name: " + nearby["results"][0]["name"]);
+    
+    @nearby_results = nearby["results"]
+
+  end
+
   def result
     # (lat,lng,limit,dist_radius)
     address = params[:address]
+
+    if(params[:address] == nil || params[:address] == "")
+      redirect_to restaurant_search_path, alert: "Address is empty, please input address"
+      return
+    end
 
     limit = params[:limit]
     dist_radius = params[:dist_radius]

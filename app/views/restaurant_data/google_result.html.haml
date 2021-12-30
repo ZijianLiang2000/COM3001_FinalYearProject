@@ -1,0 +1,14 @@
+.container
+    .row    
+        - @nearby_results.each do |restaurant|
+            .col-sm-3
+                .card.h-100{:style => "width: 18rem;"}
+                    - if  restaurant["photos"] == nil
+                        %img.card-img-top{:alt => "Restaurant image", :src => "https://thumbs.dreamstime.com/z/not-available-red-rubber-stamp-over-white-background-87242466.jpg"}/
+                    - else
+                        %img.card-img-top{:alt => "Restaurant image", :src => "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&key=#{ENV["GOOGLE_API_KEY"]}&photoreference="+restaurant["photos"][0]["photo_reference"], :width => "256", :height => "171"}
+                    .card-body
+                        %h5.card-title #{restaurant["name"]}
+                        %p.card-text Ratings: #{restaurant["rating"]}
+                        %a.btn.btn-primary{:href => "#"} Go somewhere
+                

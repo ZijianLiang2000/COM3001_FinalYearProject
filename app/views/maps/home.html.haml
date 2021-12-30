@@ -1,0 +1,25 @@
+.cover-container.d-flex.w-100.h-100.p-3.mx-auto.flex-column
+  %header.masthead.mb-auto
+    .inner
+      %h3.masthead-brand Home page
+      %nav.nav.nav-masthead.justify-content-center
+        %a.nav-link.active{:href => "#"} Home
+        %a.nav-link{:href => "#"} Features
+        %a.nav-link{:href => "#"} Contact
+  %main.inner.cover{:role => "main"}
+    %h1.cover-heading Cover your page.
+    %p.lead Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.
+    %p.lead
+      %a.btn.btn-lg.btn-secondary{:href => "#"} Learn more
+  %footer.mastfoot.mt-auto
+    .inner
+      %p
+        Cover template for
+        = succeed "," do
+          %a{:href => "https://getbootstrap.com/"} Bootstrap
+        = succeed "." do
+          %a{:href => "https://twitter.com/mdo"} @mdo
+
+%script{:crossorigin => "anonymous", :integrity => "sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo", :src => "https://code.jquery.com/jquery-3.3.1.slim.min.js"}
+:javascript
+  window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')
