@@ -28,11 +28,11 @@ class RestaurantDataController < ApplicationController
     address_coord = request_api(
       "https://maps.googleapis.com/maps/api/geocode/json?address=#{URI.encode(address)}&key=#{ENV["GOOGLE_API_KEY"]}"
     )
-    if(address_coord["results"] == nil)
+    if(address_coord["results"][0] == nil)
       redirect_to restaurant_search_path, alert: "Address not found"
       return
     end
-
+    
     lng = address_coord["results"][0]["geometry"]["location"]["lng"].to_s
     lat = address_coord["results"][0]["geometry"]["location"]["lat"].to_s
 
@@ -115,7 +115,7 @@ class RestaurantDataController < ApplicationController
       )
       puts("RESTAURANT DATA URL: " + restaurant_results["data"].first["location_id"])
 
-    elsif(address_coord["results"][0]["geometry"]["location"] != nil)
+    elsif(address_coord["results"][0] != nil && address_coord["results"][0]["geometry"]["location"] != nil && address_coord["results"][0]["geometry"]["location"]["lat"] != "" && address_coord["results"][0]["geometry"]["location"]["lng"] != "")
       # If no boundary available for address or no restaurants available within the boundary, just use one coordinate
       lat = address_coord["results"][0]["geometry"]["location"]["lat"].to_s
       lng = address_coord["results"][0]["geometry"]["location"]["lng"].to_s
