@@ -30,8 +30,8 @@
             = label_tag :keyword, 'Restaurant Type'
             = text_field_tag :keyword, nil, placeholder: 'Eg. Thai', class: 'form-control'
 
-            -# = label_tag :dist_radius, 'Distance Radius'
-            -# = number_field_tag :dist_radius, 2, placeholder: 'Eg. 2', min: 1, max: 10, class: 'form-control'
+            = label_tag :dist_radius, 'Radius (m)'
+            = number_field_tag :dist_radius, 50000, placeholder: 'Eg. 25,000', min: 1, max: 50000, class: 'form-control'
 
           %br
           = button_tag 'Search', class: 'btn btn-success btn-block'

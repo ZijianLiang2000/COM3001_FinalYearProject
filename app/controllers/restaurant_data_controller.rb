@@ -37,16 +37,17 @@ class RestaurantDataController < ApplicationController
     lat = address_coord["results"][0]["geometry"]["location"]["lat"].to_s
 
     keyword = params[:keyword]
+    dist_radius = params[:dist_radius]
 
     puts("Longitude: "+ lng + ", Latitude: " + lat);
 
     if(keyword == nil || keyword == "")
       nearby = request_api(
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&radius=3000&type=restaurant&keyword=&key=#{ENV["GOOGLE_API_KEY"]}"
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&radius=#{URI.encode(dist_radius)}&type=restaurant&keyword=&key=#{ENV["GOOGLE_API_KEY"]}"
       )
     else
       nearby = request_api(
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&keyword=#{URI.encode(keyword)}&radius=3000&type=restaurant&key=#{ENV["GOOGLE_API_KEY"]}"
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&keyword=#{URI.encode(keyword)}&radius=#{URI.encode(dist_radius)}&type=restaurant&key=#{ENV["GOOGLE_API_KEY"]}"
       )
     end
 

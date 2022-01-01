@@ -14,5 +14,13 @@
                         %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["geometry"]["location"]["lat"]},#{restaurant["geometry"]["location"]["lng"]}"} Discover
 
 %br
-= button_to "More Results", google_result_next_path(:next_page_token => @nearby_results["next_page_token"]), class: "btn btn-success btn-block"
+
+
+- if (@nearby_results["next_page_token"] != nil && @nearby_results["next_page_token"] != "")
+    -p "THIS IS TOKEN: " + @nearby_results["next_page_token"]
+    = button_to "More Results", google_result_next_path(:next_page_token => @nearby_results["next_page_token"]), class: "btn btn-success btn-block"
+- else
+    -p "TOKEN IS EMPTY"
+
+
 %br
