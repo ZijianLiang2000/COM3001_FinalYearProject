@@ -10,15 +10,22 @@
                     .card-body
                         %h5.card-title #{restaurant["name"]}
                         %p.card-text Ratings: #{restaurant["rating"]}
-
-                        %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["geometry"]["location"]["lat"]},#{restaurant["geometry"]["location"]["lng"]}"} Discover
+                        %p.card-text
+                            Address: 
+                            = get_detailed_addr(restaurant["place_id"])
+                        - restaurant["types"].each do |type|
+                            %span.badge.bg-success #{type}
+                        %br
+                        %br
+                        %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["name"]}, #{get_detailed_addr(restaurant["place_id"])}"} Discover
 
 %br
 
 
 - if (@nearby_results["next_page_token"] != nil && @nearby_results["next_page_token"] != "")
     -p "THIS IS TOKEN: " + @nearby_results["next_page_token"]
-    = button_to "More Results", google_result_next_path(:next_page_token => @nearby_results["next_page_token"]), class: "btn btn-success btn-block"
+    %br
+    = button_to "More Results", google_result_next_path(:next_page_token => @nearby_results["next_page_token"]), class: "btn btn-success btn-block", id: "next_page"
 - else
     -p "TOKEN IS EMPTY"
 

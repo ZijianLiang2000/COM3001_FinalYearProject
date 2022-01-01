@@ -40,6 +40,7 @@ class RestaurantDataController < ApplicationController
     dist_radius = params[:dist_radius]
 
     puts("Longitude: "+ lng + ", Latitude: " + lat);
+    puts("Formatted Address: " + address_coord["results"][0]["formatted_address"])
 
     if(keyword == nil || keyword == "")
       nearby = request_api(
@@ -59,6 +60,7 @@ class RestaurantDataController < ApplicationController
     puts("Nearby location business_status: "+ nearby["results"][0]["business_status"] + ", Name: " + nearby["results"][0]["name"]);
     
     @nearby_results = nearby
+    
 
   end
 
@@ -130,7 +132,7 @@ class RestaurantDataController < ApplicationController
     end
 
     @restaurants = restaurant_results
-
+    
     if @restaurants["data"] == nil
       # flash[:alert] = 'No restaurants available, please try again'
       redirect_to restaurant_search_path, alert: "Restaurant info nearby not found for address"
