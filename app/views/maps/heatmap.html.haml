@@ -4,21 +4,44 @@
 = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
 %br
+
+-# Side panel for google maps
+#mySidebar.sidebar
+    %a.closebtn{:href => "javascript:void(0)", :onclick => "closeNav()"} ×
+    %iframe{:allowfullscreen => "", :height => "740",
+    :loading => "lazy",
+    :src => "https://www.google.com/maps/embed/v1/view?key=#{ENV["GOOGLE_API_KEY"]}&center=-33.8569,151.2152&zoom=18&maptype=satellite",
+    :style => "border:0",
+    :width => "450"}
+
 %br
 
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
 %h4 Heatmap View:
 %select#globalstyleselect{:onchange => "styleselect()"}
-  %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
-  %option{:value => "2"} Density map
-  %option{:value => "1"} Heatmap
+    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
+    %option{:value => "2"} Density map
+    %option{:value => "1"} Heatmap
   
-
+%br
 %head
-  %title Basic Embed
-  %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
-  :javascript
+%title Basic Embed
+%script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
+
+
+:javascript
+
+    function openNav() {
+        document.getElementById("mySidebar").style.width = "450px";
+        //document.getElementById("main").style.marginLeft = "450px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        //document.getElementById("main").style.marginLeft= "0";
+    }
+
     let viz
     //function for viz
     function initViz(containerDiv, url, options) {
@@ -27,6 +50,8 @@
         }
         viz = new tableau.Viz(containerDiv, url, options);
     }
+
+    // Option to show sheet 1
     function applyOptions1() {
         var containerDiv = document.getElementById("vizContainer"),
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
@@ -39,12 +64,15 @@
                 hideTabs: true,
                 onFirstInteractive: function () {
                     console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
                 }
             };
 
     initViz(containerDiv, url, options);
     }
 
+    // Option to show sheet 2
         function applyOptions2() {
         var containerDiv = document.getElementById("vizContainer"),
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
@@ -57,6 +85,8 @@
                 hideTabs: true,
                 onFirstInteractive: function () {
                     console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
                 }
             };
 
@@ -109,6 +139,45 @@
         }
     }
 
+    function listenToMarksSelection() {
+        console.log("listenToMarksSelection function is loaded");
+        viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
+    }
+
+    function onMarksSelection(marksEvent) {
+        console.log("onMarksSelection function is loaded");
+        
+        return marksEvent.getMarksAsync().then(reportSelectedMarks);
+    }
+    
+    function reportSelectedMarks(marks) {
+        console.log("reportSelectedMarks is loaded");
+        var html = "";
+
+        for (var markIndex = 0; markIndex < marks.length; markIndex++) {
+            var pairs = marks[markIndex].getPairs();
+            html += "Mark " + markIndex + ": ";
+            var array = [];
+            for (var pairIndex = 0; pairIndex < pairs.length; pairIndex++) {
+                var pair = pairs[pairIndex];
+                html += "Field Name: " + pair.fieldName;
+                html += ", Value:" + pair.formattedValue + ", ";
+                array.push(pair.formattedValue)
+            }
+            html += "";
+            for (var index = 0; index < array.length; index++) {
+                console.log(array[index] + " ");
+            }
+        }
+        console.log("Length:" + marks.length);
+        // only Google API when one mark is selected
+        if (marks.length == 1){
+            openNav();
+        }
+
+    }
+
 %body#stylediv
+
 
 
