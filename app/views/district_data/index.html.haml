@@ -1,0 +1,47 @@
+%h1 Listing district_data
+
+%table
+  %thead
+    %tr
+      %th Name
+      %th Restaurant type
+      %th Restaurant type num
+      %th Restaurants avg rating
+      %th Float,
+      %th Population
+      %th Restaurants sum rating
+      %th Restaurants price avg lvl
+      %th Public trans lvl
+      %th Direct competitors
+      %th Indirect competitors
+      %th Purchasing power
+      %th Restaurant price index
+      %th Rent index
+      %th
+      %th
+      %th
+
+  %tbody
+    - @district_data.each do |district_datum|
+      %tr
+        %td= district_datum.name
+        %td= district_datum.restaurant_type
+        %td= district_datum.restaurant_type_num
+        %td= district_datum.restaurants_avg_rating
+        %td= district_datum.float,
+        %td= district_datum.population
+        %td= district_datum.restaurants_sum_rating
+        %td= district_datum.restaurants_price_avg_lvl
+        %td= district_datum.public_trans_lvl
+        %td= district_datum.direct_competitors
+        %td= district_datum.indirect_competitors
+        %td= district_datum.purchasing_power
+        %td= district_datum.restaurant_price_index
+        %td= district_datum.rent_index
+        %td= link_to 'Show', district_datum
+        %td= link_to 'Edit', edit_district_datum_path(district_datum)
+        %td= link_to 'Destroy', district_datum, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New District datum', new_district_datum_path

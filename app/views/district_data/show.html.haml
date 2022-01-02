@@ -1,0 +1,48 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @district_datum.name
+%p
+  %b Restaurant type:
+  = @district_datum.restaurant_type
+%p
+  %b Restaurant type num:
+  = @district_datum.restaurant_type_num
+%p
+  %b Restaurants avg rating:
+  = @district_datum.restaurants_avg_rating
+%p
+  %b Float,:
+  = @district_datum.float,
+%p
+  %b Population:
+  = @district_datum.population
+%p
+  %b Restaurants sum rating:
+  = @district_datum.restaurants_sum_rating
+%p
+  %b Restaurants price avg lvl:
+  = @district_datum.restaurants_price_avg_lvl
+%p
+  %b Public trans lvl:
+  = @district_datum.public_trans_lvl
+%p
+  %b Direct competitors:
+  = @district_datum.direct_competitors
+%p
+  %b Indirect competitors:
+  = @district_datum.indirect_competitors
+%p
+  %b Purchasing power:
+  = @district_datum.purchasing_power
+%p
+  %b Restaurant price index:
+  = @district_datum.restaurant_price_index
+%p
+  %b Rent index:
+  = @district_datum.rent_index
+
+= link_to 'Edit', edit_district_datum_path(@district_datum)
+\|
+= link_to 'Back', district_data_path

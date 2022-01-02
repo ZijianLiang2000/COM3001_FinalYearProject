@@ -1,0 +1,52 @@
+= form_for @district_datum do |f|
+  - if @district_datum.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@district_datum.errors.count, "error")} prohibited this district_datum from being saved:"
+      %ul
+        - @district_datum.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :restaurant_type
+    = f.text_field :restaurant_type
+  .field
+    = f.label :restaurant_type_num
+    = f.number_field :restaurant_type_num
+  .field
+    = f.label :restaurants_avg_rating
+    = f.text_field :restaurants_avg_rating
+  .field
+    = f.label :float,
+    = f.text_field :float,
+  .field
+    = f.label :population
+    = f.number_field :population
+  .field
+    = f.label :restaurants_sum_rating
+    = f.number_field :restaurants_sum_rating
+  .field
+    = f.label :restaurants_price_avg_lvl
+    = f.number_field :restaurants_price_avg_lvl
+  .field
+    = f.label :public_trans_lvl
+    = f.number_field :public_trans_lvl
+  .field
+    = f.label :direct_competitors
+    = f.number_field :direct_competitors
+  .field
+    = f.label :indirect_competitors
+    = f.number_field :indirect_competitors
+  .field
+    = f.label :purchasing_power
+    = f.number_field :purchasing_power
+  .field
+    = f.label :restaurant_price_index
+    = f.text_field :restaurant_price_index
+  .field
+    = f.label :rent_index
+    = f.text_field :rent_index
+  .actions
+    = f.submit 'Save'

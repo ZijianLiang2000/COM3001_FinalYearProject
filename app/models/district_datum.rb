@@ -1,0 +1,2 @@
+class DistrictDatum < ApplicationRecord
+end

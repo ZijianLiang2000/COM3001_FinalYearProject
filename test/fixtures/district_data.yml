@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  restaurant_type: MyString
+  restaurant_type_num: 1
+  restaurants_avg_rating: MyString
+  float,: MyString
+  population: 1
+  restaurants_sum_rating: 1
+  restaurants_price_avg_lvl: 1
+  public_trans_lvl: 1
+  direct_competitors: 1
+  indirect_competitors: 1
+  purchasing_power: 1
+  restaurant_price_index: 1.5
+  rent_index: 1.5
+
+two:
+  name: MyString
+  restaurant_type: MyString
+  restaurant_type_num: 1
+  restaurants_avg_rating: MyString
+  float,: MyString
+  population: 1
+  restaurants_sum_rating: 1
+  restaurants_price_avg_lvl: 1
+  public_trans_lvl: 1
+  direct_competitors: 1
+  indirect_competitors: 1
+  purchasing_power: 1
+  restaurant_price_index: 1.5
+  rent_index: 1.5

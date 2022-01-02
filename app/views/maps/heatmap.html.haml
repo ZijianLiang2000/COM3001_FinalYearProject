@@ -1,11 +1,19 @@
 %h1 Heatmap
-<br>
+%br
 %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
-<br>
-<br>
-To move the view - Tap the map, then hold on "shift" + drag the mouse
+%br
+%br
+
+%script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
+
+%h4 Heatmap View:
+%select#globalstyleselect{:onchange => "styleselect()"}
+  %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
+  %option{:value => "2"} Density map
+  %option{:value => "1"} Heatmap
+  
 
 %head
   %title Basic Embed
@@ -14,14 +22,35 @@ To move the view - Tap the map, then hold on "shift" + drag the mouse
     let viz
     //function for viz
     function initViz(containerDiv, url, options) {
+        if (viz){
+            viz.dispose();
+        }
         viz = new tableau.Viz(containerDiv, url, options);
     }
-    function applyOptions() {
+    function applyOptions1() {
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:language=gb-EN&publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "Lsoa11Nm" : ["Canterbury 006A","Burnley 009B"],
+                //"Lsoa11Nm" : ["Canterbury 006A","Burnley 009B"],
+                width: window.innerWidth,
+                height: window.innerHeight,
+                device: "desktop",
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Run this code when the viz has finished loading.");
+                }
+            };
+
+    initViz(containerDiv, url, options);
+    }
+
+        function applyOptions2() {
+        var containerDiv = document.getElementById("vizContainer"),
+            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
+            options = {
+                // Options to show area LSOA code for user when at start
+                //"Lsoa11Nm" : ["Canterbury 006A","Burnley 009B"],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -69,6 +98,17 @@ To move the view - Tap the map, then hold on "shift" + drag the mouse
         applyFilter();
     })
 
-%body{:onload => "applyOptions();"}
+    function styleselect() {
+        var value = $('#globalstyleselect').val();
+        var div = $("#stylediv");
+        if (value == "1") {
+            applyOptions2();
+        }
+        if (value == "2") {
+            applyOptions1();
+        }
+    }
+
+%body#stylediv
 
 
