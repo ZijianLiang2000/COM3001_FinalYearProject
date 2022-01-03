@@ -19,6 +19,17 @@ class MapsController < ApplicationController
   def edit
   end
 
+  def nearby_result
+    if(params[:lat] == nil || params[:lat] == "" || params[:lng] == nil || params[:lng] == "")
+      redirect_to heatmap_path, alert: "Latitude and Longitude is empty, please try another place"
+      return
+    end
+
+    lat = params[:lat]
+    lng = params[:lng]
+    puts("Latitude:" + lat + "Longitude:" + lng)
+  end
+
   # POST /maps or /maps.json
   def create
     @map = Map.new(map_params)
@@ -57,6 +68,20 @@ class MapsController < ApplicationController
   end
 
   private
+    
+    # Request api providing API URI and Key 
+    def request_api(url)
+      response = Excon.get(
+        url,
+        headers: {
+          'X-RapidAPI-Host' => URI.parse(url).host,
+          'X-RapidAPI-Key' => ENV["API_KEY"]
+        }
+      )
+      return nil if response.status != 200
+      JSON.parse(response.body)
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_map
       @map = Map.find(params[:id])

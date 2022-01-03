@@ -32,6 +32,7 @@ class RestaurantDataController < ApplicationController
       redirect_to restaurant_search_path, alert: "Address not found"
       return
     end
+
     
     lng = address_coord["results"][0]["geometry"]["location"]["lng"].to_s
     lat = address_coord["results"][0]["geometry"]["location"]["lat"].to_s

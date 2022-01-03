@@ -25,16 +25,22 @@
 :javascript
 
     function openNav(lat,lng) {
+        // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
         console.log(src);
-        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">x</a><iframe' +
+        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">x</a>' +
+        '<iframe' +
         ' width="450"' +
-        ' height="740"' +
+        ' height="730"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
         src +
-        '</iframe>'
+        '</iframe>' +
+        '<%= form_tag (nearby_result_path, method: :get, local: true, lng: "'+ lng +'") do |f| %>'+
+        '<%= button_tag "Search", class: "btn btn-success btn-block" %>'+
+        '<% end %>'
+
         document.getElementById("mySidebar").innerHTML=innerHtml;
         document.getElementById("mySidebar").style.width = "450px";
     }
@@ -58,7 +64,7 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                //"Lsoa11Nm" : ["Canterbury 006A","Burnley 009B"],
+                "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -79,7 +85,7 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                //"Lsoa11Nm" : ["Canterbury 006A","Burnley 009B"],
+                "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
