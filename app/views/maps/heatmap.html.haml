@@ -1,18 +1,10 @@
+-# Enable gon to work, so that ENV variables can be passed to js
+= include_gon
+
 %h1 Heatmap
 %br
 %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
-
-%br
-
--# Side panel for google maps
-#mySidebar.sidebar
-    %a.closebtn{:href => "javascript:void(0)", :onclick => "closeNav()"} ×
-    %iframe{:allowfullscreen => "", :height => "740",
-    :loading => "lazy",
-    :src => "https://www.google.com/maps/embed/v1/view?key=#{ENV["GOOGLE_API_KEY"]}&center=-33.8569,151.2152&zoom=18&maptype=satellite",
-    :style => "border:0",
-    :width => "450"}
 
 %br
 
@@ -32,14 +24,23 @@
 
 :javascript
 
-    function openNav() {
+    function openNav(lat,lng) {
+        src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
+        console.log(src);
+        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">x</a><iframe' +
+        ' width="450"' +
+        ' height="740"' +
+        ' style="border:0"' +
+        ' loading="lazy"' +
+        ' allowfullscreen' +
+        src +
+        '</iframe>'
+        document.getElementById("mySidebar").innerHTML=innerHtml;
         document.getElementById("mySidebar").style.width = "450px";
-        //document.getElementById("main").style.marginLeft = "450px";
     }
 
     function closeNav() {
         document.getElementById("mySidebar").style.width = "0";
-        //document.getElementById("main").style.marginLeft= "0";
     }
 
     let viz
@@ -170,14 +171,32 @@
             }
         }
         console.log("Length:" + marks.length);
+        var lat = array[3];
+        var lng = array[4];
         // only Google API when one mark is selected
         if (marks.length == 1){
-            openNav();
+            openNav(lat,lng);
+            console.log("Lat:" + lat + ",lng: " + lng);
         }
 
     }
 
 %body#stylediv
 
+-# Side panel for google maps
+#mySidebar.sidebar{:onclick => "openNav()"}
+    -# -# Close button
+    -# %a.closebtn{:href => "javascript:void(0)", :onclick => "closeNav()"} x
+    -# -# Google map frame
+    -# -# - lat = "0" && lng = "0"
+    -# -# - src = "https://www.google.com/maps/embed/v1/view?key="+ ENV["GOOGLE_API_KEY"]+"&center="+lat+","+lng+"&zoom=18&maptype=satellite"
+    -# %iframe{:allowfullscreen => "", :height => "740",
+    -# :loading => "lazy",
+    -# :src => src,
+    -# :style => "border:0",
+    -# :width => "450",
+    -# :id => "sidebar"}
+    -# -p "\nDONE" + src
 
+%br
 
