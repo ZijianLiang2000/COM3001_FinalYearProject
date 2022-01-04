@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
         @restaurant_address = restaurant_addr_detail["result"]["formatted_address"]
         return @restaurant_address
     end
+    
 
     def assign_env_variables
         puts("RUNNING function")

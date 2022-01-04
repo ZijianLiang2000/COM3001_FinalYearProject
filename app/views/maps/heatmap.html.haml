@@ -28,21 +28,24 @@
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
         console.log(src);
-        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">x</a>' +
+        console.log("Token: " + gon.form_token);
+        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
         '<iframe' +
         ' width="450"' +
-        ' height="730"' +
+        ' height="800"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
         src +
-        '</iframe>' +
-        '<%= form_tag (nearby_result_path, method: :get, local: true, lng: "'+ lng +'") do |f| %>'+
-        '<%= button_tag "Search", class: "btn btn-success btn-block" %>'+
-        '<% end %>'
+        '</iframe>' + 
+        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'"><input class="btn btn-primary btn-block" id="nearby_search" type="submit" value="Nearby Places">' +
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '">' +       
+        '</form>'
+
 
         document.getElementById("mySidebar").innerHTML=innerHtml;
         document.getElementById("mySidebar").style.width = "450px";
+        
     }
 
     function closeNav() {
@@ -156,7 +159,7 @@
         
         return marksEvent.getMarksAsync().then(reportSelectedMarks);
     }
-    
+
     function reportSelectedMarks(marks) {
         console.log("reportSelectedMarks is loaded");
         var html = "";
@@ -184,25 +187,12 @@
             openNav(lat,lng);
             console.log("Lat:" + lat + ",lng: " + lng);
         }
-
     }
 
 %body#stylediv
 
 -# Side panel for google maps
-#mySidebar.sidebar{:onclick => "openNav()"}
-    -# -# Close button
-    -# %a.closebtn{:href => "javascript:void(0)", :onclick => "closeNav()"} x
-    -# -# Google map frame
-    -# -# - lat = "0" && lng = "0"
-    -# -# - src = "https://www.google.com/maps/embed/v1/view?key="+ ENV["GOOGLE_API_KEY"]+"&center="+lat+","+lng+"&zoom=18&maptype=satellite"
-    -# %iframe{:allowfullscreen => "", :height => "740",
-    -# :loading => "lazy",
-    -# :src => src,
-    -# :style => "border:0",
-    -# :width => "450",
-    -# :id => "sidebar"}
-    -# -p "\nDONE" + src
+#mySidebar.sidebar
 
 %br
 

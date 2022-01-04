@@ -15,7 +15,6 @@ body {
     background-color: #111;
     overflow-x: hidden;
     transition: 0.5s;
-    padding-top: 60px;
   }
   
   .sidebar a {
@@ -31,6 +30,15 @@ body {
     color: #f1f1f1;
   }
   
+  #nearby_search{
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    top:80%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+
   .sidebar .closebtn {
     position: absolute;
     top: 0;
@@ -51,11 +59,7 @@ body {
   .openbtn:hover {
     background-color: #444;
   }
-  
-  #main {
-    transition: margin-left .5s;
-    padding: 16px;
-  }
+
   
   /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
     @media screen and (max-height: 450px) {

@@ -19,6 +19,10 @@ class MapsController < ApplicationController
   def edit
   end
 
+  def heatmap
+    gon.form_token = form_authenticity_token
+  end
+
   def nearby_result
     if(params[:lat] == nil || params[:lat] == "" || params[:lng] == nil || params[:lng] == "")
       redirect_to heatmap_path, alert: "Latitude and Longitude is empty, please try another place"
