@@ -32,13 +32,13 @@
         innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
         '<iframe' +
         ' width="450"' +
-        ' height="800"' +
+        ' height="801"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
         src +
         '</iframe>' + 
-        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'"><input class="btn btn-primary btn-block" id="nearby_search" type="submit" value="Nearby Places">' +
+        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'"><input class="btn btn-primary btn-lg btn-block active shadow p-3 mb-5" aria-pressed="true" id="nearby_search" type="submit" value="Nearby Places">' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '">' +       
         '</form>'
 
@@ -67,7 +67,7 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -88,7 +88,7 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",

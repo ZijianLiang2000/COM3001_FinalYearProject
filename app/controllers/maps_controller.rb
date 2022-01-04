@@ -31,7 +31,20 @@ class MapsController < ApplicationController
 
     lat = params[:lat]
     lng = params[:lng]
+    
     puts("Latitude:" + lat + "Longitude:" + lng)
+
+    nearby = request_api(
+      "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&radius=5000&type=restaurant&keyword=&key=#{ENV["GOOGLE_API_KEY"]}"
+    )
+
+    if(nearby["results"][0] == nil)
+      redirect_to heatmap_path, alert: "Nearby info not found"
+      return
+    end
+
+    @nearby_results = nearby
+
   end
 
   # POST /maps or /maps.json

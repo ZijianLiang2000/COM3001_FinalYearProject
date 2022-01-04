@@ -17,7 +17,7 @@
                             %span.badge.bg-success #{type}
                         %br
                         %br
-                        %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["name"]}, #{get_detailed_addr(restaurant["place_id"])} Discover
+                        %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["name"]}, #{get_detailed_addr(restaurant["place_id"])}"} Discover
 
 %br
 - if (@nearby_results["next_page_token"] != nil && @nearby_results["next_page_token"] != "")
