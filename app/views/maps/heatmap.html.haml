@@ -38,7 +38,8 @@
         ' allowfullscreen' +
         src +
         '</iframe>' + 
-        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'"><input class="btn btn-primary btn-lg btn-block active shadow p-3 mb-5" aria-pressed="true" id="nearby_search" type="submit" value="Nearby Places">' +
+        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
+        '<input class="btn btn-primary btn-lg btn-block active shadow p-3 mb-5" aria-pressed="true" id="nearby_search" type="submit" value="Nearby Places">' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '">' +       
         '</form>'
 

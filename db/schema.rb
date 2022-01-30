@@ -14,15 +14,17 @@ ActiveRecord::Schema.define(version: 2022_01_02_142907) do
 
   create_table "district_data", force: :cascade do |t|
     t.string "name", null: false
-    t.string "restaurant_type", null: false
-    t.integer "restaurant_type_num", null: false
-    t.string "restaurants_avg_rating", null: false
-    t.integer "population", null: false
-    t.integer "restaurants_sum_rating", null: false
-    t.integer "restaurants_price_avg_lvl", null: false
+    t.string "longitude", null: false
+    t.string "latitude", null: false
+    t.string "restaurant_type"
+    t.integer "restaurant_type_num"
+    t.string "restaurants_avg_rating"
+    t.integer "population"
+    t.integer "restaurants_sum_rating"
+    t.integer "restaurants_price_avg_lvl"
     t.integer "public_trans_lvl"
-    t.integer "direct_competitors", null: false
-    t.integer "indirect_competitors", null: false
+    t.integer "direct_competitors"
+    t.integer "indirect_competitors"
     t.integer "purchasing_power"
     t.float "restaurant_price_index"
     t.float "rent_index"
