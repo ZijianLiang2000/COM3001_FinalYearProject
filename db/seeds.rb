@@ -30,8 +30,8 @@ CSV.foreach(Rails.root.join('lib\Local_Authority_Name.csv'), headers: true) do |
     unless row[0].to_s.strip.empty?
         DistrictDatum.create({
             name: row[0].to_s,
-            longitude: [1].to_s,
-            latitude: [2].to_s
+            longitude: row[1].to_s,
+            latitude: row[2].to_s
         })
     end
 
