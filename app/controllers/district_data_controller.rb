@@ -1,4 +1,5 @@
 class DistrictDataController < ApplicationController
+  require 'csv'
   before_action :set_district_datum, only: %i[ show edit update destroy ]
 
   # GET /district_data or /district_data.json
@@ -57,6 +58,7 @@ class DistrictDataController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_district_datum
       @district_datum = DistrictDatum.find(params[:id])
@@ -64,6 +66,6 @@ class DistrictDataController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def district_datum_params
-      params.require(:district_datum).permit(:name, :restaurant_type, :restaurant_type_num, :restaurants_avg_rating, :float,, :population, :restaurants_sum_rating, :restaurants_price_avg_lvl, :public_trans_lvl, :direct_competitors, :indirect_competitors, :purchasing_power, :restaurant_price_index, :rent_index)
+      params.require(:district_datum).permit(:name, :restaurant_type, :restaurant_type_num, :restaurants_avg_rating, :float, :population, :restaurants_sum_rating, :restaurants_price_avg_lvl, :public_trans_lvl, :direct_competitors, :indirect_competitors, :purchasing_power, :restaurant_price_index, :rent_index)
     end
 end

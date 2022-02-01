@@ -13,4 +13,5 @@ Rails.application.routes.draw do
   get 'google_result_next' => 'restaurant_data#google_result_next'
   post 'nearby_result' => 'maps#nearby_result'
   get 'nearby_result' => 'maps#nearby_result'
+  get 'retreive_col_data' => 'district_data#retreive_col_data'
 end
