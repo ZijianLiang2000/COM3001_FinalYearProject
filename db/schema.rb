@@ -14,8 +14,7 @@ ActiveRecord::Schema.define(version: 2022_01_02_142907) do
 
   create_table "district_data", force: :cascade do |t|
     t.string "name", null: false
-    t.string "longitude", null: false
-    t.string "latitude", null: false
+    t.string "code", null: false
     t.string "restaurant_type"
     t.integer "restaurant_type_num"
     t.string "restaurants_avg_rating"

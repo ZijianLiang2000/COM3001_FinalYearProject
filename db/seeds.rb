@@ -7,6 +7,8 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 require 'csv'
+require 'tempfile'
+require 'fileutils'
 
 # Request api providing API URI and Key 
 def request_api(url)
@@ -42,18 +44,33 @@ def request_api_col(url,district_name)
 # Get latitude and longitude of each LAD
 CSV.foreach(Rails.root.join('lib\Local_Authority_Name.csv'), headers: true) do |row|
 
-    puts("Name: " + (row[0]).to_s + ", lat: " + (row[2]).to_s + ", lng:" + (row[1]).to_s + "\n")
-    
     # Verify if name is empty, if not store lat and lng data to db
-    unless row[0].to_s.strip.empty?
+    if (row[0].to_s.strip.empty? || row[0].to_s.strip == "")
+      break
+    end
+
+    puts("Code: " + (row[0]).to_s + ", Name: " + (row[1]).to_s + "\n")
+
+    unless row[1].to_s.strip.empty?
         DistrictDatum.create({
-            name: row[0].to_s,
-            longitude: row[1].to_s,
-            latitude: row[2].to_s
+            code: row[0].to_s,
+            name: row[1].to_s,
         })
     end
+
 end
  
+old_csv = CSV.open('lib\Cost_of_Living_Districts.csv', "r", headers: true, return_headers: true)
+old_csv.readline
+temp = Tempfile.new
+# Open the new CSV with the existing headers plus a new one.
+new_csv = CSV.open(
+  temp, "w",
+  headers: old_csv.headers + [:new],
+  write_headers: true
+)
+
+
     # Get cost of living data of each district on map
 CSV.foreach(Rails.root.join('lib\Cost_of_Living_Districts.csv'), headers: true) do |row|
 
@@ -75,15 +92,32 @@ CSV.foreach(Rails.root.join('lib\Cost_of_Living_Districts.csv'), headers: true) 
 
   district_name_pair = ""
 
-  if district_name == "London":
+  if district_name == "London"
     district_name_pair = "City of London"
+  elsif district_name == "Bournemouth"
+    district_name_pair = "Bournemouth, Christchurch and Poole"
+  elsif district_name == "Bristol"
+    district_name_pair = "Bristol, City of"
+  elsif district_name == "Brighton"
+    district_name_pair = "Brighton and Hove"
+  elsif district_name == "Kingston upon Hull"
+    district_name_pair = "Kingston upon Hull, City of"
   else
     district_name_pair = district_name
   end
 
   puts("Name Pair: " + district_name_pair + "\n")
-  district = DistrictDatum.where(name:district_name_pair)
+  district = DistrictDatum.where(name: district_name_pair)
   district.update(restaurant_price_index: restaurant_price_index, rent_index: rent_index, purchasing_power: purchasing_power)
-
+  row[:cost_of_living_with_rent] = col_index
+  row[:restaurant_price_index] = restaurant_price_index
+  row[:rent_index] = rent_index
+  row[:local_purchasing_power_index] = purchasing_power
+  new_csv << row
 end
 
+new_csv.close
+
+csv_file = 'lib\Cost_of_Living_Districts_Copy.csv'
+# Replace the old CSV with the new one.
+FileUtils.move(temp.path, csv_file)
