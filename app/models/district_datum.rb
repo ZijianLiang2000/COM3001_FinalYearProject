@@ -20,9 +20,12 @@ class DistrictDatum < ApplicationRecord
     validates :code, presence: true, inclusion: { in: ladCodes, message: "%{value} is not a valid Local Authority District Code" }
 
     # All restaurant categories
-    Restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
-    districtName = self.name
-    # for category in Restaurant_Category_Encode
-    #     DistrictDatum.where(name: districtName).restaurantData
-
-end
+    def Get_Restaurant_Count(district_id)
+        Restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
+        Restaurant_Category_Count = []
+        for category in Restaurant_Category_Encode
+            areaRestaurantCatCount = RestaurantDatum.where(DistrictDatum_id: district_id, category: category).count
+            Restaurant_Category_Count.append(areaRestaurantCatCount)
+        return Restaurant_Category_Encode
+    end
+end     

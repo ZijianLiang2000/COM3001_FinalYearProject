@@ -16,6 +16,7 @@ class DistrictDataController < ApplicationController
     @district_datum = DistrictDatum.new
   end
 
+
   # GET /district_data/1/edit
   def edit
   end

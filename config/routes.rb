@@ -5,7 +5,11 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root 'maps#home'
   get 'home' => 'maps#home'
-  get 'heatmap' => 'maps#heatmap'
+  # Heatmap for LSOA
+  get 'lsoa_heatmap' => 'maps#lsoa_heatmap'
+  # Heatmap for LAD
+  get 'lad_heatmap' => 'maps#lad_heatmap'
+  
   get 'restaurant_search' => 'restaurant_data#search'
   get 'restaurant_result' => 'restaurant_data#result'
   get 'google_result' => 'restaurant_data#google_result'
@@ -13,5 +17,5 @@ Rails.application.routes.draw do
   get 'google_result_next' => 'restaurant_data#google_result_next'
   post 'nearby_result' => 'maps#nearby_result'
   get 'nearby_result' => 'maps#nearby_result'
-  get 'retreive_col_data' => 'district_data#retreive_col_data'
+
 end

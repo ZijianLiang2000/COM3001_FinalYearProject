@@ -19,13 +19,19 @@ class MapsController < ApplicationController
   def edit
   end
 
-  def heatmap
+  def lsoa_heatmap
     gon.form_token = form_authenticity_token
+    
+  end
+
+  def lad_heatmap
+    gon.form_token = form_authenticity_token
+    
   end
 
   def nearby_result
     if(params[:lat] == nil || params[:lat] == "" || params[:lng] == nil || params[:lng] == "")
-      redirect_to heatmap_path, alert: "Latitude and Longitude is empty, please try another place"
+      redirect_to :back, alert: "Latitude and Longitude is empty, please try another place"
       return
     end
 
@@ -39,7 +45,7 @@ class MapsController < ApplicationController
     )
 
     if(nearby["results"][0] == nil)
-      redirect_to heatmap_path, alert: "Nearby info not found"
+      redirect_to lsoa_heatmap_path, alert: "Nearby info not found"
       return
     end
 

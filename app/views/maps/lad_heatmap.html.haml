@@ -1,0 +1,197 @@
+-# Enable gon to work, so that ENV variables can be passed to js
+= include_gon
+
+%h1 Heatmap
+%br
+%input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
+= button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
+
+%br
+
+%script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
+
+%h4 Heatmap View:
+%select#globalstyleselect{:onchange => "styleselect()"}
+    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
+    %option{:value => "2"} Density map
+    %option{:value => "1"} Heatmap
+  
+%br
+%head
+%title Basic Embed
+%script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
+
+-# Window to pop-up and function to open the sidebar
+:javascript
+    function openNav(name,lat,lng) {
+        // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
+        src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
+        console.log(src);
+        console.log("Token: " + gon.form_token);
+        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
+        '<iframe' +
+        ' width="450"' +
+        ' height="801"' +
+        ' style="border:0"' +
+        ' loading="lazy"' +
+        ' allowfullscreen' +
+        src +
+        '</iframe>' + 
+        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
+        '<input class="btn btn-primary btn-lg btn-block active shadow p-3 mb-5" aria-pressed="true" id="nearby_search" type="submit" value="Places in ' + name + '">' +
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '">' +       
+        '</form>'
+
+
+        document.getElementById("mySidebar").innerHTML=innerHtml;
+        document.getElementById("mySidebar").style.width = "450px";
+        
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+    }
+
+    let viz
+    //function for viz
+    function initViz(containerDiv, url, options) {
+        if (viz){
+            viz.dispose();
+        }
+        viz = new tableau.Viz(containerDiv, url, options);
+    }
+
+    // Option to show sheet 1
+    function applyOptions1() {
+        var containerDiv = document.getElementById("vizContainer"),
+            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet4?:publish=yes&:display_count=n&:origin=viz_share_link",
+            options = {
+                // Options to show area LSOA code for user when at start
+                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                width: window.innerWidth,
+                height: window.innerHeight,
+                device: "desktop",
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
+                }
+            };
+    initViz(containerDiv, url, options);
+    }
+
+    // Option to show sheet 2
+        function applyOptions2() {
+        var containerDiv = document.getElementById("vizContainer"),
+            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link",
+            options = {
+                // Options to show area LSOA code for user when at start
+                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                width: window.innerWidth,
+                height: window.innerHeight,
+                device: "desktop",
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
+                }
+            };
+
+    initViz(containerDiv, url, options);
+    }
+
+    // apply filter after webpage loaded
+    function applyFilter(){
+        
+        // get the values from input
+        const filterInput = document.getElementById('filter_input').value;
+        // get workbook obj
+        const workbook = viz.getWorkbook();
+        // get active sheet in window - which is dashboard
+        const activeSheet = workbook.getActiveSheet();
+        // define sheet to filter
+        const sheetToFilter = activeSheet;
+        
+        sheetToFilter.applyFilterAsync("Lsoa11Nm",filterInput,tableau.FilterUpdateType.REPLACE);
+        console.log(activeSheet);
+    }
+
+    // Function to listen to adjustment of window
+    window.addEventListener("resize", () => {
+        console.log(
+            `Resizing the window ${window.innerHeight}, ${window.innerWidth}`
+        );
+        autoResize();
+    });
+
+    // Resize dashboard window
+    function autoResize(){
+        const height = window.innerHeight;
+        const width = window.innerWidth;
+        viz.setFrameSize(width, height);
+    }
+
+    document.getElementById('applyFilter').addEventListener('click',function(){
+        applyFilter();
+    })
+
+    function styleselect() {
+        var value = $('#globalstyleselect').val();
+        var div = $("#stylediv");
+        if (value == "1") {
+            applyOptions2();
+        }
+        if (value == "2") {
+            applyOptions1();
+        }
+    }
+
+    function listenToMarksSelection() {
+        console.log("listenToMarksSelection function is loaded");
+        viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
+    }
+
+    function onMarksSelection(marksEvent) {
+        console.log("onMarksSelection function is loaded");
+        
+        return marksEvent.getMarksAsync().then(reportSelectedMarks);
+    }
+
+    function reportSelectedMarks(marks) {
+        console.log("reportSelectedMarks is loaded");
+        var html = "";
+
+        for (var markIndex = 0; markIndex < marks.length; markIndex++) {
+            var pairs = marks[markIndex].getPairs();
+            html += "Mark " + markIndex + ": ";
+            var array = [];
+            for (var pairIndex = 0; pairIndex < pairs.length; pairIndex++) {
+                var pair = pairs[pairIndex];
+                html += "Field Name: " + pair.fieldName;
+                html += ", Value:" + pair.formattedValue + ", ";
+                array.push(pair.formattedValue)
+            }
+            html += "";
+            for (var index = 0; index < array.length; index++) {
+                console.log(array[index] + " ");
+            }
+        }
+        var name = array[1];
+        var lat = array[3];
+        var lng = array[4];
+        // only Google API when one mark is selected
+        if (marks.length == 1){
+            openNav(name,lat,lng);
+            console.log("LAD Name:" + name + ", Lat:" + lat + ",lng: " + lng);
+        }
+    }
+
+%body#stylediv
+
+-# Side panel for google maps
+#mySidebar.sidebar
+
+%br
+
