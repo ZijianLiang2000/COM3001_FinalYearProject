@@ -19,13 +19,4 @@ class DistrictDatum < ApplicationRecord
     validates :name, presence: true, inclusion: { in: ladNames, message: "%{value} is not a valid Local Authority District Name" }
     validates :code, presence: true, inclusion: { in: ladCodes, message: "%{value} is not a valid Local Authority District Code" }
 
-    # All restaurant categories
-    def Get_Restaurant_Count(district_id)
-        Restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
-        Restaurant_Category_Count = []
-        for category in Restaurant_Category_Encode
-            areaRestaurantCatCount = RestaurantDatum.where(DistrictDatum_id: district_id, category: category).count
-            Restaurant_Category_Count.append(areaRestaurantCatCount)
-        return Restaurant_Category_Encode
-    end
 end     

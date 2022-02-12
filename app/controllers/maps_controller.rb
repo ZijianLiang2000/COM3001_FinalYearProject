@@ -29,6 +29,22 @@ class MapsController < ApplicationController
     
   end
 
+  # All restaurant categories
+  def get_restaurant_count
+    name = params[:name] 
+    puts("received LAD: " + name)
+    
+    restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
+    restaurant_Category_Count = []
+    for category in restaurant_Category_Encode
+      puts("Category: #{category}")
+      areaRestaurantCatCount = RestaurantDatum.where(DistrictDatum_id: DistrictDatum.where(name: name).ids.first, category: category).count
+      puts("Running, count: #{areaRestaurantCatCount}")
+      restaurant_Category_Count.append(areaRestaurantCatCount)
+    end
+    render json: { response: restaurant_Category_Count }
+  end
+
   def nearby_result
     if(params[:lat] == nil || params[:lat] == "" || params[:lng] == nil || params[:lng] == "")
       redirect_to :back, alert: "Latitude and Longitude is empty, please try another place"
@@ -50,7 +66,6 @@ class MapsController < ApplicationController
     end
 
     @nearby_results = nearby
-
   end
 
   # POST /maps or /maps.json
@@ -91,7 +106,7 @@ class MapsController < ApplicationController
   end
 
   private
-    
+
     # Request api providing API URI and Key 
     def request_api(url)
       response = Excon.get(
