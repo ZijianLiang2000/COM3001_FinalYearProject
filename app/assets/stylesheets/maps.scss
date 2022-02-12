@@ -33,7 +33,14 @@ body {
   #nearby_search{
     margin: 0;
     position: absolute;
-    left: 50%;
+    left: 50%;  .sidebar .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+      color: red;
+    }
     top:80%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
@@ -45,22 +52,13 @@ body {
     right: 25px;
     font-size: 36px;
     margin-left: 50px;
+    color: rgb(0, 0, 0);
   }
   
-  .openbtn {
-    font-size: 20px;
-    cursor: pointer;
-    background-color: #111;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-  }
-  
-  .openbtn:hover {
-    background-color: #444;
+  .sidebar .closebtn:hover {
+    color: rgb(123, 123, 123);
   }
 
-  
   /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
     @media screen and (max-height: 450px) {
     .sidebar {padding-top: 15px;}

@@ -3,13 +3,15 @@
 
 %h1 Heatmap
 %br
+-# Filter search bar part
 %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
 %br
-
+-# include script to add google embed iframe
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
+-# Options to choose which map to display
 %h4 Heatmap View:
 %select#globalstyleselect{:onchange => "styleselect()"}
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
@@ -23,24 +25,35 @@
 
 -# Window to pop-up and function to open the sidebar
 :javascript
-    function openNav(name,lat,lng) {
+    function openNav(name,lat,lng,population) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
         console.log(src);
         console.log("Token: " + gon.form_token);
-        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
-        '<iframe' +
+        innerHtml = '<head><style>' +
+        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;bottom: 10px; left: 50%}" +
+        '</style></head>' +
+        '<body><a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
+        '<div class="holder"><iframe id="map_frame"' +
         ' width="450"' +
-        ' height="801"' +
+        ' height="800"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
         src +
-        '</iframe>' + 
+        '</iframe>' +
         '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
-        '<input class="btn btn-primary btn-lg btn-block active shadow p-3 mb-5" aria-pressed="true" id="nearby_search" type="submit" value="Places in ' + name + '">' +
-        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '">' +       
-        '</form>'
+        '<input class="btn btn-primary btn-lg btn-block active shadow p-3 mb-5" aria-pressed="true" id="nearby_search" type="submit" value="Restaurants in ' + name + '" />' +
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+        '</form>' +
+        '<div class="card" style="width: 18rem;">' +
+        '<div class="card-body">' +
+        '<h5 class="card-title">'+ name +'</h5>' +
+        '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
+        '<p class="card-text">Some quick example text to build on the card title and make up the bulk of the cardt.</p>' +
+        '<a href="#" class="card-link">Card link</a>' +
+        '<a href="#" class="card-link">Another link</a>' +
+        '</div></div></div></body>'
 
 
         document.getElementById("mySidebar").innerHTML=innerHtml;
@@ -179,12 +192,13 @@
             }
         }
         var name = array[1];
+        var population = array[2];
         var lat = array[3];
         var lng = array[4];
         // only Google API when one mark is selected
         if (marks.length == 1){
-            openNav(name,lat,lng);
-            console.log("LAD Name:" + name + ", Lat:" + lat + ",lng: " + lng);
+            openNav(name,lat,lng,population);
+            console.log("LAD Name:" + name + ", Lat:" + lat + ",lng: " + lng + ", population: " + population);
         }
     }
 
