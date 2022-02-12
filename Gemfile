@@ -25,6 +25,9 @@ gem 'bootstrap', '~> 5.0'
 gem 'jquery-rails'
 gem 'jquery'
 gem 'gon'
+gem 'json'
+gem 'progress_bar'
+gem 'activerecord-import'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

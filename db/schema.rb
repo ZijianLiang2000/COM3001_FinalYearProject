@@ -15,18 +15,14 @@ ActiveRecord::Schema.define(version: 2022_01_02_142907) do
   create_table "district_data", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
-    t.string "restaurant_type"
-    t.integer "restaurant_type_num"
-    t.string "restaurants_avg_rating"
     t.integer "population"
-    t.integer "restaurants_sum_rating"
-    t.integer "restaurants_price_avg_lvl"
     t.integer "public_trans_lvl"
-    t.integer "direct_competitors"
-    t.integer "indirect_competitors"
     t.integer "purchasing_power"
     t.float "restaurant_price_index"
     t.float "rent_index"
+    t.float "cost_of_food_supply"
+    t.float "employment_lvl"
+    t.float "rec_val"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -39,11 +35,18 @@ ActiveRecord::Schema.define(version: 2022_01_02_142907) do
   end
 
   create_table "restaurant_data", force: :cascade do |t|
-    t.string "city"
+    t.integer "DistrictDatum_id"
+    t.string "url", null: false
+    t.string "category", null: false
+    t.string "place_id", null: false
+    t.string "comment"
     t.string "name"
     t.float "rating"
+    t.string "lat"
+    t.string "lng"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["DistrictDatum_id"], name: "index_restaurant_data_on_DistrictDatum_id"
   end
 
 end
