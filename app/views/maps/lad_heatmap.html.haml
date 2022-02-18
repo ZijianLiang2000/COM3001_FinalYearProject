@@ -18,6 +18,19 @@
     %option{:value => "2"} Density map
     %option{:value => "1"} Heatmap
   
+%h4 Restaurant Category:
+%select#rest_cat_select
+    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Restaurant Category
+    %option{:value => "0"} Italian Restaurant
+    %option{:value => "1"} Indian Restaurant
+    %option{:value => "2"} Japanese Restaurant
+    %option{:value => "3"} Thai Restaurant
+    %option{:value => "4"} British Restaurant
+    %option{:value => "5"} Chinese Restaurant
+    %option{:value => "6"} Vegetarian
+    %option{:value => "7"} Cafe
+    %option{:value => "8"} Pub
+
 %br
 %head
 %title Basic Embed
@@ -25,12 +38,18 @@
 
 -# Window to pop-up and function to open the sidebar
 :javascript
-    function openNav(name,lat,lng,population,count) {
+    function openNav(name,lat,lng,population,count,rest_cat_val) {
         total = 0
         for(var k in count) {
             console.log("Each:" + count[k]);
             total += count[k]
         }
+        console.log("RestCatVal:" + rest_cat_val)
+        console.log("RestCatVal (int):" + parseInt(rest_cat_val))
+        console.log("Number of selected category restaurants:" + count[parseInt(rest_cat_val)])
+
+        restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
+
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
         console.log(src);
@@ -61,11 +80,11 @@
         '<div class="card-body">' +
         '<h5 class="card-title">'+ name +'</h5>' +
         '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ total +' listed restaurants (restaurant categories) </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ count[0] +' Italian Restaurants in this area </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ count[1] +' Indian Restaurants in this area </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+  +' direct competitors </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+  +' indirect competitors </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ total +' listed restaurants (of supported restaurant categories) </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ count[parseInt(rest_cat_val)] +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_val)] + ') </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - count[parseInt(rest_cat_val)]) +' Indirect Competitors </p>' +
+        //'<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ count[2] +' Japanese Restaurant </p>' +
+        //'<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ count[5] +' Chinese Restaurant </p>' +
         '</div></div></div></body>'
 
 
@@ -214,25 +233,27 @@
         res_count = new Array();
         // only Google API when one mark is selected
         if (marks.length == 1){
-
-        // Use AJAX to call method from controller
-        $.ajax({
-            type: "GET",
-            url: "/get_restaurant_count",
-            data: {'name': name},
-            success:function(msg){
-                // Returning a json format of count
-                res_count = msg.response;
-                console.log("Response: " + res_count)
-                openNav(name,lat,lng,population,res_count);
-            },
-            error: function() {
-                alert('Unavailable to retreive restaurant amount in this area');
-            }
-        });
-        
-        // openNav(res_count, name,lat,lng,population);
-        console.log("LAD Name:" + name + ", Lat:" + lat + ",lng: " + lng + ", population: " + population);
+            // Print selected restaurant category value
+            var rest_cat_value = $('#rest_cat_select').val();
+            console.log("Restaurant Category Selected:" + rest_cat_value)
+            // Use AJAX to call method from controller
+            $.ajax({
+                type: "GET",
+                url: "/get_restaurant_count",
+                data: {'name': name},
+                success:function(msg){
+                    // Returning a json format of count
+                    res_count = msg.response;
+                    console.log("Response: " + res_count)
+                    openNav(name,lat,lng,population,res_count,rest_cat_value);
+                },
+                error: function() {
+                    alert('Unavailable to retreive restaurant amount in this area');
+                }
+            });
+            
+            // openNav(res_count, name,lat,lng,population);
+            console.log("LAD Name:" + name + ", Lat:" + lat + ",lng: " + lng + ", population: " + population);
             
         }
     }
