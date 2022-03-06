@@ -42,8 +42,10 @@ class MapsController < ApplicationController
       puts("Running, count: #{areaRestaurantCatCount}")
       restaurant_Category_Count.append(areaRestaurantCatCount)
     end
+
     render json: { response: restaurant_Category_Count }
   end
+
 
   def nearby_result
     if(params[:lat] == nil || params[:lat] == "" || params[:lng] == nil || params[:lng] == "")

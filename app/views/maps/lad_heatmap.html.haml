@@ -19,7 +19,7 @@
     %option{:value => "1"} Heatmap
   
 %h4 Restaurant Category:
-%select#rest_cat_select
+%select#rest_cat_select{:onchange => "update_weight_to_tableau()"}
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Restaurant Category
     %option{:value => "0"} Italian Restaurant
     %option{:value => "1"} Indian Restaurant
@@ -129,7 +129,8 @@
     // Option to show sheet 2
         function applyOptions2() {
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link",
+            // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/1?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
                 // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
@@ -193,8 +194,35 @@
         }
     }
 
+    // JS scipt to update value when an option is selected for restuarant category
+    // because some weights for importance change for different restaurants
+    function update_weight_to_tableau(){
+        var rest_cat_value = $('#rest_cat_select').val();
+
+        var Weight_Population = 1;
+        var Asian_Weight = 1;
+
+        console.log("Selected restaurant category: '" + rest_cat_value + "'")
+        // if rest_cat_value = 5 (Chinese Restaurant), then update weights
+        if (rest_cat_value == 5){
+            Weight_Population = 0.5;
+            Asian_Weight = 0.8;
+        }
+        // etc
+
+        console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
+
+        // get workbook
+        const workbook = viz.getWorkbook();
+        
+        workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
+        workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
+
+    }
+
     function listenToMarksSelection() {
         console.log("listenToMarksSelection function is loaded");
+        update_weight_to_tableau();
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
 
@@ -225,12 +253,16 @@
             }
         }
         // Assign mark parameters to values
-        var name = array[1];
+        var name = array[6];
         var population = array[2];
-        var lat = array[3];
-        var lng = array[4];
+        var lat = array[9];
+        var lng = array[10];
+
+
+        console.log()
 
         res_count = new Array();
+
         // only Google API when one mark is selected
         if (marks.length == 1){
             // Print selected restaurant category value
