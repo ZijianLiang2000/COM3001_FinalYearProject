@@ -1,4 +1,6 @@
 class MapsController < ApplicationController
+  require 'csv'
+  require 'uri'
   before_action :set_map, only: %i[ show edit update destroy ]
 
   # GET /maps or /maps.json
@@ -23,9 +25,25 @@ class MapsController < ApplicationController
     gon.form_token = form_authenticity_token
     name = params[:name]
     map_style = params[:map_style]
+    rest_cat = params[:rest_cat]
     puts("received LAD Name: " + name)
     puts("received LAD Map Style: " + map_style)
+    puts("received LAD Restaurant Category: " + rest_cat)
     @map_style = map_style
+    @rest_cat = rest_cat
+
+    # Find LSOA areas under LAD Name from csv
+    lsoa_filter = []
+    # Loop through all rows
+    CSV.foreach(Rails.root.join('lib\LSOA11_WD21_LAD21_EW_LU.csv'), headers: true) do |row|
+      # If LAD name exist in LAD row
+      if(row[5].include? name)
+        # Add corresponding LSOA of LAD
+        puts("corresponding lsoa:" + row[1])
+        lsoa_filter.append(row[1].to_s)
+      end
+    end
+    gon.lsoa_filter = lsoa_filter
 
   end
 

@@ -68,13 +68,14 @@
         viz = new tableau.Viz(containerDiv, url, options);
     }
 
+
     // Option to show sheet 1
     function applyOptions1() {
         var containerDiv = document.getElementById("vizContainer"),
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LSOA11 Name" : ["Guildford"],
+                "LSOA11 Name" : gon.lsoa_filter,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -95,7 +96,7 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                "LSOA11 Name" : gon.lsoa_filter,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",

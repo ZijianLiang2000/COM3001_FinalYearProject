@@ -76,8 +76,8 @@
         ' allowfullscreen' +
         src +
         '</iframe>' +
-        // Button to select a location, post name of location to controller
-        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&map_style='+ map_style + '">'+
+        // Button to select a location, post params of location to controller
+        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
