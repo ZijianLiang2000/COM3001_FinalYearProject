@@ -15,8 +15,9 @@
 %h4 Heatmap View:
 %select#globalstyleselect{:onchange => "styleselect()"}
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
-    %option{:value => "2"} Density map
     %option{:value => "1"} Heatmap
+    %option{:value => "2"} Density map
+
   
 %h4 Restaurant Category:
 %select#rest_cat_select{:onchange => "update_weight_to_tableau()"}
@@ -52,11 +53,16 @@
 
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
+        // Let LSOA default map to show be identical to previous map if next stage
+        var map_style = $('#globalstyleselect').val();
         console.log(src);
         console.log("Token: " + gon.form_token);
+        console.log("Map style: " + map_style);
+        
         innerHtml = '<head><style>' +
         // Header part
-        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;bottom: 10px; left: 50%}" +
+        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;top: 250px;left: 110px;}" +
+        '.holder #select_area{position: absolute;bottom: 60px; left: 30%;}'+
         '</style></head>' +
         '<body>' + 
         // Close Button
@@ -70,9 +76,9 @@
         ' allowfullscreen' +
         src +
         '</iframe>' +
-        // Button to search nearby restaurants in selected location
-        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
-        '<input class="btn btn-primary" id="nearby_search" type="submit" value="Restaurants in ' + name + '" />' +
+        // Button to select a location, post name of location to controller
+        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&map_style='+ map_style + '">'+
+        '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
         // Card to display information about district
@@ -83,8 +89,12 @@
         '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ total +' listed restaurants (of supported restaurant categories) </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ count[parseInt(rest_cat_val)] +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_val)] + ') </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - count[parseInt(rest_cat_val)]) +' Indirect Competitors </p>' +
-        //'<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ count[2] +' Japanese Restaurant </p>' +
-        //'<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ count[5] +' Chinese Restaurant </p>' +
+        
+        // button for nearby search
+        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
+        '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+        '</form>'
         '</div></div></div></body>'
 
 
@@ -109,7 +119,7 @@
     // Option to show sheet 1
     function applyOptions1() {
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet4?:publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/WorksheetHeatmap?:language=zh-CN&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
                 // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
@@ -126,11 +136,11 @@
     initViz(containerDiv, url, options);
     }
 
-    // Option to show sheet 2
+    // Option to show sheet 2 for Heatmap
         function applyOptions2() {
         var containerDiv = document.getElementById("vizContainer"),
             // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/1?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/WorksheetDensityMap?:language=zh-CN&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
                 // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
@@ -186,11 +196,14 @@
     function styleselect() {
         var value = $('#globalstyleselect').val();
         var div = $("#stylediv");
+        // If map style is Heatmap map
         if (value == "1") {
-            applyOptions2();
-        }
-        if (value == "2") {
+            // Use data sheet for Heatmap map
             applyOptions1();
+        }
+        // else you datasheet for Density map
+        if (value == "2") {
+            applyOptions2();
         }
     }
 
@@ -255,8 +268,8 @@
         // Assign mark parameters to values
         var name = array[6];
         var population = array[2];
-        var lat = array[9];
-        var lng = array[10];
+        var lat = array[8];
+        var lng = array[9];
 
 
         console.log()

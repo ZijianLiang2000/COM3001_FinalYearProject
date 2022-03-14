@@ -1,3 +1,5 @@
+%body{ :onload => "styleselect()"}
+
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
@@ -12,9 +14,14 @@
 
 %h4 Heatmap View:
 %select#globalstyleselect{:onchange => "styleselect()"}
-    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
-    %option{:value => "2"} Density map
-    %option{:value => "1"} Heatmap
+
+    - if @map_style == "1"
+        %option{:value => "1", :selected => "selected"} Heatmap
+        %option{:value => "2"} Density map
+    - elsif @map_style == "2"
+        %option{:value => "1"} Heatmap
+        %option{:value => "2", :selected => "selected"} Density map
+    
   
 %br
 %head
@@ -23,7 +30,6 @@
 
 
 :javascript
-
     function openNav(lat,lng) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
@@ -65,10 +71,10 @@
     // Option to show sheet 1
     function applyOptions1() {
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                "LSOA11 Name" : ["Guildford"],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -86,7 +92,7 @@
     // Option to show sheet 2
         function applyOptions2() {
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
                 // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
@@ -143,10 +149,10 @@
         var value = $('#globalstyleselect').val();
         var div = $("#stylediv");
         if (value == "1") {
-            applyOptions2();
+            applyOptions1();
         }
         if (value == "2") {
-            applyOptions1();
+            applyOptions2();
         }
     }
 

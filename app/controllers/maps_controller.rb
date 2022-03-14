@@ -21,7 +21,12 @@ class MapsController < ApplicationController
 
   def lsoa_heatmap
     gon.form_token = form_authenticity_token
-    
+    name = params[:name]
+    map_style = params[:map_style]
+    puts("received LAD Name: " + name)
+    puts("received LAD Map Style: " + map_style)
+    @map_style = map_style
+
   end
 
   def lad_heatmap
@@ -31,7 +36,7 @@ class MapsController < ApplicationController
 
   # All restaurant categories
   def get_restaurant_count
-    name = params[:name] 
+    name = params[:name]
     puts("received LAD: " + name)
     
     restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]

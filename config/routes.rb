@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get 'home' => 'maps#home'
   # Heatmap for LSOA
   get 'lsoa_heatmap' => 'maps#lsoa_heatmap'
+  post 'lsoa_heatmap' => 'maps#lsoa_heatmap'
   # Heatmap for LAD
   get 'lad_heatmap' => 'maps#lad_heatmap'
   
