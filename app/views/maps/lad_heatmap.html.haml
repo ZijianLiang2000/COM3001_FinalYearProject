@@ -1,18 +1,18 @@
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
-%h1 Heatmap
+%h1 Local Authority District Map
 %br
 -# Filter search bar part
-%input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
-= button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
+-# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
+-# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
 %br
 -# include script to add google embed iframe
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
 -# Options to choose which map to display
-%h4 Heatmap View:
+%h4 Map View:
 %select#globalstyleselect{:onchange => "styleselect()"}
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
     %option{:value => "1"} Heatmap
@@ -39,7 +39,7 @@
 
 -# Window to pop-up and function to open the sidebar
 :javascript
-    function openNav(name,lat,lng,population,count,rest_cat_val) {
+    function openNav(name, code, lat,lng,population,count,rest_cat_val) {
         total = 0
         for(var k in count) {
             console.log("Each:" + count[k]);
@@ -77,7 +77,7 @@
         src +
         '</iframe>' +
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'">'+
+        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&lad='+ code +'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
@@ -270,7 +270,7 @@
         var population = array[2];
         var lat = array[8];
         var lng = array[9];
-
+        var code = array[5];
 
         console.log()
 
@@ -290,7 +290,7 @@
                     // Returning a json format of count
                     res_count = msg.response;
                     console.log("Response: " + res_count)
-                    openNav(name,lat,lng,population,res_count,rest_cat_value);
+                    openNav(name,code, lat,lng,population,res_count,rest_cat_value);
                 },
                 error: function() {
                     alert('Unavailable to retreive restaurant amount in this area');
@@ -298,7 +298,7 @@
             });
             
             // openNav(res_count, name,lat,lng,population);
-            console.log("LAD Name:" + name + ", Lat:" + lat + ",lng: " + lng + ", population: " + population);
+            console.log("LAD Name:" + name + ", LAD Code: " + code +  ", Lat:" + lat + ",lng: " + lng + ", population: " + population);
             
         }
     }

@@ -5,8 +5,8 @@
 
 %h1 Heatmap
 %br
-%input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
-= button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
+-# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
+-# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
 %br
 
@@ -75,7 +75,7 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LSOA11 Name" : gon.lsoa_filter,
+                "LSOA11 Code" : gon.lsoa_filter,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -96,7 +96,7 @@
             url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LSOA11 Name" : gon.lsoa_filter,
+                "LSOA11 Code" : gon.lsoa_filter,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",

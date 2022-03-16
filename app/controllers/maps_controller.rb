@@ -24,20 +24,23 @@ class MapsController < ApplicationController
   def lsoa_heatmap
     gon.form_token = form_authenticity_token
     name = params[:name]
+    lad20_code = params[:lad]
     map_style = params[:map_style]
     rest_cat = params[:rest_cat]
     puts("received LAD Name: " + name)
+    puts("received LAD 2020 Code: " + lad20_code)
     puts("received LAD Map Style: " + map_style)
     puts("received LAD Restaurant Category: " + rest_cat)
+ 
     @map_style = map_style
     @rest_cat = rest_cat
 
     # Find LSOA areas under LAD Name from csv
     lsoa_filter = []
     # Loop through all rows
-    CSV.foreach(Rails.root.join('lib\LSOA11_WD21_LAD21_EW_LU.csv'), headers: true) do |row|
+    CSV.foreach(Rails.root.join('lib\LSOA11_WD20_LAD20_EW_LU.csv'), headers: true) do |row|
       # If LAD name exist in LAD row
-      if(row[5].include? name)
+      if(row[5].include? lad20_code)
         # Add corresponding LSOA of LAD
         puts("corresponding lsoa:" + row[1])
         lsoa_filter.append(row[1].to_s)
