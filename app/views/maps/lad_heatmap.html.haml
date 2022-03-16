@@ -116,13 +116,21 @@
         viz = new tableau.Viz(containerDiv, url, options);
     }
 
-    // Option to show sheet 1
+    // Option to show sheet 1 Heat map
     function applyOptions1() {
+
+        rest_cat = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+
+        // Selected restaurant category options from user, eg: 3, we want to get rest_cat[3] = Thai Restaurant
+        var rest_cat_value = $('#rest_cat_select').val();
+        console.log("rest_cat:" + rest_cat_value);
+
+        if(rest_cat_value !== null){
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/WorksheetHeatmap?:language=zh-CN&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
-                // Options to show area LSOA code for user when at start
-                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                // Options to show/filter Restaurant category according to selected type from user
+                "Restaurant Category" : rest_cat[rest_cat_value],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -132,18 +140,40 @@
                     listenToMarksSelection();
                     
                 }
-            };
+            };}
+        else{
+           var containerDiv = document.getElementById("vizContainer"),
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+            options = {
+                // Options to show/filter Restaurant category according to selected type from user
+                width: window.innerWidth,
+                height: window.innerHeight,
+                device: "desktop",
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
+                }
+            };}
     initViz(containerDiv, url, options);
     }
 
-    // Option to show sheet 2 for Heatmap
+    // Option to show sheet 2 for Density
         function applyOptions2() {
+
+        rest_cat = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+
+        // Selected restaurant category options from user, eg: 3, we want to get rest_cat[3] = Thai Restaurant
+        var rest_cat_value = $('#rest_cat_select').val();
+
+        if(rest_cat_value !== null){
         var containerDiv = document.getElementById("vizContainer"),
             // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/WorksheetDensityMap?:language=zh-CN&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
-                // Options to show area LSOA code for user when at start
-                // "LSOA11 Name" : ["Canterbury 006A","Burnley 009B"],
+                // Options to show/filter Restaurant category according to selected type from user
+                "Restaurant Category" : rest_cat[rest_cat_value],
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -153,26 +183,28 @@
                     listenToMarksSelection();
                     
                 }
-            };
+            };}
+        else{
+            var containerDiv = document.getElementById("vizContainer"),
+            // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+            options = {
+                // Options to show/filter Restaurant category according to selected type from user
+                width: window.innerWidth,
+                height: window.innerHeight,
+                device: "desktop",
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
+                }
+            };}
 
     initViz(containerDiv, url, options);
     }
 
-    // apply filter after webpage loaded
-    function applyFilter(){
-        
-        // get the values from input
-        const filterInput = document.getElementById('filter_input').value;
-        // get workbook obj
-        const workbook = viz.getWorkbook();
-        // get active sheet in window - which is dashboard
-        const activeSheet = workbook.getActiveSheet();
-        // define sheet to filter
-        const sheetToFilter = activeSheet;
-        
-        sheetToFilter.applyFilterAsync("Lsoa11Nm",filterInput,tableau.FilterUpdateType.REPLACE);
-        console.log(activeSheet);
-    }
+
 
     // Function to listen to adjustment of window
     window.addEventListener("resize", () => {
@@ -189,13 +221,9 @@
         viz.setFrameSize(width, height);
     }
 
-    document.getElementById('applyFilter').addEventListener('click',function(){
-        applyFilter();
-    })
-
     function styleselect() {
         var value = $('#globalstyleselect').val();
-        var div = $("#stylediv");
+        //var div = $("#stylediv");
         // If map style is Heatmap map
         if (value == "1") {
             // Use data sheet for Heatmap map
@@ -210,8 +238,11 @@
     // JS scipt to update value when an option is selected for restuarant category
     // because some weights for importance change for different restaurants
     function update_weight_to_tableau(){
+        
         var rest_cat_value = $('#rest_cat_select').val();
+        var map_type = $('#globalstyleselect').val();
 
+        //default settings
         var Weight_Population = 1;
         var Asian_Weight = 1;
 
@@ -225,9 +256,17 @@
 
         console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
 
+        // update map filter after changed restaurant category through changing viz options
+        if(map_type == 1){
+            applyOptions1();
+        }
+
+        if(map_type == 2){
+            applyOptions2();
+        }
         // get workbook
         const workbook = viz.getWorkbook();
-        
+        // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
         workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
 
@@ -235,7 +274,8 @@
 
     function listenToMarksSelection() {
         console.log("listenToMarksSelection function is loaded");
-        update_weight_to_tableau();
+        //Put this back if error
+        //update_weight_to_tableau();
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
 
