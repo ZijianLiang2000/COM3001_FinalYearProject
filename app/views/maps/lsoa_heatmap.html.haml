@@ -4,6 +4,9 @@
 = include_gon
 
 %h1 Heatmap
+%h5 #{@lad_name}
+%h5 #{@lad20_code}
+
 %br
 -# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 -# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
@@ -72,10 +75,10 @@
     // Option to show sheet 1
     function applyOptions1() {
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet2?:publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LSOA_Recommendation_Value/LSOA_Heatmap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LSOA11 Code" : gon.lsoa_filter,
+                "LAD20 Name" : gon.lad20_code,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -93,10 +96,10 @@
     // Option to show sheet 2
         function applyOptions2() {
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet1?:publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LSOA_Recommendation_Value/LSOA_Density_Map?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LSOA11 Code" : gon.lsoa_filter,
+                "LAD20 Name" : gon.lad20_code,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",

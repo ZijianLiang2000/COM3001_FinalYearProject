@@ -17,24 +17,24 @@
           %br
           = button_tag 'Search', class: 'btn btn-success btn-block'
 
-.container
-  .row
-    .col-lg-12.mt-5
-      .mx-auto.mt-5{:style => "width: 400px"}
-        = form_with(url: google_result_path, method: 'get', local: true) do
-          .form-group
-            %h1 Google Maps Search
-            = label_tag :address, 'Postcode Address'
-            = text_field_tag :address, nil, placeholder: 'Eg. GU1 4BU', class: 'form-control'
+-# .container
+-#   .row
+-#     .col-lg-12.mt-5
+-#       .mx-auto.mt-5{:style => "width: 400px"}
+-#         = form_with(url: google_result_path, method: 'get', local: true) do
+-#           .form-group
+-#             %h1 Google Maps Search
+-#             = label_tag :address, 'Postcode Address'
+-#             = text_field_tag :address, nil, placeholder: 'Eg. GU1 4BU', class: 'form-control'
 
-            = label_tag :keyword, 'Restaurant Type'
-            = text_field_tag :keyword, nil, placeholder: 'Eg. Thai', class: 'form-control'
+-#             = label_tag :keyword, 'Restaurant Type'
+-#             = text_field_tag :keyword, nil, placeholder: 'Eg. Thai', class: 'form-control'
 
-            = label_tag :dist_radius, 'Radius (m)'
-            = number_field_tag :dist_radius, 50000, placeholder: 'Eg. 25,000', min: 1, max: 50000, class: 'form-control'
+-#             = label_tag :dist_radius, 'Radius (m)'
+-#             = number_field_tag :dist_radius, 50000, placeholder: 'Eg. 25,000', min: 1, max: 50000, class: 'form-control'
 
-          %br
-          = button_tag 'Search', class: 'btn btn-success btn-block'
+-#           %br
+-#           = button_tag 'Search', class: 'btn btn-success btn-block'
 
 %br
 %br

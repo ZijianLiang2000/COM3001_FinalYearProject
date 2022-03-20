@@ -14,7 +14,7 @@
                             Address: 
                             = get_detailed_addr(restaurant["place_id"])
                         - restaurant["types"].each do |type|
-                            %span.badge.bg-success #{type}
+                            %span.badge.bg-success #{(type.to_s).gsub("_"," ")}
                         %br
                         %br
                         %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["name"]}, #{get_detailed_addr(restaurant["place_id"])}"} Discover

@@ -1,30 +1,30 @@
-.container
-    .row.mt-4
-        - @nearby_results["results"].each do |restaurant|
-            .col-sm-3
-                .card.h-100{:style => "width: 18rem;"}
-                    - if  restaurant["photos"] == nil
-                        %img.card-img-top{:alt => "Restaurant image", :src => "https://thumbs.dreamstime.com/z/not-available-red-rubber-stamp-over-white-background-87242466.jpg"}/
-                    - else
-                        %img.card-img-top{:alt => "Restaurant image", :src => "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&key=#{ENV["GOOGLE_API_KEY"]}&photoreference="+restaurant["photos"][0]["photo_reference"], :width => "256", :height => "171"}
-                    .card-body
-                        %h5.card-title #{restaurant["name"]}
-                        %p.card-text Ratings: #{restaurant["rating"]}
-                        %p.card-text 
-                            Address: 
-                            = get_detailed_addr(restaurant["place_id"])
-                        - restaurant["types"].each do |type|
-                            %span.badge.bg-success #{type}
-                        %br
-                        %br
-                        %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["name"]}, #{get_detailed_addr(restaurant["place_id"])}"} Discover
+-# .container
+-#     .row.mt-4
+-#         - @nearby_results["results"].each do |restaurant|
+-#             .col-sm-3
+-#                 .card.h-100{:style => "width: 18rem;"}
+-#                     - if  restaurant["photos"] == nil
+-#                         %img.card-img-top{:alt => "Restaurant image", :src => "https://thumbs.dreamstime.com/z/not-available-red-rubber-stamp-over-white-background-87242466.jpg"}/
+-#                     - else
+-#                         %img.card-img-top{:alt => "Restaurant image", :src => "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&key=#{ENV["GOOGLE_API_KEY"]}&photoreference="+restaurant["photos"][0]["photo_reference"], :width => "256", :height => "171"}
+-#                     .card-body
+-#                         %h5.card-title #{restaurant["name"]}
+-#                         %p.card-text Ratings: #{restaurant["rating"]}
+-#                         %p.card-text 
+-#                             Address: 
+-#                             = get_detailed_addr(restaurant["place_id"])
+-#                         - restaurant["types"].each do |type|
+-#                             %span.badge.bg-success #{type}
+-#                         %br
+-#                         %br
+-#                         %a.btn.btn-primary{:href => "https://maps.google.com/?q=#{restaurant["name"]}, #{get_detailed_addr(restaurant["place_id"])}"} Discover
 
-%br
-- if (@nearby_results["next_page_token"] != nil && @nearby_results["next_page_token"] != "")
-    -p "THIS IS TOKEN: " + @nearby_results["next_page_token"]
-    %br
-    = button_to "More Results", google_result_next_path(:next_page_token => @nearby_results["next_page_token"]), class: "btn btn-success btn-block", id: "next_page"
-- else
-    -p "TOKEN IS EMPTY"
+-# %br
+-# - if (@nearby_results["next_page_token"] != nil && @nearby_results["next_page_token"] != "")
+-#     -p "THIS IS TOKEN: " + @nearby_results["next_page_token"]
+-#     %br
+-#     = button_to "More Results", google_result_next_path(:next_page_token => @nearby_results["next_page_token"]), class: "btn btn-success btn-block", id: "next_page"
+-# - else
+-#     -p "TOKEN IS EMPTY"
 
-%br
+-# %br

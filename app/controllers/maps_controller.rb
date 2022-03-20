@@ -34,6 +34,8 @@ class MapsController < ApplicationController
  
     @map_style = map_style
     @rest_cat = rest_cat
+    @lad_name = name
+    @lad20_code = lad20_code
 
     # Find LSOA areas under LAD Name from csv
     lsoa_filter = []
@@ -46,7 +48,11 @@ class MapsController < ApplicationController
         lsoa_filter.append(row[1].to_s)
       end
     end
+
     gon.lsoa_filter = lsoa_filter
+    gon.rest_cat = rest_cat
+    gon.lad_name = name
+    gon.lad20_code = lad20_code
 
   end
 

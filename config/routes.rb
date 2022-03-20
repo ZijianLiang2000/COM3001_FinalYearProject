@@ -13,9 +13,9 @@ Rails.application.routes.draw do
   
   get 'restaurant_search' => 'restaurant_data#search'
   get 'restaurant_result' => 'restaurant_data#result'
-  get 'google_result' => 'restaurant_data#google_result'
-  post 'google_result_next' => 'restaurant_data#google_result_next'
-  get 'google_result_next' => 'restaurant_data#google_result_next'
+  # get 'google_result' => 'restaurant_data#google_result'
+  # post 'google_result_next' => 'restaurant_data#google_result_next'
+  # get 'google_result_next' => 'restaurant_data#google_result_next'
   post 'nearby_result' => 'maps#nearby_result'
   get 'nearby_result' => 'maps#nearby_result'
   get 'get_restaurant_count' => 'maps#get_restaurant_count'

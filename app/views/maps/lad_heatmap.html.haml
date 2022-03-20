@@ -41,7 +41,12 @@
 
 -# Window to pop-up and function to open the sidebar
 :javascript
-    function openNav(name, code, lat,lng,population,count,rest_cat_val) {
+    function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num) {
+
+        // Current type restaurant number in area
+        console.log("Number of selected type restaurant in lad:" + curr_rest_num);
+        console.log("Number of all restaurant in lad:" + sum_rest_num);
+        
         total = 0
         for(var k in count) {
             console.log("Each:" + count[k]);
@@ -49,7 +54,7 @@
         }
         console.log("RestCatVal:" + rest_cat_val)
         console.log("RestCatVal (int):" + parseInt(rest_cat_val))
-        console.log("Number of selected category restaurants:" + count[parseInt(rest_cat_val)])
+        console.log("Number of selected category restaurants in and nearby LAD:" + count[parseInt(rest_cat_val)])
 
         restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
 
@@ -63,7 +68,7 @@
         
         innerHtml = '<head><style>' +
         // Header part
-        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;top: 250px;left: 110px;}" +
+        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;top: 290px;left: 110px;}" +
         '.holder #select_area{position: absolute;bottom: 60px; left: 30%;}'+
         '</style></head>' +
         '<body>' + 
@@ -88,9 +93,10 @@
         '<div class="card-body">' +
         '<h5 class="card-title">'+ name +'</h5>' +
         '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ total +' listed restaurants (of supported restaurant categories) </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ count[parseInt(rest_cat_val)] +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_val)] + ') </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - count[parseInt(rest_cat_val)]) +' Indirect Competitors </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ total +' listed restaurants within and nearby </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_val)] + ') </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - curr_rest_num) +' Indirect Competitors </p>' +
         
         // button for nearby search
         '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
@@ -283,7 +289,6 @@
 
     function onMarksSelection(marksEvent) {
         console.log("onMarksSelection function is loaded");
-        
         return marksEvent.getMarksAsync().then(reportSelectedMarks);
     }
 
@@ -307,21 +312,30 @@
                 console.log(array[index] + " ");
             }
         }
-        // Assign mark parameters to values
-        var name = array[6];
-        var population = array[2];
-        var lat = array[8];
-        var lng = array[9];
-        var code = array[5];
 
-        console.log()
+        // Print selected restaurant category value
+        var rest_cat_value = $('#rest_cat_select').val();
+
+        // Assign mark parameters to values
+        var name = array[5];
+        var population = array[6];
+        var lat = array[18];
+        var lng = array[19];
+        var code = array[4];
+        
+        rest_cat_index = [11, 10, 14, 13, 12, 9, 15, 16, 17]
+
+        var curr_rest_num = array[rest_cat_index[rest_cat_value]]
+        var sum_rest_num = array[8]
+
+        console.log("Current restaurant num:" + curr_rest_num);
 
         res_count = new Array();
 
         // only Google API when one mark is selected
         if (marks.length == 1){
-            // Print selected restaurant category value
-            var rest_cat_value = $('#rest_cat_select').val();
+            
+            
             console.log("Restaurant Category Selected:" + rest_cat_value)
             // Use AJAX to call method from controller
             $.ajax({
@@ -332,7 +346,7 @@
                     // Returning a json format of count
                     res_count = msg.response;
                     console.log("Response: " + res_count)
-                    openNav(name,code, lat,lng,population,res_count,rest_cat_value);
+                    openNav(name,code, lat,lng,population,res_count,rest_cat_value, sum_rest_num, curr_rest_num);
                 },
                 error: function() {
                     alert('Unavailable to retreive restaurant amount in this area');
