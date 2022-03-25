@@ -1,0 +1,105 @@
+-# Enable gon to work, so that ENV variables can be passed to js
+= include_gon
+
+Restaurant Clusters
+
+
+%head
+%title Cluster
+%script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
+
+:javascript
+
+    let viz
+
+    //function for viz
+    function initViz(containerDiv, url, options) {
+        if (viz){
+            viz.dispose();
+        }
+        viz = new tableau.Viz(containerDiv, url, options);
+    }
+
+    // load function applyOptions when webpage loaded
+    window.onload = function() {
+    applyOptions();
+    };
+
+    // Option to show sheet cluster
+    function applyOptions() {
+        var containerDiv = document.getElementById("vizContainer"),
+            url = "https://public.tableau.com/shared/QNGQ8W4C3?:display_count=n&:origin=viz_share_link",
+            options = {
+                // Options to show area LSOA code for user when at start
+                "LSOA11 Code" : gon.lsoa11_code,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                device: "desktop",
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
+                }
+            };
+
+    initViz(containerDiv, url, options);
+    }
+
+        // Function to listen to adjustment of window
+    window.addEventListener("resize", () => {
+        console.log(
+            `Resizing the window ${window.innerHeight}, ${window.innerWidth}`
+        );
+        autoResize();
+    });
+
+    // Resize dashboard window
+    function autoResize(){
+        const height = window.innerHeight;
+        const width = window.innerWidth;
+        viz.setFrameSize(width, height);
+    }
+
+    function listenToMarksSelection() {
+        console.log("listenToMarksSelection function is loaded");
+        viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
+    }
+
+    function onMarksSelection(marksEvent) {
+        console.log("onMarksSelection function is loaded");
+        
+        return marksEvent.getMarksAsync().then(reportSelectedMarks);
+    }
+
+    function reportSelectedMarks(marks) {
+        console.log("reportSelectedMarks is loaded");
+        var html = "";
+
+        for (var markIndex = 0; markIndex < marks.length; markIndex++) {
+            var pairs = marks[markIndex].getPairs();
+            html += "Mark " + markIndex + ": ";
+            var array = [];
+            for (var pairIndex = 0; pairIndex < pairs.length; pairIndex++) {
+                var pair = pairs[pairIndex];
+                html += "Field Name: " + pair.fieldName;
+                html += ", Value:" + pair.formattedValue + ", ";
+                array.push(pair.formattedValue)
+            }
+            html += "";
+            for (var index = 0; index < array.length; index++) {
+                console.log(array[index] + " ");
+            }
+        }
+        console.log("Length:" + marks.length);
+
+        // only Google API when one mark is selected
+        if (marks.length == 1){
+            console.log("Lat:" + lat + ",lng: " + lng);
+            openNav(name,code,postcode,population,rest_cat_value, sum_rest_num, curr_rest_num);
+            console.log("Sent to openNav");
+        }
+    }
+
+%body#stylediv
+

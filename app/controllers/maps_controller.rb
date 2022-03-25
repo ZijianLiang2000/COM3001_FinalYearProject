@@ -36,6 +36,7 @@ class MapsController < ApplicationController
     @rest_cat = rest_cat
     @lad_name = name
     @lad20_code = lad20_code
+    
 
     # Find LSOA areas under LAD Name from csv
     lsoa_filter = []
@@ -53,12 +54,29 @@ class MapsController < ApplicationController
     gon.rest_cat = rest_cat
     gon.lad_name = name
     gon.lad20_code = lad20_code
+    gon.google_api_key = ENV["GOOGLE_API_KEY"]
 
   end
 
   def lad_heatmap
     gon.form_token = form_authenticity_token
+  end
+
+  def rest_cluster
+    name = params[:name]
+    code = params[:code]
+    rest_cat = params[:rest_cat]
+    puts("received LSOA name: " + name)
+    puts("received LSOA code: " + code)
+    puts("received restaurant category: " + rest_cat)
     
+    @lsoa11_name = name
+    @lsoa11_code = code
+    @rest_cat = rest_cat
+
+    gon.lsoa11_name = name
+    gon.lsoa11_code = code
+    gon.rest_cat = rest_cat
   end
 
   # All restaurant categories

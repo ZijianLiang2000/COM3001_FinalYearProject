@@ -1,11 +1,14 @@
+-# Enable gon to work, so that ENV variables can be passed to js
+= include_gon
+
 %body{ :onload => "styleselect()"}
 
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
 %h1 Heatmap
-%h5 #{@lad_name}
-%h5 #{@lad20_code}
+%h5 Selected Local Authority: #{@lad_name}
+%h5 Code: #{@lad20_code}
 
 %br
 -# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
@@ -30,31 +33,66 @@
 %head
 %title Basic Embed
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
-
-
 :javascript
-    function openNav(lat,lng) {
+    function openNav(name,code,postcode,population,rest_cat_value, sum_rest_num, curr_rest_num) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
-        src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
+             // Current type restaurant number in area
+        console.log("Number of selected type restaurant in LSOA:" + curr_rest_num);
+        console.log("Number of all restaurant in LSOA:" + sum_rest_num);
+        console.log("Received Postcode:" + postcode);
+        
+        console.log("RestCatVal:" + rest_cat_value)
+        console.log("RestCatVal (int):" + parseInt(rest_cat_value))
+
+        restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
+
+        // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
+        src = ' src="https://www.google.com/maps/embed/v1/search?key='+gon.google_api_key+'&q=' + postcode + '&zoom=15">'
+        // Let LSOA default map to show be identical to previous map if next stage
+        var map_style = $('#globalstyleselect').val();
         console.log(src);
         console.log("Token: " + gon.form_token);
-        innerHtml = '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
-        '<iframe' +
+        console.log("Map style: " + map_style);
+        
+        innerHtml = '<head><style>' +
+        // Header part
+        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;top: 290px;left: 110px;}" +
+        '.holder #select_area{position: absolute;bottom: 60px; left: 30%;}'+
+        '</style></head>' +
+        '<body>' + 
+        // Close Button
+        '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
+        // Google map frame
+        '<div class="holder"><iframe id="map_frame"' +
         ' width="450"' +
-        ' height="801"' +
+        ' height="800"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
         src +
-        '</iframe>' + 
-        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
-        '<input class="btn btn-primary btn-lg btn-block active shadow p-3 mb-5" aria-pressed="true" id="nearby_search" type="submit" value="Nearby Places">' +
-        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '">' +       
-        '</form>'
+        '</iframe>' +
+        // Button to select a location, post params of location to controller
+        '<form class="button_to" method="post" action="/rest_cluster?name='+name+'&code='+ code + '&rest_cat='+ parseInt(rest_cat_value) +'">'+
+        '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+        '</form>' +
+        // Card to display information about district
+        '<div class="card" style="width: 18rem;">' +
+        '<div class="card-body">' +
+        '<h5 class="card-title">'+ name +'</h5>' +
+        '<h6 class="card-subtitle mb-2 text-muted">Postcode: '+ postcode +'</h6>' +
+        '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_value)] + ') </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </p>' +
+        
+        '</div></div></div></body>'
 
 
         document.getElementById("mySidebar").innerHTML=innerHtml;
         document.getElementById("mySidebar").style.width = "450px";
+        
+        console.log("Finished loading")
         
     }
 
@@ -112,22 +150,6 @@
             };
 
     initViz(containerDiv, url, options);
-    }
-
-    // apply filter after webpage loaded
-    function applyFilter(){
-        
-        // get the values from input
-        const filterInput = document.getElementById('filter_input').value;
-        // get workbook obj
-        const workbook = viz.getWorkbook();
-        // get active sheet in window - which is dashboard
-        const activeSheet = workbook.getActiveSheet();
-        // define sheet to filter
-        const sheetToFilter = activeSheet;
-        
-        sheetToFilter.applyFilterAsync("Lsoa11Nm",filterInput,tableau.FilterUpdateType.REPLACE);
-        console.log(activeSheet);
     }
 
     // Function to listen to adjustment of window
@@ -191,12 +213,39 @@
             }
         }
         console.log("Length:" + marks.length);
-        var lat = array[3];
-        var lng = array[4];
+        var name = array[4];
+        var code = array[3];
+        var lad_name = array[2];
+        var lad_code = array[1];
+        var lat = array[13];
+        var lng = array[14];
+        var population = array[6]
+        var postcode = array[5]
+        var sum_rest_num = array[8]
+
+        restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
+
+        var rest_cat_value = gon.rest_cat
+        console.log("Selected rest_cat from previous stage:" + rest_cat_value);
+
+        // Index corresponding to the restaurant category order on Tableau Marks
+        rest_cat_index = [9, 14, 10, 13, 12, 11, 16, 7, 15]
+
+        // Sum of current restaurant category in LSOA
+        var curr_rest_num = array[rest_cat_index[rest_cat_value]];
+        console.log("Curr_rest_num: " + curr_rest_num);
+        // Inspect each restaurant count
+        for (let i = 0; i < rest_cat_index.length; i++) {
+            console.log(restaurant_Category_Encode[i]);
+            console.log(array[rest_cat_index[i]]);
+        }
+        
+
         // only Google API when one mark is selected
         if (marks.length == 1){
-            openNav(lat,lng);
             console.log("Lat:" + lat + ",lng: " + lng);
+            openNav(name,code,postcode,population,rest_cat_value, sum_rest_num, curr_rest_num);
+            console.log("Sent to openNav");
         }
     }
 

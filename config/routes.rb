@@ -10,6 +10,10 @@ Rails.application.routes.draw do
   post 'lsoa_heatmap' => 'maps#lsoa_heatmap'
   # Heatmap for LAD
   get 'lad_heatmap' => 'maps#lad_heatmap'
+  # Heatmap for Clusters
+    # Heatmap for LSOA
+  get 'rest_cluster' => 'maps#rest_cluster'
+  post 'rest_cluster' => 'maps#rest_cluster'
   
   get 'restaurant_search' => 'restaurant_data#search'
   get 'restaurant_result' => 'restaurant_data#result'
