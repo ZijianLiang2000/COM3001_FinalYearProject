@@ -34,12 +34,11 @@
 %title Basic Embed
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
 :javascript
-    function openNav(name,code,postcode,population,rest_cat_value, sum_rest_num, curr_rest_num) {
+    function openNav(name,code,lat,lng,population,rest_cat_value, sum_rest_num, curr_rest_num) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
              // Current type restaurant number in area
         console.log("Number of selected type restaurant in LSOA:" + curr_rest_num);
         console.log("Number of all restaurant in LSOA:" + sum_rest_num);
-        console.log("Received Postcode:" + postcode);
         
         console.log("RestCatVal:" + rest_cat_value)
         console.log("RestCatVal (int):" + parseInt(rest_cat_value))
@@ -47,7 +46,7 @@
         restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
 
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
-        src = ' src="https://www.google.com/maps/embed/v1/search?key='+gon.google_api_key+'&q=' + postcode + '&zoom=15">'
+        src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
         // Let LSOA default map to show be identical to previous map if next stage
         var map_style = $('#globalstyleselect').val();
         console.log(src);
@@ -80,7 +79,7 @@
         '<div class="card" style="width: 18rem;">' +
         '<div class="card-body">' +
         '<h5 class="card-title">'+ name +'</h5>' +
-        '<h6 class="card-subtitle mb-2 text-muted">Postcode: '+ postcode +'</h6>' +
+        '<h6 class="card-subtitle mb-2 text-muted">Location: '+ lat + ', ' + lng + '</h6>' +
         '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_value)] + ') </p>' +
@@ -116,7 +115,7 @@
             url = "https://public.tableau.com/views/LSOA_Recommendation_Value/LSOA_Heatmap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LAD20 Name" : gon.lad20_code,
+                "Lad20Cd" : gon.lad20_code,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -137,7 +136,7 @@
             url = "https://public.tableau.com/views/LSOA_Recommendation_Value/LSOA_Density_Map?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "LAD20 Name" : gon.lad20_code,
+                "Lad20Cd" : gon.lad20_code,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -213,15 +212,15 @@
             }
         }
         console.log("Length:" + marks.length);
-        var name = array[4];
-        var code = array[3];
-        var lad_name = array[2];
-        var lad_code = array[1];
-        var lat = array[13];
-        var lng = array[14];
-        var population = array[6]
-        var postcode = array[5]
-        var sum_rest_num = array[8]
+        var name = array[6];
+        var code = array[5];
+        var lad_name = array[4];
+        var lad_code = array[3];
+        var lat = array[0];
+        var lng = array[1];
+        var population = array[8]
+        var postcode = array[7]
+        var sum_rest_num = array[10]
 
         restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
 
@@ -229,7 +228,7 @@
         console.log("Selected rest_cat from previous stage:" + rest_cat_value);
 
         // Index corresponding to the restaurant category order on Tableau Marks
-        rest_cat_index = [9, 14, 10, 13, 12, 11, 16, 7, 15]
+        rest_cat_index = [11, 16, 12, 15, 14, 13, 18, 9, 17]
 
         // Sum of current restaurant category in LSOA
         var curr_rest_num = array[rest_cat_index[rest_cat_value]];
@@ -244,7 +243,7 @@
         // only Google API when one mark is selected
         if (marks.length == 1){
             console.log("Lat:" + lat + ",lng: " + lng);
-            openNav(name,code,postcode,population,rest_cat_value, sum_rest_num, curr_rest_num);
+            openNav(name,code,lat,lng,population,rest_cat_value, sum_rest_num, curr_rest_num);
             console.log("Sent to openNav");
         }
     }
