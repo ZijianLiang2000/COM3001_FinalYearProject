@@ -17,7 +17,11 @@
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
     %option{:value => "1"} Heatmap
     %option{:value => "2"} Density map
-
+    
+%h4 Data View:
+%select#dataview{:onchange => "dataview()"}
+    %option{:selected => "selected", :value => "none"} Map
+    %option{:value => "1"} Ethnic Structure
   
 %h4 Restaurant Category:
 %select#rest_cat_select{:onchange => "update_weight_to_tableau()"}
@@ -144,6 +148,7 @@
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
+                    workbook = viz.getWorkbook();
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -159,6 +164,7 @@
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
+                    workbook = viz.getWorkbook();
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -187,6 +193,7 @@
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
+                    workbook = viz.getWorkbook();
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -203,6 +210,7 @@
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
+                    workbook = viz.getWorkbook();
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -212,7 +220,32 @@
     initViz(containerDiv, url, options);
     }
 
+    // Option to show ethnic structure
+    function applyDataView1() {
 
+    rest_cat = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+
+    // Selected restaurant category options from user, eg: 3, we want to get rest_cat[3] = Thai Restaurant
+    var rest_cat_value = $('#rest_cat_select').val();
+
+    var containerDiv = document.getElementById("vizContainer"),
+    // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
+    url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADEthnicStructure?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+    options = {
+        // Options to show/filter Restaurant category according to selected type from user
+        width: window.innerWidth,
+        height: window.innerHeight,
+        device: "desktop",
+        hideTabs: true,
+        onFirstInteractive: function () {
+            console.log("Run this code when the viz has finished loading.");
+            listenToMarksSelection();
+            
+        }
+    };
+
+    initViz(containerDiv, url, options);
+    }
 
     // Function to listen to adjustment of window
     window.addEventListener("resize", () => {
@@ -231,6 +264,9 @@
 
     function styleselect() {
         var value = $('#globalstyleselect').val();
+        // once map view is changed, set data view back to map
+        var dataview_value = $('#dataview').val();
+        document.getElementById('dataview').selectedIndex = "none";
         //var div = $("#stylediv");
         // If map style is Heatmap map
         if (value == "1") {
@@ -241,6 +277,33 @@
         if (value == "2") {
             applyOptions2();
         }
+    }
+
+    function dataview() {
+        var value = $('#dataview').val();
+        var map_value = $('#globalstyleselect').val()
+        // if dataview is selected as Map
+        if (value == "none") {
+            // while map view is selected as heatmap or not selected
+            if (map_value == "1" || map_value == "none"){
+                // apply first option
+                applyOptions1();
+            }
+            // or else apply the second
+            else {
+                applyOptions2();
+            }
+        }
+        //var div = $("#stylediv");
+        // If map style is Ethnic Structure table
+        if (value == "1") {
+            // Use data sheet for Ethnic Structure table
+            applyDataView1();
+        }
+        // else you datasheet for XXX
+        //if (value == "2") {
+        //    applyOptions2();
+        //}
     }
 
     // JS scipt to update value when an option is selected for restuarant category
@@ -263,17 +326,6 @@
         // etc
 
         console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
-
-        // update map filter after changed restaurant category through changing viz options
-        if(map_type == 1){
-            applyOptions1();
-        }
-
-        if(map_type == 2){
-            applyOptions2();
-        }
-        // get workbook
-        const workbook = viz.getWorkbook();
         // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
         workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
@@ -282,8 +334,8 @@
 
     function listenToMarksSelection() {
         console.log("listenToMarksSelection function is loaded");
-        //Put this back if error
-        //update_weight_to_tableau();
+        //Check every time when map is loaded, the value of restaurant category and update weights
+        update_weight_to_tableau();
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
 
@@ -305,8 +357,9 @@
                 var pair = pairs[pairIndex];
                 html += "Field Name: " + pair.fieldName;
                 html += ", Value:" + pair.formattedValue + ", ";
-                array.push(pair.formattedValue)
+                array.push(pair.formattedValue);
             }
+            console.log(html);
             html += "";
             for (var index = 0; index < array.length; index++) {
                 console.log(array[index] + " ");
@@ -331,10 +384,9 @@
         console.log("Current restaurant num:" + curr_rest_num);
 
         res_count = new Array();
-
+        var dataview_value = $('#dataview').val();
         // only Google API when one mark is selected
-        if (marks.length == 1){
-            
+        if (marks.length == 1 && dataview_value == "none"){
             
             console.log("Restaurant Category Selected:" + rest_cat_value)
             // Use AJAX to call method from controller
