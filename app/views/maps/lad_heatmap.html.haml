@@ -139,7 +139,7 @@
 
         if(rest_cat_value !== null){
         var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show/filter Restaurant category according to selected type from user
                 "Restaurant Category" : rest_cat[rest_cat_value],
@@ -156,7 +156,7 @@
             };}
         else{
            var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show/filter Restaurant category according to selected type from user
                 width: window.innerWidth,
@@ -184,7 +184,7 @@
         if(rest_cat_value !== null){
         var containerDiv = document.getElementById("vizContainer"),
             // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show/filter Restaurant category according to selected type from user
                 "Restaurant Category" : rest_cat[rest_cat_value],
@@ -201,8 +201,7 @@
             };}
         else{
             var containerDiv = document.getElementById("vizContainer"),
-            // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show/filter Restaurant category according to selected type from user
                 width: window.innerWidth,
@@ -223,14 +222,9 @@
     // Option to show ethnic structure
     function applyDataView1() {
 
-    rest_cat = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
-
-    // Selected restaurant category options from user, eg: 3, we want to get rest_cat[3] = Thai Restaurant
-    var rest_cat_value = $('#rest_cat_select').val();
-
     var containerDiv = document.getElementById("vizContainer"),
     // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
-    url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADEthnicStructure?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+    url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADEthnicStructure?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
     options = {
         // Options to show/filter Restaurant category according to selected type from user
         width: window.innerWidth,
