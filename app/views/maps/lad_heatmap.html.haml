@@ -238,9 +238,9 @@
         device: "desktop",
         hideTabs: true,
         onFirstInteractive: function () {
+            workbook = viz.getWorkbook();
             console.log("Run this code when the viz has finished loading.");
             listenToMarksSelection();
-            
         }
     };
 
@@ -316,6 +316,7 @@
         //default settings
         var Weight_Population = 1;
         var Asian_Weight = 1;
+        var Ethnic_Sort_by = "Default";
 
         console.log("Selected restaurant category: '" + rest_cat_value + "'")
         // if rest_cat_value = 5 (Chinese Restaurant), then update weights
@@ -323,13 +324,22 @@
             Weight_Population = 0.5;
             Asian_Weight = 0.8;
         }
+
+        if (rest_cat_value == 1 || rest_cat_value == 2 || rest_cat_value == 3 || rest_cat_value == 5){
+            Ethnic_Sort_by = "Asian_Percentage";
+        } else if(rest_cat_value == 4 || rest_cat_value == 6 || rest_cat_value == 7) {
+            Ethnic_Sort_by = "White_British_Percentage";
+        }
+        else {
+            Ethnic_Sort_by = "White_Percentage";
+        }
         // etc
 
         console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
         // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
         workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
-
+        workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
     }
 
     function listenToMarksSelection() {
