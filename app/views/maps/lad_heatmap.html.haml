@@ -45,7 +45,7 @@
 
 -# Window to pop-up and function to open the sidebar
 :javascript
-    function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num) {
+    function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size) {
 
         // Current type restaurant number in area
         console.log("Number of selected type restaurant in lad:" + curr_rest_num);
@@ -54,11 +54,13 @@
         total = 0
         for(var k in count) {
             console.log("Each:" + count[k]);
-            total += count[k]
+            total += parseInt(count[k])
         }
         console.log("RestCatVal:" + rest_cat_val)
         console.log("RestCatVal (int):" + parseInt(rest_cat_val))
+        console.log("Area size:" + parseInt(area_size))
         console.log("Number of selected category restaurants in and nearby LAD:" + count[parseInt(rest_cat_val)])
+        console.log("Listed restaurants within area: " + parseInt(total))
 
         restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
 
@@ -72,7 +74,7 @@
         
         innerHtml = '<head><style>' +
         // Header part
-        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;top: 290px;left: 110px;}" +
+        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;top: 320px;left: 110px;}" +
         '.holder #select_area{position: absolute;bottom: 60px; left: 30%;}'+
         '</style></head>' +
         '<body>' + 
@@ -96,9 +98,10 @@
         '<div class="card" style="width: 18rem;">' +
         '<div class="card-body">' +
         '<h5 class="card-title">'+ name +'</h5>' +
+        '<h6 class="card-subtitle mb-2 text-muted">Area size: '+ parseInt(area_size) * 10 +' km²</h6>' +
         '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ total +' listed restaurants within and nearby </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted"> '+ (total - 0) +' listed restaurants within and nearby </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_val)] + ') </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - curr_rest_num) +' Indirect Competitors </p>' +
         
@@ -183,7 +186,6 @@
 
         if(rest_cat_value !== null){
         var containerDiv = document.getElementById("vizContainer"),
-            // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
             url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show/filter Restaurant category according to selected type from user
@@ -313,12 +315,17 @@
         var Ethnic_Sort_by = "Default";
 
         console.log("Selected restaurant category: '" + rest_cat_value + "'")
+
+        // weight updates on heatmap and density map
+
+        // calculate value of weights of each parameter
         // if rest_cat_value = 5 (Chinese Restaurant), then update weights
         if (rest_cat_value == 5){
             Weight_Population = 0.5;
             Asian_Weight = 0.8;
         }
 
+        // weight updates for statistics on population of cities
         if (rest_cat_value == 1 || rest_cat_value == 2 || rest_cat_value == 3 || rest_cat_value == 5){
             Ethnic_Sort_by = "Asian_Percentage";
         } else if(rest_cat_value == 4 || rest_cat_value == 6 || rest_cat_value == 7) {
@@ -357,16 +364,21 @@
             var pairs = marks[markIndex].getPairs();
             html += "Mark " + markIndex + ": ";
             var array = [];
+            var dict = {}
             for (var pairIndex = 0; pairIndex < pairs.length; pairIndex++) {
                 var pair = pairs[pairIndex];
                 html += "Field Name: " + pair.fieldName;
-                html += ", Value:" + pair.formattedValue + ", ";
+                html += ", Value:" + pair.formattedValue + "\n ";
+                dict[pair.fieldName] = pair.formattedValue;
                 array.push(pair.formattedValue);
             }
             console.log(html);
             html += "";
-            for (var index = 0; index < array.length; index++) {
-                console.log(array[index] + " ");
+            //for (var index = 0; index < array.length; index++) {
+            //    console.log(array[index] + " ");
+            //}
+            for(var key in dict) {
+                console.log(key + " : " + dict[key]);
             }
         }
 
@@ -374,16 +386,21 @@
         var rest_cat_value = $('#rest_cat_select').val();
 
         // Assign mark parameters to values
-        var name = array[5];
-        var population = array[6];
-        var lat = array[18];
-        var lng = array[19];
-        var code = array[4];
+        var name =  dict["Lad 2020 Name"];
+        var area_size = dict["ATTR(Areachect)"];
+        var population = dict["ATTR(Population (All ages))"];
+        var lat = dict["Latitude (generated)"];
+        var lng = dict["Longitude (generated)"];
+        var code = dict["Lad 2020 Code"];
         
-        rest_cat_index = [11, 10, 14, 13, 12, 9, 15, 16, 17]
+        rest_cat_index = ["AGG(Number of Italian Restaurants in LAD)",
+        "AGG(Number of Indian Restaurants in LAD)", "AGG(Number of Japanese Restaurants in LAD)",
+        "AGG(Number of Thai Restaurants in LAD)", "AGG(Number of British Restaurants in LAD)",
+        "AGG(Number of Chinese Restaurants in LAD)", "AGG(Number of Vegetarian Restaurants in LAD)",
+        "AGG(Number of Pub(s) in LAD)", "AGG(Number of Cafe(s) in LAD)"]
 
-        var curr_rest_num = array[rest_cat_index[rest_cat_value]]
-        var sum_rest_num = array[8]
+        var curr_rest_num = dict[rest_cat_index[rest_cat_value]];
+        var sum_rest_num = dict["AGG(Number of Restaurants in LAD)"];
 
         console.log("Current restaurant num:" + curr_rest_num);
 
@@ -402,7 +419,7 @@
                     // Returning a json format of count
                     res_count = msg.response;
                     console.log("Response: " + res_count)
-                    openNav(name,code, lat,lng,population,res_count,rest_cat_value, sum_rest_num, curr_rest_num);
+                    openNav(name,code, lat,lng,population,res_count,rest_cat_value, sum_rest_num, curr_rest_num,area_size);
                 },
                 error: function() {
                     alert('Unavailable to retreive restaurant amount in this area');
