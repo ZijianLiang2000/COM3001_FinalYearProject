@@ -1,0 +1,21 @@
+%h4 Restaurant Category:
+
+-# = form_tag(activate_foobar_foobar_index_path, :method => :post) do
+
+= form_with url: lad_heatmap_path do |f|
+    = f.label :rest_cat, "Restaurant Category"
+    %br
+    = f.select(:rest_cat_value, ['Italian Restaurant', "Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"], {class: "form-control"}, {required: "required"})
+    %br
+    %br
+    = f.label :acceptance, "Expected Customer Acceptance"
+    %br
+    = f.select(:acceptance_value, ['Low', "Medium","High"], {class: "form-control"}, {required: "required"})
+    %br
+    %br
+    = f.label :price_seg, "Price Segment"
+    %br
+    = f.select(:price_seg_value, ['Low', "Medium","High"], {class: "form-control"},  {required: "required"}) 
+    %br
+    %br
+    = f.submit "Next", class: "btn btn-success btn-block"

@@ -1,6 +1,8 @@
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
+%body{:onload => "init()"};
+
 %h1 Local Authority District Map
 %br
 -# Filter search bar part
@@ -22,8 +24,11 @@
 %select#dataview{:onchange => "dataview()"}
     %option{:selected => "selected", :value => "none"} Map
     %option{:value => "1"} Ethnic Structure
+    %option{:value => "2"} Population Median Age
   
 %h4 Restaurant Category:
+
+
 %select#rest_cat_select{:onchange => "update_weight_to_tableau()"}
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Restaurant Category
     %option{:value => "0"} Italian Restaurant
@@ -45,6 +50,14 @@
 
 -# Window to pop-up and function to open the sidebar
 :javascript
+
+    function init(){
+        console.log("Running Init function");
+        var rest_cat_val = $('#rest_cat_select').val();
+        document.getElementById('rest_cat_select').selectedIndex = gon.rest_cat;
+        console.log("Selected Restaurant Category: " + (gon.rest_cat));
+    }
+
     function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size) {
 
         // Current type restaurant number in area
@@ -240,6 +253,27 @@
         }
     };
 
+    
+
+    initViz(containerDiv, url, options);
+    }
+
+    function applyDataView2() {
+
+    var containerDiv = document.getElementById("vizContainer"),
+    url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADPopulation?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
+    options = {
+        // Options to show/filter Restaurant category according to selected type from user
+        width: window.innerWidth,
+        height: window.innerHeight,
+        device: "desktop",
+        hideTabs: true,
+        onFirstInteractive: function () {
+            workbook = viz.getWorkbook();
+            console.log("Run this code when the viz has finished loading.");
+            listenToMarksSelection();
+        }
+    };
     initViz(containerDiv, url, options);
     }
 
@@ -297,9 +331,9 @@
             applyDataView1();
         }
         // else you datasheet for XXX
-        //if (value == "2") {
-        //    applyOptions2();
-        //}
+        if (value == "2") {
+            applyDataView2();
+        }
     }
 
     // JS scipt to update value when an option is selected for restuarant category
@@ -341,6 +375,7 @@
         workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
         workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
+        workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
     }
 
     function listenToMarksSelection() {
@@ -391,6 +426,11 @@
         var population = dict["ATTR(Population (All ages))"];
         var lat = dict["Latitude (generated)"];
         var lng = dict["Longitude (generated)"];
+        if (!("Latitude (generated)" in dict)){
+            lat = dict["纬度(自动生成)"]
+            lng = dict["经度(自动生成)"]
+        }
+
         var code = dict["Lad 2020 Code"];
         
         rest_cat_index = ["AGG(Number of Italian Restaurants in LAD)",

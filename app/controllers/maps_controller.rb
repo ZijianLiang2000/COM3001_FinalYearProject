@@ -60,6 +60,18 @@ class MapsController < ApplicationController
 
   def lad_heatmap
     gon.form_token = form_authenticity_token
+    rest_cat = params[:rest_cat_value]
+    price_seg = params[:price_seg_value]
+    acceptance_select = params[:acceptance_value]
+
+    rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+
+    puts("Restaurant Index: " + rest_cat_arr.index((rest_cat).to_s).to_s)
+    @rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
+    gon.rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
+    puts("Restaurant Category: " + (rest_cat).to_s)
+    puts("Price Segment: " + (price_seg).to_s)
+    puts("Acceptance Select: " + (acceptance_select).to_s)
   end
 
   def rest_cluster
@@ -73,6 +85,7 @@ class MapsController < ApplicationController
     @lsoa11_name = name
     @lsoa11_code = code
     @rest_cat = rest_cat
+
 
     gon.lsoa11_name = name
     gon.lsoa11_code = code

@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
     
 
     def assign_env_variables
-        puts("RUNNING function")
+        puts("assigned google env var")
         gon.google_api_key = ENV["GOOGLE_API_KEY"]
     end
 end
