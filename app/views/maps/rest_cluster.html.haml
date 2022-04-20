@@ -38,6 +38,7 @@ Restaurant Clusters
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
+                    workbook = viz.getWorkbook();
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -63,6 +64,10 @@ Restaurant Clusters
     }
 
     function listenToMarksSelection() {
+        var rest_cat_value = String(gon.rest_cat);
+        console.log("Rest cat val:" + rest_cat_value);
+        
+        workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
         console.log("listenToMarksSelection function is loaded");
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
@@ -81,15 +86,18 @@ Restaurant Clusters
             var pairs = marks[markIndex].getPairs();
             html += "Mark " + markIndex + ": ";
             var array = [];
+            var dict = {};
             for (var pairIndex = 0; pairIndex < pairs.length; pairIndex++) {
                 var pair = pairs[pairIndex];
                 html += "Field Name: " + pair.fieldName;
                 html += ", Value:" + pair.formattedValue + ", ";
+                dict[pair.fieldName] = pair.formattedValue;;
                 array.push(pair.formattedValue)
             }
             html += "";
-            for (var index = 0; index < array.length; index++) {
-                console.log(array[index] + " ");
+            
+            for(var key in dict) {
+            console.log(key + " : " + dict[key]);
             }
         }
         console.log("Length:" + marks.length);
