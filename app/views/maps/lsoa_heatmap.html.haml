@@ -37,7 +37,7 @@
 
     function openNav(name,code,lat,lng,population,rest_cat_value, sum_rest_num, curr_rest_num) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
-             // Current type restaurant number in area
+        // Current type restaurant number in area
         console.log("Number of selected type restaurant in LSOA:" + curr_rest_num);
         console.log("Number of all restaurant in LSOA:" + sum_rest_num);
         
@@ -72,7 +72,7 @@
         src +
         '</iframe>' +
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/rest_cluster?name='+name+'&code='+ code + '&rest_cat='+ parseInt(rest_cat_value) +'">'+
+        '<form class="button_to" method="post" action="/rest_cluster?name='+name+'&code='+ code + '&rest_cat='+ parseInt(rest_cat_value) +'&lad_name='+ gon.lad_name +'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
@@ -98,7 +98,7 @@
 
     function openNav_Restaurant(place_id,rest_cat, lad_name) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
-             // Current type restaurant number in area
+        // Current type restaurant number in area
         console.log("openNav_Restaurant function selected")
         console.log("Place ID:" + place_id)
         console.log("Rest_Cat:" + rest_cat)

@@ -26,4 +26,5 @@ Rails.application.routes.draw do
   post 'nearby_result' => 'maps#nearby_result'
   get 'nearby_result' => 'maps#nearby_result'
   get 'get_restaurant_count' => 'maps#get_restaurant_count'
+  get 'get_rest_detail' => 'maps#get_rest_detail'
 end

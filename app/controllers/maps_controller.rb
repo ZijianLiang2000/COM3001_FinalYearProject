@@ -75,10 +75,12 @@ class MapsController < ApplicationController
   end
 
   def rest_cluster
-    
+
     name = params[:name]
     code = params[:code]
     rest_cat = params[:rest_cat]
+    lad_name = params[:lad_name]
+
     puts("received LSOA name: " + name)
     puts("received LSOA code: " + code)
     puts("received restaurant category: " + rest_cat)
@@ -90,12 +92,29 @@ class MapsController < ApplicationController
     gon.lsoa11_name = name
     gon.lsoa11_code = code
     gon.rest_cat = rest_cat
-
+    gon.lad_name = lad_name
     
   end
 
   # All restaurant categories
   def get_restaurant_count
+    name = params[:name]
+    puts("received LAD: " + name)
+    
+    restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
+    restaurant_Category_Count = []
+    for category in restaurant_Category_Encode
+      puts("Category: #{category}")
+      areaRestaurantCatCount = RestaurantDatum.where(DistrictDatum_id: DistrictDatum.where(name: name).ids.first, category: category).count
+      puts("Running, count: #{areaRestaurantCatCount}")
+      restaurant_Category_Count.append(areaRestaurantCatCount)
+    end
+
+    render json: { response: restaurant_Category_Count }
+  end
+
+  # 
+  def get_rest_detail
     name = params[:name]
     puts("received LAD: " + name)
     

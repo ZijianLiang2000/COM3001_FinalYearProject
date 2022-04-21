@@ -27,6 +27,166 @@ Restaurant Clusters
         applyOptions();
     };
 
+    function openNav_Restaurant(place_id,rest_cat, lad_name) {
+        // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
+        // Current type restaurant number in area
+        console.log("openNav_Restaurant function selected")
+        console.log("Place ID:" + place_id)
+        console.log("Rest_Cat:" + rest_cat)
+        console.log("LAD:" + lad_name)
+        // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
+        src = ' src = "https://www.google.com/maps/embed/v1/place?key='+gon.google_api_key+'&q=place_id:'+ place_id +'">'
+
+        innerHtml = '<head><style>' +
+        // Header part
+        "'.holder #select_restaurant{position: absolute;bottom: 60px; left: 30%;}'" +
+        '</style></head>' +
+        '<body>' + 
+        // Close Button
+        '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
+        // Google map frame
+        '<div class="holder"><iframe id="map_frame"' +
+        ' width="450"' +
+        ' height="800"' +
+        ' style="border:0"' +
+        ' loading="lazy"' +
+        ' allowfullscreen' +
+        src +
+        '</iframe>' +
+        // Card to display information about district
+        '<input class="btn btn-success" id="select_cluster" type="submit" value="More about restaurant" />' +
+        '</body>'
+
+        document.getElementById("mySidebar").innerHTML=innerHtml;
+        document.getElementById("mySidebar").style.width = "450px";
+        
+        console.log("Finished loading")
+        
+    }
+    // Info for sidebar to display after clicking on specific button
+    function clusterInfo(clicked_id){
+
+        // reading which button pressed
+        console.log("Selected Cluster " + clicked_id);
+        console.log(window.table);
+
+        table = window.table;
+        rest_cat = gon.rest_cat;
+        lad_name = gon.lad_name;
+
+        const info_arr = [];
+
+        // for all restaurants in cluster
+        for (let i = 0; i < table["$0"]["$3"].length; i++){
+            // if restaurant belongs to selected cluster
+            if (parseInt(table["$0"]["$3"][i][0]["value"]) == parseInt(clicked_id)){
+                // save restaurant into array
+                info_arr.push(table["$0"]["$3"][i]);
+            }
+        }
+
+        const rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+
+        for (let i = 0; i < info_arr.length; i++){
+            // select random point's lat and long to display embed background map view
+            lat = info_arr[i][4]["value"];
+            long = info_arr[i][5]["value"];
+
+            // index (of restaurant in list) of restaurant in cluster
+            cluster_rest_cat = info_arr[i][3]["value"];
+
+            var curr_rest_num = 0;
+            var sum_rest_num = 0;
+
+            console.log("Rest_cat array val: " + rest_cat + ", " + rest_cat_arr[parseInt(rest_cat)]);
+            console.log("Actual rest_cat: " + cluster_rest_cat);
+
+            // total numbers of restaurants of any category
+            sum_rest_num = sum_rest_num + 1;
+
+            // current type of restaurants amount
+            if (rest_cat_arr[parseInt(rest_cat)] == cluster_rest_cat){
+                curr_rest_num = curr_rest_num + 1;
+            }
+            // calculate restaurant category value for competition
+            console.log(info_arr[i]);
+            console.log("Num of current type restaurant: " + curr_rest_num);
+        }
+
+        // find detailed information for places within clusters
+        // Use AJAX to call method from controller
+        $.ajax({
+            type: "GET",
+            url: "/get_rest_detail",
+            data: {'rest_cat_arr': rest_cat_arr},
+            success:function(msg){
+                // Returning a json format of count
+                rest_data = msg.response;
+                console.log("Response: " + rest_data)
+                
+            },
+            error: function() {
+                alert('Unavailable to retreive restaurant amount in this area');
+            }
+        });
+
+        // sidebar part
+        src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + long + '&zoom=15">'
+
+        innerHtml = '<head><style>' +
+        // Header part
+        ".holder .card{position: absolute;top: 50px;left: 10px;width: 100%;}.holder" +
+        '</style></head>' +
+        '<body>' + 
+        // Close Button
+        '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
+        // Google map frame
+        '<div class="holder"><iframe id="map_frame"' +
+        ' width="450"' +
+        ' height="800"' +
+        ' style="border:0"' +
+        ' loading="lazy"' +
+        ' allowfullscreen' +
+        src +
+        '</iframe>' +
+        // Card to display information about district
+        '<div class="card" style="width: 18rem;">' +
+        '<div class="card-body">' +
+        '<h5 class="card-title"> Cluster '+ clicked_id +' in ' + lad_name + '</h5>' +
+        '<h6 class="card-subtitle mb-2 text-muted"> '+ curr_rest_num +' Direct Competitors (' + rest_cat_arr[parseInt(rest_cat)] + ') </h6>' +
+        '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Inirect Competitors </h6>' +
+
+        '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />' +
+        '</div></div></div></body>'
+        
+
+        document.getElementById("mySidebar").innerHTML=innerHtml;
+        document.getElementById("mySidebar").style.width = "450px";
+        
+        console.log("Finished loading")
+    }
+
+    function clusterButton(button_num) {
+
+        innerHtml = '<head></head>' +
+        '<body>'
+        for (let i = 1; i <= button_num; i++) {
+            innerHtml = innerHtml + ' <button type="button" role="group" class="btn btn-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button>'
+        }   
+
+        InnerHtml = innerHtml + '</body>'
+
+        console.log("Inner HTML:" + InnerHtml);
+
+        document.getElementById("clusterButtons").innerHTML=innerHtml;
+        
+
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+    }
+
     // Option to show sheet cluster
     function applyOptions() {
         console.log("Initializing...");
@@ -67,10 +227,29 @@ Restaurant Clusters
         console.log("Retreiving Underlying data");
         table = t;
         var tgt = document.getElementById("dataTarget");
-        console.log(JSON.stringify(table))
-        console.log("written JSON")
-        //console.log("Underlying Data:" + JSON.stringify(table.getData()) + "</p>");
-        });
+        var result_json = JSON.stringify(table);
+        console.log(result_json);
+        console.log("written JSON");
+    
+        largest = 0;
+
+        console.log(table["$0"]["$3"].length);
+
+        //Find largest number of cluster number
+        for (let i = 0; i < table["$0"]["$3"].length; i++){
+            //console.log(parseInt(table["$0"]["$3"][i][0]["value"]));
+            if (parseInt(table["$0"]["$3"][i][0]["value"]) > parseInt(largest)){
+                largest = table["$0"]["$3"][i][0]["value"];
+            }
+        }
+
+        window.table = table;
+        console.log(largest);
+
+        clusterButton(largest);
+
+        }
+        );
     }   
 
         // Function to listen to adjustment of window
@@ -89,10 +268,6 @@ Restaurant Clusters
     }
 
     function listenToMarksSelection() {
-        var rest_cat_value = String(gon.rest_cat);
-        console.log("Rest cat val:" + rest_cat_value);
-        
-        workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
         console.log("listenToMarksSelection function is loaded");
         
 
@@ -129,13 +304,25 @@ Restaurant Clusters
         }
         console.log("Length:" + marks.length);
 
+        var rest_place_id = dict["Place ID (Restaurant Location Output.csv1)"];
+        var rest_cat = dict["Restaurant Category (Restaurant Location Output.csv1)"];
+        var lat = dict["ATTR(LAT)"];
+        var long = dict["ATTR(Long)"];
+
         // only Google API when one mark is selected
         if (marks.length == 1){
-            console.log("Lat:" + lat + ",lng: " + lng);
-            openNav(name,code,postcode,population,rest_cat_value, sum_rest_num, curr_rest_num);
+            console.log("Place ID:" + rest_place_id + ", Category: " + rest_cat);
+            openNav_Restaurant(rest_place_id,rest_cat, gon.lad_name);
             console.log("Sent to openNav");
         }
     }
 
 %body#stylediv
 
+-# Side panel for google maps
+#mySidebar.sidebar
+#clusterButtons
+
+    
+
+%br
