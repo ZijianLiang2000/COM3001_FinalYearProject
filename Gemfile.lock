@@ -150,6 +150,7 @@ GEM
     public_suffix (4.0.6)
     puma (5.5.2)
       nio4r (~> 2.0)
+    pycall (1.4.1)
     racc (1.6.0)
     rack (2.2.3)
     rack-mini-profiler (2.3.3)
@@ -269,6 +270,7 @@ DEPENDENCIES
   nokogiri
   progress_bar
   puma (~> 5.0)
+  pycall
   rack-mini-profiler (~> 2.0)
   rails (~> 6.1.4, >= 6.1.4.1)
   sass-rails (>= 6)

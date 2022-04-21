@@ -11,9 +11,11 @@ Restaurant Clusters
 :javascript
 
     let viz
+    var sheet, table;
 
     //function for viz
     function initViz(containerDiv, url, options) {
+        console.log("Initializing Viz");
         if (viz){
             viz.dispose();
         }
@@ -39,6 +41,7 @@ Restaurant Clusters
                 hideTabs: true,
                 onFirstInteractive: function () {
                     workbook = viz.getWorkbook();
+                    getUnderlyingData();
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -47,6 +50,28 @@ Restaurant Clusters
 
     initViz(containerDiv, url, options);
     }
+
+    function getUnderlyingData(){
+    console.log("Worksheets:" + workbook.getActiveSheet());
+    sheet = workbook.getActiveSheet();
+    // If the active sheet is not a dashboard, then you can just enter:
+    // viz.getWorkbook().getActiveSheet();
+    options = {
+        maxRows: 0, // Max rows to return. Use 0 to return all rows
+        ignoreAliases: false,
+        ignoreSelection: true,
+        includeAllColumns: false
+    };
+
+    sheet.getSummaryDataAsync(options).then(function(t){
+        console.log("Retreiving Underlying data");
+        table = t;
+        var tgt = document.getElementById("dataTarget");
+        console.log(JSON.stringify(table))
+        console.log("written JSON")
+        //console.log("Underlying Data:" + JSON.stringify(table.getData()) + "</p>");
+        });
+    }   
 
         // Function to listen to adjustment of window
     window.addEventListener("resize", () => {
@@ -69,16 +94,18 @@ Restaurant Clusters
         
         workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
         console.log("listenToMarksSelection function is loaded");
+        
+
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
 
     function onMarksSelection(marksEvent) {
         console.log("onMarksSelection function is loaded");
-        
         return marksEvent.getMarksAsync().then(reportSelectedMarks);
     }
 
     function reportSelectedMarks(marks) {
+        console.log(marks)
         console.log("reportSelectedMarks is loaded");
         var html = "";
 

@@ -40,6 +40,7 @@ gem 'turbolinks', '~> 5'
 gem 'select2-rails'
 gem 'figaro'
 gem 'nokogiri'
+gem 'pycall'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false

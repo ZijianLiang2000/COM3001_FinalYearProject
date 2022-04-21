@@ -75,6 +75,7 @@ class MapsController < ApplicationController
   end
 
   def rest_cluster
+    
     name = params[:name]
     code = params[:code]
     rest_cat = params[:rest_cat]
@@ -86,10 +87,11 @@ class MapsController < ApplicationController
     @lsoa11_code = code
     @rest_cat = rest_cat
 
-
     gon.lsoa11_name = name
     gon.lsoa11_code = code
     gon.rest_cat = rest_cat
+
+    
   end
 
   # All restaurant categories
