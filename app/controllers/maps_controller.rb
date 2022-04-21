@@ -115,19 +115,19 @@ class MapsController < ApplicationController
 
   # 
   def get_rest_detail
-    name = params[:name]
-    puts("received LAD: " + name)
-    
-    restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
-    restaurant_Category_Count = []
-    for category in restaurant_Category_Encode
-      puts("Category: #{category}")
-      areaRestaurantCatCount = RestaurantDatum.where(DistrictDatum_id: DistrictDatum.where(name: name).ids.first, category: category).count
-      puts("Running, count: #{areaRestaurantCatCount}")
-      restaurant_Category_Count.append(areaRestaurantCatCount)
+    puts("get_rest_detail")
+    info_arr = params[:info_arr]
+
+    info_arr["9"] = {}
+    info_arr["9"][:key] = "value"
+    info_arr["9"]["value"] = ["gOOD", "Bad"]
+
+    for restaurant in info_arr["9"]
+      puts(restaurant)
     end
 
-    render json: { response: restaurant_Category_Count }
+    puts("Done filling in restaurant data")
+    render json: { response: info_arr }
   end
 
 

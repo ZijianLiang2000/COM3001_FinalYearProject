@@ -6,6 +6,9 @@ Restaurant Clusters
 
 %head
 %title Cluster
+
+%script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
+
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
 
 :javascript
@@ -118,52 +121,70 @@ Restaurant Clusters
         $.ajax({
             type: "GET",
             url: "/get_rest_detail",
-            data: {'rest_cat_arr': rest_cat_arr},
+            data: {'info_arr': info_arr},
             success:function(msg){
                 // Returning a json format of count
-                rest_data = msg.response;
-                console.log("Response: " + rest_data)
+                info_arr_full = msg.response;
+                console.log(typeof info_arr_full);
+                // To get value of json response, eg do: info_arr_full["0"]["1"]["value"]
+                for (let i = 0; i < Object.keys(info_arr_full).length; i++){
+                    for (let j = 0; j < Object.keys(info_arr_full[i]).length; j++){
+                        console.log("Response: " + info_arr_full[i][j]["value"]);
+                    }
+                }
                 
+                // sidebar view if successfully return data
+                // sidebar part
+                src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + long + '&zoom=15">'
+
+                innerHtml = '<head><style>' +
+                // Header part
+                ".holder .card{position: absolute;top: 50px;left: 10px;width: 100%;}.holder" +
+                ".scroll {max-height: 100px;overflow-y: auto;}" + 
+                '</style></head>' +
+                '<body>' + 
+                // Close Button
+                '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
+                // Google map frame
+                '<div class="holder"><iframe id="map_frame"' +
+                ' width="450"' +
+                ' height="800"' +
+                ' style="border:0"' +
+                ' loading="lazy"' +
+                ' allowfullscreen' +
+                src +
+                '</iframe>' +
+                // Card to display information about district
+                '<div class="card" style="width: 18rem;">' +
+                '<div class="card-body">' +
+                '<h5 class="card-title"> Cluster '+ clicked_id +' in ' + lad_name + '</h5>' +
+                '<h6 class="card-subtitle mb-2 text-muted"> '+ curr_rest_num +' Direct Competitors (' + rest_cat_arr[parseInt(rest_cat)] + ') </h6>' +
+                '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Inirect Competitors </h6>'
+                for (let i = 0; i < Object.keys(info_arr_full).length; i++){
+                    for (let j = 0; j < Object.keys(info_arr_full[i]).length; j++){
+                    console.log("!!!!!!!!!!!!!!!!!!!!!");
+                    console.log(info_arr_full[i][j]["value"]);
+
+                    innerHtml = innerHtml + '<div class="col-sm-4"><div class="card-subtitle mb-2 text-muted"> '+ info_arr_full[i] +') </div></div>';
+                    }
+                } 
+                innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />' +
+                '</div></div></div></body>'
+                
+
+                document.getElementById("mySidebar").innerHTML=innerHtml;
+                document.getElementById("mySidebar").style.width = "450px";
+                
+                console.log("Finished loading")
+
             },
             error: function() {
-                alert('Unavailable to retreive restaurant amount in this area');
+                alert('Unavailable to retreive restaurant detailed info at this moment');
             }
+            
         });
 
-        // sidebar part
-        src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + long + '&zoom=15">'
-
-        innerHtml = '<head><style>' +
-        // Header part
-        ".holder .card{position: absolute;top: 50px;left: 10px;width: 100%;}.holder" +
-        '</style></head>' +
-        '<body>' + 
-        // Close Button
-        '<a class="closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>' +
-        // Google map frame
-        '<div class="holder"><iframe id="map_frame"' +
-        ' width="450"' +
-        ' height="800"' +
-        ' style="border:0"' +
-        ' loading="lazy"' +
-        ' allowfullscreen' +
-        src +
-        '</iframe>' +
-        // Card to display information about district
-        '<div class="card" style="width: 18rem;">' +
-        '<div class="card-body">' +
-        '<h5 class="card-title"> Cluster '+ clicked_id +' in ' + lad_name + '</h5>' +
-        '<h6 class="card-subtitle mb-2 text-muted"> '+ curr_rest_num +' Direct Competitors (' + rest_cat_arr[parseInt(rest_cat)] + ') </h6>' +
-        '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Inirect Competitors </h6>' +
-
-        '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />' +
-        '</div></div></div></body>'
         
-
-        document.getElementById("mySidebar").innerHTML=innerHtml;
-        document.getElementById("mySidebar").style.width = "450px";
-        
-        console.log("Finished loading")
     }
 
     function clusterButton(button_num) {
