@@ -213,18 +213,28 @@ Restaurant Clusters
     function clusterButton(button_num) {
 
         innerHtml = '<head></head>' +
-        '<body><div class="d-grid gap-2 col-6 mx-auto">'
+        '<body><div class="row">';
+
+        const rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+        
+
         for (let i = 1; i <= button_num; i++) {
-            innerHtml = innerHtml + ' <button type="button" role="group" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button>'
-        }   
+            innerHtml = innerHtml + '<div class="col-sm-6"><div class="card"><div class="card-body"><h5 class="card-title">Cluster '+ i +'</h5>';
+            if(window["cluster_"+ i +"_curr_rest_num"] == 0){
+                innerHtml = innerHtml + '<p class="card-text"> No ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div></div>';
+            }else if(window["cluster_"+ i +"_curr_rest_num"] == 1){
+                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div></div>';
+            }else{
+                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + 's in the cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div></div>';
+            }
+            
+        }
 
         InnerHtml = innerHtml + '</div></body>'
-
         console.log("Inner HTML:" + InnerHtml);
 
         document.getElementById("clusterButtons").innerHTML=innerHtml;
         
-
     }
 
     function closeNav() {
@@ -350,7 +360,6 @@ Restaurant Clusters
         // calculate cluster with most restaurants but least similar ones
         for (let i = 0; i < largest; i++){
             window[("cluster_" + (i+1) + "_recommend")] = window[("cluster_" + (table["$0"]["$3"][i][0]["value"]) + "_curr_rest_num")] / window[("cluster_" + (table["$0"]["$3"][i][0]["value"]) + "_rest_num")];
-            
         }
 
         // Sort cluster size according to recommendation value

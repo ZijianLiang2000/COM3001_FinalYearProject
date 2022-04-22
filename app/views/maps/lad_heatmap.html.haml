@@ -1,7 +1,7 @@
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
-%body{:onload => "init()"};
+%body{:onload => "init()"}
 
 %h1 Local Authority District Map
 %br
@@ -53,6 +53,9 @@
 
     function init(){
         console.log("Running Init function");
+        document.getElementById('globalstyleselect').selectedIndex = "1";
+        document.getElementById("globalstyleselect").dispatchEvent(new Event("change"));
+
         var rest_cat_val = $('#rest_cat_select').val();
         document.getElementById('rest_cat_select').selectedIndex = gon.rest_cat;
         console.log("Selected Restaurant Category: " + (gon.rest_cat));
