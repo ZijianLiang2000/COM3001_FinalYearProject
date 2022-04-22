@@ -167,14 +167,27 @@ Restaurant Clusters
                 '<div class="scrollable">' + 
                 '<br><h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' Restaurant(s) </h6>' +
                 '<h6 class="card-subtitle mb-2 text-muted"> '+ curr_rest_num +' Direct Competitors (' + rest_cat_arr[parseInt(rest_cat)] + ') </h6>' +
-                '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Inirect Competitors </h6>'
+                '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </h6>'
+                
+                cat_tag = {"Italian Restaurant" : "ITA",
+                "Indian Restaurant" : "IND",
+                "Japanese Restaurant" : "JAP",
+                "Thai Restaurant" : "THA",
+                "British Restaurant" : "BRIT",
+                "Chinese Restaurant" : "CHN",
+                "Vegetarian" : "VEG",
+                "Cafe" : "Cafe",
+                "Pub" : "Pub"};
+                
                 for (let i = 0; i < (info_arr_full).length; i++){
                     console.log("Response: " + info_arr_full[i]["ratings"]);
 
-                    innerHtml = innerHtml + '<br><h5 class="card-subtitle mb-2 text-muted"> '+ info_arr_full[i]["name"] +' </h5> ';
+                    innerHtml = innerHtml + '<br><h5 class="card-subtitle mb-2 text-muted"> '+ info_arr_full[i]["name"] +' <span class="badge rounded-pill bg-info text-dark">' + cat_tag[info_arr_full[i]["rest_cat"]] + '</span> </h5>';
                     innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Rating: '+ info_arr_full[i]["rating"] +' </h6>';
-                    innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Price Level: '+ info_arr_full[i]["price_level"] +' </h6>';
-                    innerHtml = innerHtml + '<button type="button" class="btn btn-success" onclick="location.href=' + "'" + "https://www.google.com/maps/search/?api=1&query=" + encodeURI((info_arr_full[i]["rest_cat"]) + " Near " + lad_name) + "&query_place_id=" + info_arr_full[i]["place_id"] + "'" + '" > Click me </Button><br>';
+                    if (info_arr_full[i]["price_level"] != null){
+                        innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Price Level: '+ info_arr_full[i]["price_level"] +' </h6>';
+                    }
+                    innerHtml = innerHtml + '<button type="button" class="btn btn-success" onclick="location.href=' + "'" + "https://www.google.com/maps/search/?api=1&query=" + encodeURI((info_arr_full[i]["rest_cat"]) + " Near " + lad_name) + "&query_place_id=" + info_arr_full[i]["place_id"] + "'" + '" > Learn More </Button><br>';
 
                 } 
                 
@@ -200,12 +213,12 @@ Restaurant Clusters
     function clusterButton(button_num) {
 
         innerHtml = '<head></head>' +
-        '<body>'
+        '<body><div class="d-grid gap-2 col-6 mx-auto">'
         for (let i = 1; i <= button_num; i++) {
-            innerHtml = innerHtml + ' <button type="button" role="group" class="btn btn-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button>'
+            innerHtml = innerHtml + ' <button type="button" role="group" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button>'
         }   
 
-        InnerHtml = innerHtml + '</body>'
+        InnerHtml = innerHtml + '</div></body>'
 
         console.log("Inner HTML:" + InnerHtml);
 
@@ -266,7 +279,7 @@ Restaurant Clusters
 
         console.log(table["$0"]["$3"].length);
 
-        //Find largest number of cluster number
+        //Find largest number of cluster number and generate num of buttons
         for (let i = 0; i < table["$0"]["$3"].length; i++){
             //console.log(parseInt(table["$0"]["$3"][i][0]["value"]));
             if (parseInt(table["$0"]["$3"][i][0]["value"]) > parseInt(largest)){
@@ -274,9 +287,73 @@ Restaurant Clusters
             }
         }
 
+        for (let i = 0; i < largest; i++){
+            window[("cluster_" + (i+1) + "_rest_num")] = 0;
+            console.log("created window cluster: window[" + "cluster_" + (i+1) + "_rest_num" + "]");
+            window[("cluster_" + (i+1) + "_curr_rest_num")] = 0;
+            console.log("created window cluster: window[" + "cluster_" + (i+1) + "_curr_rest_num" + "]");
+        }
+
         window.table = table;
         console.log(largest);
 
+        const rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+        
+
+        // ALGORITHM for cluster suggestions
+        rest_cat = gon.rest_cat;
+
+        sum_rest_num = 0
+        curr_rest_num = 0
+
+        for (let i = 0; i < table["$0"]["$3"].length; i++){
+
+            // index (of restaurant in list) of restaurant in cluster
+            cluster_rest_cat = table["$0"]["$3"][i][3]["value"];
+            console.log("Rest_cat array val for " + i + ": " + rest_cat + ", " + rest_cat_arr[parseInt(rest_cat)]);
+            console.log("Actual rest_cat: " + i + ": " + cluster_rest_cat);
+
+            // total numbers of restaurants of any category
+            sum_rest_num = sum_rest_num + 1;
+            
+            // current type of restaurants amount
+            if (rest_cat_arr[parseInt(rest_cat)] == cluster_rest_cat){
+                curr_rest_num = curr_rest_num + 1;
+                            // number of total restaurants in one cluster
+                window[("cluster_" + (table["$0"]["$3"][i][0]["value"]) + "_curr_rest_num")] += 1; 
+                console.log("added curr amount: " + curr_rest_num);
+            }
+            console.log("next stage");
+            // calculate restaurant category value for competition
+            console.log("Num of current type restaurant: " + curr_rest_num);
+
+            // number of total restaurants in one cluster
+            
+            window[("cluster_" + table["$0"]["$3"][i][0]["value"] + "_rest_num")] += 1;
+            console.log("cluster_" + (table["$0"]["$3"][i][0]["value"]) + "_rest_num")
+        }
+
+        console.log("For each cluster, rest num: ");
+        console.log(window["cluster_1_rest_num"]);
+        console.log(window["cluster_2_rest_num"]);
+        console.log(window["cluster_3_rest_num"]);
+        console.log(window["cluster_4_rest_num"]);
+        console.log(window["cluster_5_rest_num"]);
+
+        console.log("For each cluster, current rest cat num: ");
+        console.log(window["cluster_1_curr_rest_num"]);
+        console.log(window["cluster_2_curr_rest_num"]);
+        console.log(window["cluster_3_curr_rest_num"]);
+        console.log(window["cluster_4_curr_rest_num"]);
+        console.log(window["cluster_5_curr_rest_num"]);
+
+        // calculate cluster with most restaurants but least similar ones
+        for (let i = 0; i < largest; i++){
+            window[("cluster_" + (i+1) + "_recommend")] = window[("cluster_" + (table["$0"]["$3"][i][0]["value"]) + "_curr_rest_num")] / window[("cluster_" + (table["$0"]["$3"][i][0]["value"]) + "_rest_num")];
+            
+        }
+
+        // Sort cluster size according to recommendation value
         clusterButton(largest);
 
         }

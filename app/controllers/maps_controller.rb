@@ -159,7 +159,7 @@ class MapsController < ApplicationController
     end
     
     # store retreived data as session
-    session[:rest_details_arr] = rest_details_arr
+    #session[:rest_details_arr] = rest_details_arr
     
     # rest_details_arr = session[:rest_details_arr]
 
