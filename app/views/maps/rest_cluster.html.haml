@@ -27,6 +27,7 @@ Restaurant Clusters
 
     // load function applyOptions when webpage loaded
     window.onload = function() {
+        window.lad_name = gon.lad_name;
         applyOptions();
     };
 
@@ -75,7 +76,7 @@ Restaurant Clusters
 
         table = window.table;
         rest_cat = gon.rest_cat;
-        lad_name = gon.lad_name;
+        lad_name = window.lad_name;
 
         const info_arr = [];
 
@@ -89,6 +90,9 @@ Restaurant Clusters
         }
 
         const rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+        
+        var curr_rest_num = 0;
+        var sum_rest_num = 0;
 
         for (let i = 0; i < info_arr.length; i++){
             // select random point's lat and long to display embed background map view
@@ -97,9 +101,6 @@ Restaurant Clusters
 
             // index (of restaurant in list) of restaurant in cluster
             cluster_rest_cat = info_arr[i][3]["value"];
-
-            var curr_rest_num = 0;
-            var sum_rest_num = 0;
 
             console.log("Rest_cat array val: " + rest_cat + ", " + rest_cat_arr[parseInt(rest_cat)]);
             console.log("Actual rest_cat: " + cluster_rest_cat);
@@ -114,33 +115,38 @@ Restaurant Clusters
             // calculate restaurant category value for competition
             console.log(info_arr[i]);
             console.log("Num of current type restaurant: " + curr_rest_num);
+
+            window.sum_rest_num = sum_rest_num;
+            window.curr_rest_num = curr_rest_num;
+            
         }
 
         // find detailed information for places within clusters
         // Use AJAX to call method from controller
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/get_rest_detail",
-            data: {'info_arr': info_arr},
+            data: {'info_arr': info_arr,  authenticity_token: $('[name="csrf-token"]')[0].content },
             success:function(msg){
                 // Returning a json format of count
                 info_arr_full = msg.response;
-                console.log(typeof info_arr_full);
                 // To get value of json response, eg do: info_arr_full["0"]["1"]["value"]
-                for (let i = 0; i < Object.keys(info_arr_full).length; i++){
-                    for (let j = 0; j < Object.keys(info_arr_full[i]).length; j++){
-                        console.log("Response: " + info_arr_full[i][j]["value"]);
-                    }
+                for (let i = 0; i < (info_arr_full).length; i++){
+                    console.log("Response: " + info_arr_full[i]["ratings"]);
                 }
                 
+                sum_rest_num = window.sum_rest_num;
+                curr_rest_num = window.curr_rest_num;
+
+                lad_name = window.lad_name;
                 // sidebar view if successfully return data
                 // sidebar part
                 src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + long + '&zoom=15">'
 
                 innerHtml = '<head><style>' +
                 // Header part
-                ".holder .card{position: absolute;top: 50px;left: 10px;width: 100%;}.holder" +
-                ".scroll {max-height: 100px;overflow-y: auto;}" + 
+                ".holder .card{position: absolute;top: 50px;left: 10px;width: 100%; height: 370px; margin: 30px;}" +
+                ".scrollable {max-height: 300px;overflow-y: auto;} #select_cluster{position: absolute;top: 400px;}" + 
                 '</style></head>' +
                 '<body>' + 
                 // Close Button
@@ -158,18 +164,22 @@ Restaurant Clusters
                 '<div class="card" style="width: 18rem;">' +
                 '<div class="card-body">' +
                 '<h5 class="card-title"> Cluster '+ clicked_id +' in ' + lad_name + '</h5>' +
+                '<div class="scrollable">' + 
+                '<br><h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' Restaurant(s) </h6>' +
                 '<h6 class="card-subtitle mb-2 text-muted"> '+ curr_rest_num +' Direct Competitors (' + rest_cat_arr[parseInt(rest_cat)] + ') </h6>' +
                 '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Inirect Competitors </h6>'
-                for (let i = 0; i < Object.keys(info_arr_full).length; i++){
-                    for (let j = 0; j < Object.keys(info_arr_full[i]).length; j++){
-                    console.log("!!!!!!!!!!!!!!!!!!!!!");
-                    console.log(info_arr_full[i][j]["value"]);
+                for (let i = 0; i < (info_arr_full).length; i++){
+                    console.log("Response: " + info_arr_full[i]["ratings"]);
 
-                    innerHtml = innerHtml + '<div class="col-sm-4"><div class="card-subtitle mb-2 text-muted"> '+ info_arr_full[i] +') </div></div>';
-                    }
+                    innerHtml = innerHtml + '<br><h5 class="card-subtitle mb-2 text-muted"> '+ info_arr_full[i]["name"] +' </h5> ';
+                    innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Rating: '+ info_arr_full[i]["rating"] +' </h6>';
+                    innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Price Level: '+ info_arr_full[i]["price_level"] +' </h6>';
+                    innerHtml = innerHtml + '<button type="button" class="btn btn-success" onclick="location.href=' + "'" + "https://www.google.com/maps/search/?api=1&query=" + encodeURI((info_arr_full[i]["rest_cat"]) + " Near " + lad_name) + "&query_place_id=" + info_arr_full[i]["place_id"] + "'" + '" > Click me </Button><br>';
+
                 } 
-                innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />' +
-                '</div></div></div></body>'
+                
+                innerHtml = innerHtml + '</div><input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />' +
+                '</div></body>'
                 
 
                 document.getElementById("mySidebar").innerHTML=innerHtml;

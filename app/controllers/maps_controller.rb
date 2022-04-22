@@ -1,6 +1,7 @@
 class MapsController < ApplicationController
   require 'csv'
   require 'uri'
+  require 'json'
   before_action :set_map, only: %i[ show edit update destroy ]
 
   # GET /maps or /maps.json
@@ -116,18 +117,54 @@ class MapsController < ApplicationController
   # 
   def get_rest_detail
     puts("get_rest_detail")
-    info_arr = params[:info_arr]
+    
+    info_arr = (params[:info_arr])
+    max_index = 0
 
-    info_arr["9"] = {}
-    info_arr["9"][:key] = "value"
-    info_arr["9"]["value"] = ["gOOD", "Bad"]
+    i = 0
 
-    for restaurant in info_arr["9"]
-      puts(restaurant)
+    rest_details_arr = []
+
+    # obtain restaurant place id
+    for restaurant in info_arr
+      p "Restaurant: " + i.to_s
+      rest_details_arr.append([])
+      for info in restaurant
+        if info["2"] != nil && (!info["2"].nil?)
+          if info["2"]["value"] != nil && (!info["2"]["value"].nil?)
+            p "Restaurant data: "
+            p info["2"]["value"]
+
+            detail_result = request_api(
+              "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{info["2"]["value"]}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,rating"
+            )
+
+            puts(detail_result["result"]["name"])
+            puts(info["2"]["value"])
+            puts(info["3"]["value"])
+            puts(detail_result["result"]["rating"])
+            puts(detail_result["result"]["price_level"])
+
+            # Simulation of retreiving results of details
+            rest_details_arr[i] = {}
+            rest_details_arr[i].store("name", detail_result["result"]["name"])
+            rest_details_arr[i].store("place_id", info["2"]["value"])
+            rest_details_arr[i].store("rest_cat", info["3"]["value"])
+            rest_details_arr[i].store("rating", detail_result["result"]["rating"])
+            rest_details_arr[i].store("price_level", detail_result["result"]["price_level"])
+          end
+        end
+      end
+      i += 1
     end
+    
+    # store retreived data as session
+    session[:rest_details_arr] = rest_details_arr
+    
+    # rest_details_arr = session[:rest_details_arr]
 
     puts("Done filling in restaurant data")
-    render json: { response: info_arr }
+    render json: { response: rest_details_arr }
   end
 
 
