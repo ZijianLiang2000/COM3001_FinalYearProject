@@ -1,14 +1,14 @@
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
-%body{:onload => "styleselect()"}
+%body{:onload => "applyOptions()"}
 
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
-%h1 Heatmap
+%h1 Restaurant in Cluster #{@cluster_id}
 %h5 Selected Local Authority: #{@lad_name}
-%h5 Code: #{@lad20_code}
+%h5 Code: #{@lsoa11_code}
 
 %br
 -# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
@@ -17,17 +17,6 @@
 %br
 
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
-
-%h4 Heatmap View:
-%select#globalstyleselect{:onchange => "styleselect()", :class => "form-select"}
-
-    - if @map_style == "1"
-        %option{:value => "1", :selected => "selected"} Heatmap
-        %option{:value => "2"} Density map
-    - elsif @map_style == "2"
-        %option{:value => "1"} Heatmap
-        %option{:value => "2", :selected => "selected"} Density map
-    
   
 %br
 %head
@@ -49,7 +38,6 @@
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
         // Let LSOA default map to show be identical to previous map if next stage
-        var map_style = $('#globalstyleselect').val();
         console.log(src);
         console.log("Token: " + gon.form_token);
         console.log("Map style: " + map_style);
@@ -107,7 +95,7 @@
         src = ' src = "https://www.google.com/maps/embed/v1/place?key='+gon.google_api_key+'&q=place_id:'+ place_id +'">'
         
         // Let LSOA default map to show be identical to previous map if next stage
-        var map_style = $('#globalstyleselect').val();
+
         console.log(src);
         console.log("Restaurant Token: " + gon.form_token);
         console.log("Map style: " + map_style);
@@ -154,37 +142,20 @@
         viz = new tableau.Viz(containerDiv, url, options);
     }
 
+    function applyOptions() {
 
-    // Option to show sheet 1
-    function applyOptions1() {
-        console.log("Running option 1, LAD20Cd is: " + gon.lad20_code)
-        var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LSOA_Recommendation_Value/LSOA_Heatmap?:language=en-GB&:display_count=n&:origin=viz_share_link",
-            options = {
-                // Options to show area LSOA code for user when at start
-                "Lad20Cd" : gon.lad20_code,
-                width: window.innerWidth,
-                height: window.innerHeight,
-                device: "desktop",
-                hideTabs: true,
-                onFirstInteractive: function () {
-                    console.log("Run this code when the viz has finished loading.");
-                    listenToMarksSelection();
-                    
-                }
-            };
+            for(var place_id in gon.place_id_arr) {
+                console.log(gon.place_id_arr[place_id]);
+            } 
 
-    initViz(containerDiv, url, options);
-    }
 
-    // Option to show sheet 2
-        function applyOptions2() {
-            console.log("Running option 2, LAD20Cd is: " + gon.lad20_code)
+            console.log("Clusters: " + ("Cluster " + gon.cluster_id));
             var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LSOA_Recommendation_Value/LSOA_Density_Map?:language=en-GB&:display_count=n&:origin=viz_share_link",
+            url = "https://public.tableau.com/views/LSOA_Recommendation_Value/Cluster_Group?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
             options = {
                 // Options to show area LSOA code for user when at start
-                "Lad20Cd" : gon.lad20_code,
+                "LSOA11 Code" : gon.lsoa11_code,
+                "Place ID (Restaurant Location Output.csv1)" : gon.place_id_arr,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 device: "desktop",
@@ -217,17 +188,6 @@
     document.getElementById('applyFilter').addEventListener('click',function(){
         applyFilter();
     })
-
-    function styleselect() {
-        var value = $('#globalstyleselect').val();
-        var div = $("#stylediv");
-        if (value == "1") {
-            applyOptions1();
-        }
-        if (value == "2") {
-            applyOptions2();
-        }
-    }
 
     function listenToMarksSelection() {
         console.log("listenToMarksSelection function is loaded");
@@ -266,56 +226,13 @@
         }
         console.log("Length:" + marks.length);
 
-        var name = dict["LSOA11 Name"];
-        var code = dict["LSOA11 Code"];
-        var lad_name = dict["LAD20 Name"];
-        var lad_code = dict["LAD20 Cd"];
-        var lat = dict["AVG(LAT)"];
-        var lng = dict["AVG(Long)"];
-        var population = dict["SUM(Sum Population)"];
-        var postcode = dict["Postcode"];
-        var sum_rest_num = dict["AGG(Number of Restaurants in LSOA)"];
-
-        restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
-
-        var rest_cat_value = gon.rest_cat
-        console.log("Selected rest_cat from previous stage:" + rest_cat_value);
-
-        // Index corresponding to the restaurant category order on Tableau Marks
-        rest_cat_index = ["AGG(Number of Italian Restaurants in LSOA)",
-        "AGG(Number of Indian Restaurants in LSOA)", "AGG(Number of Japanese Restaurants in LSOA)",
-        "AGG(Number of Thai Restaurants in LSOA)", "AGG(Number of British Restaurants in LSOA)",
-        "AGG(Number of Chinese Restaurants in LSOA)", "AGG(Number of Vegetarian Restaurants in LSOA)",
-        "AGG(Number of Pub(s) in LSOA)", "AGG(Number of Cafe(s) in LSOA)"]
-
-        // Sum of current restaurant category in LSOA
-        var curr_rest_num = dict[rest_cat_index[rest_cat_value]];
-        var sum_rest_num = dict["AGG(Number of Restaurants in LSOA)"];
-        console.log("Curr_rest_num: " + curr_rest_num);
-        // Inspect each restaurant count
-        for (let i = 0; i < rest_cat_index.length; i++) {
-            console.log(restaurant_Category_Encode[i]);
-            console.log(array[rest_cat_index[i]]);
-        }
-        
-        var rest_place_id = dict["Place ID (Restaurant Location Output.csv1)"];
-        var rest_cat = dict["Restaurant Category (Restaurant Location Output.csv1)"];
-        console.log("Place ID:" + rest_place_id);
-        console.log("Restaurant Category:" + rest_cat);
         // only Google API when one mark is selected
         if (marks.length == 1){
             // If selected a restaurant
-            if ((rest_place_id != null)){
-                console.log("Restaurant Selected");
-                openNav_Restaurant(rest_place_id,rest_cat, gon.lad_name);
-                console.log("Sent to openNav");
-            }else{
-                console.log("LSOA Selected");
-                openNav(name,code,lat,lng,population,rest_cat_value, sum_rest_num, curr_rest_num);
-                console.log("Sent to openNav");
-            }
+            
         }
     }
+    
 
 %body#stylediv
 

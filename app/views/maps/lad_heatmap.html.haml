@@ -15,13 +15,13 @@
 
 -# Options to choose which map to display
 %h4 Map View:
-%select#globalstyleselect{:onchange => "styleselect()"}
+%select#globalstyleselect{:onchange => "styleselect()", :class => "form-select"}
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
     %option{:value => "1"} Heatmap
     %option{:value => "2"} Density map
     
 %h4 Data View:
-%select#dataview{:onchange => "dataview()"}
+%select#dataview{:onchange => "dataview()", :class => "form-select"}
     %option{:selected => "selected", :value => "none"} Map
     %option{:value => "1"} Ethnic Structure
     %option{:value => "2"} Population Median Age
@@ -29,7 +29,7 @@
 %h4 Restaurant Category:
 
 
-%select#rest_cat_select{:onchange => "update_weight_to_tableau()"}
+%select#rest_cat_select{:onchange => "update_weight_to_tableau()", :class => "form-select"}
     %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Restaurant Category
     %option{:value => "0"} Italian Restaurant
     %option{:value => "1"} Indian Restaurant

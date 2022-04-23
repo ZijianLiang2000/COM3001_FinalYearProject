@@ -27,4 +27,7 @@ Rails.application.routes.draw do
   get 'nearby_result' => 'maps#nearby_result'
   get 'get_restaurant_count' => 'maps#get_restaurant_count'
   post 'get_rest_detail' => 'maps#get_rest_detail'
+  
+  get 'location_in_cluster' => 'maps#location_in_cluster'
+  post 'location_in_cluster' => 'maps#location_in_cluster'
 end

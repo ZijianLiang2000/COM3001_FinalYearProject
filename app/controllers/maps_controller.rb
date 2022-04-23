@@ -76,7 +76,7 @@ class MapsController < ApplicationController
   end
 
   def rest_cluster
-
+    gon.form_token = form_authenticity_token
     name = params[:name]
     code = params[:code]
     rest_cat = params[:rest_cat]
@@ -95,6 +95,35 @@ class MapsController < ApplicationController
     gon.rest_cat = rest_cat
     gon.lad_name = lad_name
     
+  end
+
+  def location_in_cluster
+    gon.form_token = form_authenticity_token
+    rest_cat = params[:rest_cat]
+    lad_name = params[:lad_name]
+    lsoa11_code = params[:lsoa_code]
+    cluster_id = params[:cluster]
+    place_id_arr = params[:place_id_arr]
+
+    puts("Received params: " + rest_cat + ", " + lad_name + ", " + lsoa11_code)
+
+    place_id_arr = place_id_arr.split(",")
+    for place_id in place_id_arr
+      puts(place_id)
+    end
+
+    @lsoa11_code = lsoa11_code
+    @lad_name = lad_name
+    @rest_cat = rest_cat
+    @cluster_id = cluster_id
+    @place_id_arr = place_id_arr
+
+    gon.lsoa11_code = lsoa11_code
+    gon.rest_cat = rest_cat
+    gon.lad_name = lad_name
+    gon.cluster_id = cluster_id
+    gon.place_id_arr = place_id_arr
+
   end
 
   # All restaurant categories
@@ -126,6 +155,7 @@ class MapsController < ApplicationController
     rest_details_arr = []
 
     # obtain restaurant place id
+
     for restaurant in info_arr
       p "Restaurant: " + i.to_s
       rest_details_arr.append([])
