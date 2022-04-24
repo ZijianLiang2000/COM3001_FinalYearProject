@@ -64,6 +64,7 @@ class MapsController < ApplicationController
     rest_cat = params[:rest_cat_value]
     price_seg = params[:price_seg_value]
     acceptance_select = params[:acceptance_value]
+    
 
     rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
 

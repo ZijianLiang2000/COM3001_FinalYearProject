@@ -1,57 +1,50 @@
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
-
-%body{:onload => "init()"}
-
-%h1 Local Authority District Map
-%br
--# Filter search bar part
--# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
--# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
-
-%br
--# include script to add google embed iframe
-%script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
-
--# Options to choose which map to display
-%h4 Map View:
-%select#globalstyleselect{:onchange => "styleselect()", :class => "form-select"}
-    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
-    %option{:value => "1"} Heatmap
-    %option{:value => "2"} Density map
-    
-%h4 Data View:
-%select#dataview{:onchange => "dataview()", :class => "form-select"}
-    %option{:selected => "selected", :value => "none"} Map
-    %option{:value => "1"} Ethnic Structure
-    %option{:value => "2"} Population Median Age
-  
-%h4 Restaurant Category:
-
-
-%select#rest_cat_select{:onchange => "update_weight_to_tableau()", :class => "form-select"}
-    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Restaurant Category
-    %option{:value => "0"} Italian Restaurant
-    %option{:value => "1"} Indian Restaurant
-    %option{:value => "2"} Japanese Restaurant
-    %option{:value => "3"} Thai Restaurant
-    %option{:value => "4"} British Restaurant
-    %option{:value => "5"} Chinese Restaurant
-    %option{:value => "6"} Vegetarian
-    %option{:value => "7"} Cafe
-    %option{:value => "8"} Pub
-
-
-
-%br
 %head
 %title Basic Embed
+%body{:onload => "init()"}
+    -# include script to add google embed iframe
+    %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
+
+    
+    %div#lad_option{ :style => "position: absolute; margin: auto;padding: 10px; top: 130px;left: 40px;" }
+        .card{:style => "width: 18rem;"}
+            .card-body
+                -# Options to choose which map to display
+                %h4 Map View:
+                %select#globalstyleselect{:onchange => "styleselect()", :class => "form-select w-100%" }
+                    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Option
+                    %option{:value => "1"} Heatmap
+                    %option{:value => "2"} Density map
+                %br
+                %h4 Data View:
+                %select#dataview{:onchange => "dataview()", :class => "form-select w-100%"}
+                    %option{:selected => "selected", :value => "none"} Map
+                    %option{:value => "1"} Ethnic Structure
+                    %option{:value => "2"} Population Median Age
+                %br
+                %h4 Restaurant Category:
+                %select#rest_cat_select{:onchange => "update_weight_to_tableau()", :class => "form-select w-100%"}
+                    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select an Restaurant Category
+                    %option{:value => "0"} Italian Restaurant
+                    %option{:value => "1"} Indian Restaurant
+                    %option{:value => "2"} Japanese Restaurant
+                    %option{:value => "3"} Thai Restaurant
+                    %option{:value => "4"} British Restaurant
+                    %option{:value => "5"} Chinese Restaurant
+                    %option{:value => "6"} Vegetarian
+                    %option{:value => "7"} Cafe
+                    %option{:value => "8"} Pub
+
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
 
 -# Window to pop-up and function to open the sidebar
 :javascript
 
     function init(){
+        var lad_option = document.getElementById("lad_option");
+        lad_option.style.display = "none";
+        
         console.log("Running Init function");
         document.getElementById('globalstyleselect').selectedIndex = "1";
         document.getElementById("globalstyleselect").dispatchEvent(new Event("change"));
@@ -296,6 +289,14 @@
     }
 
     function styleselect() {
+        // hide block option every time onchange option
+        document.getElementById("lad_option").style.position = "absolute";
+        document.getElementById("lad_option").style.top = "130px";
+        document.getElementById("lad_option").style.left = "40px";
+
+        var lad_option = document.getElementById("lad_option");
+        lad_option.style.display = "none";
+
         var value = $('#globalstyleselect').val();
         // once map view is changed, set data view back to map
         var dataview_value = $('#dataview').val();
@@ -313,14 +314,23 @@
     }
 
     function dataview() {
+        // hide block option every time onchange option
+        var lad_option = document.getElementById("lad_option");
+        lad_option.style.display = "none";
+
         var value = $('#dataview').val();
         var map_value = $('#globalstyleselect').val()
         // if dataview is selected as Map
         if (value == "none") {
+            document.getElementById("lad_option").style.position = "absolute";
+            document.getElementById("lad_option").style.top = "130px";
+            document.getElementById("lad_option").style.left = "40px";
             // while map view is selected as heatmap or not selected
             if (map_value == "1" || map_value == "none"){
+                    
                 // apply first option
                 applyOptions1();
+                
             }
             // or else apply the second
             else {
@@ -330,11 +340,17 @@
         //var div = $("#stylediv");
         // If map style is Ethnic Structure table
         if (value == "1") {
+            document.getElementById("lad_option").style.position = "relative";
+            document.getElementById("lad_option").style.top = "0px";
+            document.getElementById("lad_option").style.left = "0px";
             // Use data sheet for Ethnic Structure table
             applyDataView1();
         }
         // else you datasheet for XXX
         if (value == "2") {
+            document.getElementById("lad_option").style.position = "relative";
+            document.getElementById("lad_option").style.top = "0px";
+            document.getElementById("lad_option").style.left = "0px";
             applyDataView2();
         }
     }
@@ -342,7 +358,10 @@
     // JS scipt to update value when an option is selected for restuarant category
     // because some weights for importance change for different restaurants
     function update_weight_to_tableau(){
-        
+        // hide block option every time onchange option
+        var lad_option = document.getElementById("lad_option");
+        lad_option.style.display = "none";
+
         var rest_cat_value = $('#rest_cat_select').val();
         var map_type = $('#globalstyleselect').val();
 
@@ -379,12 +398,19 @@
         workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
         workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
+
+        lad_option.style.display = "block";
     }
 
     function listenToMarksSelection() {
         console.log("listenToMarksSelection function is loaded");
         //Check every time when map is loaded, the value of restaurant category and update weights
         update_weight_to_tableau();
+
+        // Display option block everytime map is loaded
+        var lad_option = document.getElementById("lad_option");
+        lad_option.style.display = "block";
+
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
 
@@ -479,6 +505,3 @@
 
 -# Side panel for google maps
 #mySidebar.sidebar
-
-%br
-

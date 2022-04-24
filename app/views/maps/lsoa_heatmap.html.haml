@@ -19,7 +19,7 @@
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
 %h4 Heatmap View:
-%select#globalstyleselect{:onchange => "styleselect()", :class => "form-select"}
+%select#globalstyleselect{:onchange => "styleselect()", :class => "form-select w-25"}
 
     - if @map_style == "1"
         %option{:value => "1", :selected => "selected"} Heatmap
