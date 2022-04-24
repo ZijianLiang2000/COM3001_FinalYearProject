@@ -84,7 +84,7 @@
         
     }
 
-    function openNav_Restaurant(place_id,rest_cat, lad_name) {
+    function openNav_Restaurant(place_id,rest_cat, lad_name, lat, long) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         // Current type restaurant number in area
         console.log("openNav_Restaurant function selected")
@@ -98,7 +98,6 @@
 
         console.log(src);
         console.log("Restaurant Token: " + gon.form_token);
-        console.log("Map style: " + map_style);
         
         innerHtml = '<head><style>' +
         // Header part
@@ -224,12 +223,20 @@
                 console.log(key + " : " + dict[key]);
             }
         }
+
+        var rest_place_id = dict["Place ID (Restaurant Location Output.csv1)"];
+        var rest_cat = dict["Restaurant Category (Restaurant Location Output.csv1)"];
+        var lat = dict["Latitude (generated)"];
+        var long = dict["Longitude (generated)"];
+
         console.log("Length:" + marks.length);
 
         // only Google API when one mark is selected
         if (marks.length == 1){
             // If selected a restaurant
-            
+            console.log("Place ID:" + rest_place_id + ", Category: " + rest_cat);
+            openNav_Restaurant(rest_place_id,rest_cat, gon.lad_name, lat, long);
+            console.log("Sent to openNav");
         }
     }
     
