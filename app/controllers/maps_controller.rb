@@ -190,7 +190,7 @@ class MapsController < ApplicationController
     end
     
     # store retreived data as session
-    #session[:rest_details_arr] = rest_details_arr
+    session[:rest_details_arr] = rest_details_arr
     
     # rest_details_arr = session[:rest_details_arr]
 
@@ -200,6 +200,12 @@ class MapsController < ApplicationController
 
 
   def nearby_result
+    require 'json'
+    require 'uri'
+    require 'net/http'
+    require 'openssl'
+
+
     if(params[:lat] == nil || params[:lat] == "" || params[:lng] == nil || params[:lng] == "")
       redirect_to :back, alert: "Latitude and Longitude is empty, please try another place"
       return
@@ -210,16 +216,27 @@ class MapsController < ApplicationController
     
     puts("Latitude:" + lat + "Longitude:" + lng)
 
-    nearby = request_api(
-      "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{URI.encode(lat)}%2C#{URI.encode(lng)}&radius=5000&type=restaurant&keyword=&key=#{ENV["GOOGLE_API_KEY"]}"
-    )
+    current_date = Time.now.strftime("%Y%m%d")
+    puts(current_date)
 
-    if(nearby["results"][0] == nil)
+    # Different attraction searched using Foursquare
+    # nearby_places = request_foursquare_api(
+    #   "https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=1000"
+    #   )
+
+    # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json","w") do |f|
+    #   f.write(nearby_places.to_json)
+    # end
+
+    nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
+    puts(nearby_places["results"].length())
+
+    if(nearby_places["results"][0] == nil)
       redirect_to lsoa_heatmap_path, alert: "Nearby info not found"
       return
     end
 
-    @nearby_results = nearby
+    @nearby_results = nearby_places
   end
 
   # POST /maps or /maps.json
@@ -272,6 +289,26 @@ class MapsController < ApplicationController
       )
       return nil if response.status != 200
       JSON.parse(response.body)
+    end
+
+    def request_foursquare_api(url)
+      require 'uri'
+      require 'net/http'
+      require 'openssl'
+
+      url = URI(URI.parse(url))
+
+      http = Net::HTTP.new(url.host, url.port)
+      http.use_ssl = true
+
+      request = Net::HTTP::Get.new(url)
+      request["Accept"] = 'application/json'
+      request["Authorization"] = ENV["FOURSQUARE_TOKEN"]
+
+      response = http.request(request)
+      return nil if response.body.nil?
+      puts(response.read_body)
+      JSON.parse(response.read_body)
     end
 
     # Use callbacks to share common setup or constraints between actions.

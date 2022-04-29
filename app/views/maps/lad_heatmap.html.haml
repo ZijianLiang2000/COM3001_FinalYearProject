@@ -385,7 +385,7 @@
         if (rest_cat_value == 1 || rest_cat_value == 2 || rest_cat_value == 3 || rest_cat_value == 5){
             Ethnic_Sort_by = "Asian_Percentage";
         } else if(rest_cat_value == 4 || rest_cat_value == 6 || rest_cat_value == 7) {
-            Ethnic_Sort_by = "White_British_Percentage";
+            Ethnic_Sort_by = "White_Percentage";
         }
         else {
             Ethnic_Sort_by = "White_Percentage";
@@ -395,7 +395,7 @@
         console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
         // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
-        workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
+        workbook.changeParameterValueAsync("Asian %", Asian_Weight);
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
         workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
 

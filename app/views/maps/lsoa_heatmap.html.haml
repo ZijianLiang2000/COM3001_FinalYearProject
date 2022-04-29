@@ -6,30 +6,31 @@
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
-%h1 Heatmap
-%h5 Selected Local Authority: #{@lad_name}
-%h5 Code: #{@lad20_code}
-
-%br
 -# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 -# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
-%br
 
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
-%h4 Heatmap View:
-%select#globalstyleselect{:onchange => "styleselect()", :class => "form-select w-25"}
+%div#lad_option{ :style => "position: absolute; margin: auto;padding: 10px; top:250px;left: 80px;" }
 
-    - if @map_style == "1"
-        %option{:value => "1", :selected => "selected"} Heatmap
-        %option{:value => "2"} Density map
-    - elsif @map_style == "2"
-        %option{:value => "1"} Heatmap
-        %option{:value => "2", :selected => "selected"} Density map
+    .card{:style => "width: 18rem;"}
+        .card-body
+            %h1 Heatmap
+            %h5 Selected Local Authority: #{@lad_name}
+            %h5 Code: #{@lad20_code}
+            %br
+            %h4 Heatmap View:
+            %select#globalstyleselect{:onchange => "styleselect()", :class => "form-select w-100%"}
+
+                - if @map_style == "1"
+                    %option{:value => "1", :selected => "selected"} Heatmap
+                    %option{:value => "2"} Density map
+                - elsif @map_style == "2"
+                    %option{:value => "1"} Heatmap
+                    %option{:value => "2", :selected => "selected"} Density map
     
   
-%br
 %head
 %title Basic Embed
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
@@ -80,13 +81,15 @@
         '<div class="card" style="width: 18rem;">' +
         '<div class="card-body">' +
         '<h5 class="card-title">'+ name +'</h5>' +
-        '<h6 class="card-subtitle mb-2 text-muted">('+ lat + ', ' + lng + ')</h6>' +
         '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_value)] + ') </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </p>' +
         
-        '</div></div></div></body>'
+        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">' + 
+        '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+        '</form></div></div></div></body>'
 
 
         document.getElementById("mySidebar").innerHTML=innerHtml;
@@ -219,6 +222,9 @@
     })
 
     function styleselect() {
+        var lad_option = document.getElementById("lad_option");
+        lad_option.style.display = "none";
+
         var value = $('#globalstyleselect').val();
         var div = $("#stylediv");
         if (value == "1") {
@@ -230,6 +236,11 @@
     }
 
     function listenToMarksSelection() {
+
+        // Display option block everytime map is loaded
+        var lad_option = document.getElementById("lad_option");
+        lad_option.style.display = "block";
+
         console.log("listenToMarksSelection function is loaded");
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }

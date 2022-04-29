@@ -1,7 +1,6 @@
 -# Enable gon to work, so that ENV variables can be passed to js
 = include_gon
 
-Restaurant Clusters
 
 
 %head
@@ -10,11 +9,13 @@ Restaurant Clusters
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
-
-%h4 Data View:
-%select#dataview{:onchange => "dataview()", :class => "form-select w-25"}
-    %option{:selected => "selected", :value => "none"} Map
-    %option{:value => "1"} Cluster Restaurant Category Structure
+%div#lad_option{ :style => "margin: auto; top: 140px; left: 50px; position: absolute" }
+    .card{:style => "width: 25rem;"}
+        .card-body
+            %h5 Data View
+            %select#dataview{:onchange => "dataview()", :class => "form-select w-100%"}
+                %option{:selected => "selected", :value => "none"} Map
+                %option{:value => "1"} Cluster Restaurant Category Structure
 
 :javascript
 
@@ -24,8 +25,8 @@ Restaurant Clusters
     // Function for onchange dataview
     function dataview() {
         var value = $('#dataview').val();
-        var card_row = document.getElementById("card_row");
-        card_row.style.display = "none";
+        var cluster_card = document.getElementById("cluster_card");
+        cluster_card.style.display = "none";
         // if dataview is selected as Map
         if (value == "none") {
             console.log("Val is map");
@@ -60,7 +61,7 @@ Restaurant Clusters
         applyOptions();
     };
     
-    // Option to show ethnic structure
+    // Option to show data view
     function applyDataView1() {
 
     var containerDiv = document.getElementById("vizContainer"),
@@ -279,19 +280,18 @@ Restaurant Clusters
 
         // if dataview is selected as Map
         if (value == "none") {
-            innerHtml = '<head><style> .row{position: absolute;top: 240px;left: 20px;}</style></head>' +
-            '<body><div class="row" id = "card_row">';
+            innerHtml = '<head><style> .cluster_scrollable {max-height: 400px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;top: 260px;left: 50px;}</style></head>' +
+            '<body><div class="card" id="cluster_card" style="width: 21.5; height: 1000;"><div class="card-body"><div class="cluster_scrollable" >';
         }
-        //var div = $("#stylediv");
-        // If map style is Ethnic Structure table
+
+        // If map style is table
         if (value == "1") {
-            // Use data sheet for Ethnic Structure table
-            innerHtml = '<head><style> .row{position: relative;margin-top: 25px;left: 20px;}</style></head>' +
-        '<body><div class="row" id = "card_row">';
+            // Change styling position of options
+            innerHtml = '<head><style> .cluster_scrollable {max-height: 400px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;margin-top: 210px;left: 50px;}</style></head>' +
+        '<body><div class="card" id = "cluster_card" style="width: 21.5; height: 1000;"><div class="card-body"><div class="cluster_scrollable">';
         }
-        // else you datasheet for XXX
+        // else datasheet for XXX
         if (value == "2") {
-            //applyDataView2();
         }
         
 
@@ -301,7 +301,7 @@ Restaurant Clusters
 
         // Firstly print each cluster as card
         for (let i = 1; i <= button_num; i++) {
-            innerHtml = innerHtml + '<div class="col-sm"><div class="card"  style="width: 18rem;"><div class="card-body"><h5 class="card-title">Cluster '+ i;
+            innerHtml = innerHtml + ' <div class="col-sm-4"><div class="card"  style="width: 18rem;"><div class="card-body"><h5 class="card-title">Cluster '+ i;
             //number of stars according to algorithm
 
             // Algorithm part recommend
@@ -309,16 +309,16 @@ Restaurant Clusters
 
             innerHtml = innerHtml + '<br><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="background-color:rgb(130, 50, 29);" class="bi bi-star-fill" viewBox="0 0 16 16"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg>';
             if(window["cluster_"+ i +"_curr_rest_num"] == 0){
-                innerHtml = innerHtml + '<p class="card-text"> No ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div></div>';
+                innerHtml = innerHtml + '<p class="card-text"> No ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
             }else if(window["cluster_"+ i +"_curr_rest_num"] == 1){
-                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div></div>';
+                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
             }else{
-                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + 's in the cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div></div>';
+                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + 's in the cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
             }
             
         }
 
-        InnerHtml = innerHtml + '</div></body>'
+        InnerHtml = innerHtml + '</ul></div></div></div></div></div></body>'
         console.log("Inner HTML:" + InnerHtml);
 
         document.getElementById("clusterButtons").innerHTML=innerHtml;
@@ -338,7 +338,7 @@ Restaurant Clusters
                 // Options to show area LSOA code for user when at start
                 "LSOA11 Code" : gon.lsoa11_code,
                 width: window.innerWidth,
-                height: window.innerHeight,
+                height: window.innerHeight - 100,
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
