@@ -1,27 +1,114 @@
-.container
-    .row.mt-4
-        - @nearby_results["results"].each do |restaurant|
-            .col-sm-3.mb-4
-                .card.h-100{:style => "width: 18rem;"}
-                    - if  restaurant["photos"][0] == nil
-                        %img.card-img-top{:alt => "Restaurant image", :src => "https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"}/
-                    - else
-                        %img.card-img-top{:alt => "Restaurant image", :src => (restaurant["photos"][0]["prefix"] + "original" + restaurant["photos"][0]["suffix"] ) , :width => 256, :height => 171}
-                    .card-body
-                        %h5.card-title #{restaurant["name"]}
-                        - if  restaurant["rating"] == nil
-                            %p.card-text 
-                        - else 
-                            %p.card-text Ratings: #{restaurant["rating"]}
-                        %p.card-text
-                            Address: 
-                            = restaurant["location"]["formatted_address"]
-                        - restaurant["categories"].each do |type|
-                            %span.badge.bg-success #{(type["name"].to_s).gsub("_"," ")}
-                        %br
-                        %br
-                        %a.btn.btn-primary{:href => URI.encode("https://maps.google.com/?q=#{restaurant["name"]},#{restaurant["location"]["formatted_address"]}"), :style => "color:#FFF;"} Discover
+= include_gon
+%head
+    %style    
 
-%br
+%body{:onload => "init()"}
+    %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
+    :javascript
+        function init(){
+            // Add result category names dynamically to filter
+            console.log("loading");
+            var selectElement = document.getElementById('categoryselect');
+            var results = gon.nearby_places["results"];
+            console.log(results);
+            // for each read category names
+            for (var i = 0; i < Object.keys(results).length; i++) {
+                category_name = String(results[i]["categories"][0]["name"]);
+                console.log(category_name);
+                // add to select
+                console.log("Added " + category_name);
+                selectElement.add(new Option(category_name));
+            }
+            const options = []
+            document.querySelectorAll('#categoryselect > option').forEach((option) => {
+                if (options.includes(option.value)){
+                    option.remove();
+                    console.log("Removed object")
+                } 
+                else options.push(option.value)
+            })
+        }
 
-%br
+        function categoryselect(){
+            // show something according to selected values
+            var location_cat_val = $('#categoryselect').val();
+            console.log(location_cat_val);
+            innerHtml = '<div class="container">' +
+            '    <div class="row mt-4">' +
+            '        <% @nearby_results["results"].each do |restaurant| %>' +
+            '        <div class="col-sm-3 mb-4">' +
+            '            <div class="card h-100" style="width: 18rem;">' +
+            '            <% if  restaurant["photos"][0] == nil %>' +
+            '                <img alt="Restaurant image" class="card-img-top" src="https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"/>' +
+            '            <% else %>' +
+            '                <img alt="Restaurant image" class="card-img-top" height="171" src="<%= (restaurant["photos"][0]["prefix"] + "original" + restaurant["photos"][0]["suffix"] ) %>" width="256"/>' +
+            '            <% end %>' +
+            '            <div class="card-body">' +
+            '                <h5 class="card-title">#{restaurant["name"]}</h5>' +
+            '                <% if  restaurant["rating"] == nil %>' +
+            '                <p class="card-text"></p>' +
+            '                <% else  %>' +
+            '                <p class="card-text">Ratings: #{restaurant["rating"]}</p>' +
+            '                <% end %>' +
+            '                <p class="card-text">' +
+            '                Distance: #{restaurant["distance"]} (m)' +
+            '                <br/>' +
+            '                Address: ' +
+            '                <%= restaurant["location"]["formatted_address"] %>' +
+            '                </p>' +
+            '                <% restaurant["categories"].each do |type| %>' +
+            '                <span class="badge bg-success">#{(type["name"].to_s).gsub("_"," ")}</span>' +
+            '                <% end %>' +
+            '                <br/>' +
+            '                <br/>' +
+            '                <a class="btn btn-primary" href="<%= URI.encode("https://maps.google.com/?q=#{restaurant["name"]},#{restaurant["location"]["formatted_address"]}") %>" style="color:#FFF;">Discover</a>' +
+            '            </div>' +
+            '            </div>' +
+            '        </div>' +
+            '        <% end %>' +
+            '    </div>' +
+            '    </div>';
+
+            document.getElementById("myHtml").innerHTML=innerHtml;
+        }
+
+    %div#lad_option{ :style => "position: relative; margin: auto;padding: 10px; top: 10px;left: 40px;" }
+        .card{:style => "width: 25rem;"}
+            .card-body
+                -# Options to choose which map to display
+                %h4 Filter
+                %select#categoryselect{:onchange => "categoryselect()", :class => "form-select w-100%" }
+                    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select a location category to filter
+                    %option{:value => "All"} All
+
+    #myHtml.myHtml
+    
+    -# .container
+    -#     .row.mt-4
+    -#         - @nearby_results["results"].each do |restaurant|
+    -#             .col-sm-3.mb-4
+    -#                 .card.h-100{:style => "width: 18rem;"}
+    -#                     - if  restaurant["photos"][0] == nil
+    -#                         %img.card-img-top{:alt => "Restaurant image", :src => "https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"}/
+    -#                     - else
+    -#                         %img.card-img-top{:alt => "Restaurant image", :src => (restaurant["photos"][0]["prefix"] + "original" + restaurant["photos"][0]["suffix"] ) , :width => 256, :height => 171}
+    -#                     .card-body
+    -#                         %h5.card-title #{restaurant["name"]}
+    -#                         - if  restaurant["rating"] == nil
+    -#                             %p.card-text 
+    -#                         - else 
+    -#                             %p.card-text Ratings: #{restaurant["rating"]}
+    -#                         %p.card-text
+    -#                             Distance: #{restaurant["distance"]} (m)
+    -#                             %br
+    -#                             Address: 
+    -#                             = restaurant["location"]["formatted_address"]
+    -#                         - restaurant["categories"].each do |type|
+    -#                             %span.badge.bg-success #{(type["name"].to_s).gsub("_"," ")}
+    -#                         %br
+    -#                         %br
+    -#                         %a.btn.btn-primary{:href => URI.encode("https://maps.google.com/?q=#{restaurant["name"]},#{restaurant["location"]["formatted_address"]}"), :style => "color:#FFF;"} Discover
+
+    %br
+
+    %br

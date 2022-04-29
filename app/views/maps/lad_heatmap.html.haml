@@ -45,6 +45,7 @@
         var lad_option = document.getElementById("lad_option");
         lad_option.style.display = "none";
         
+        // Select default option to be 1, so do not need to press every time
         console.log("Running Init function");
         document.getElementById('globalstyleselect').selectedIndex = "1";
         document.getElementById("globalstyleselect").dispatchEvent(new Event("change"));

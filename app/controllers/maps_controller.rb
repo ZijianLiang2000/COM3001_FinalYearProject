@@ -237,6 +237,7 @@ class MapsController < ApplicationController
     end
 
     @nearby_results = nearby_places
+    gon.nearby_places = nearby_places
   end
 
   # POST /maps or /maps.json
