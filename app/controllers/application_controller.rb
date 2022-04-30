@@ -9,8 +9,9 @@ class ApplicationController < ActionController::Base
         return @restaurant_address
     end
     
-    def filter_location_category(cat_val)
-        puts("Category Value!: " + cat_val)
+    def filter_location_category(array)
+        puts("Received array in helper function")
+        puts(array)
     end
 
     def assign_env_variables
