@@ -221,7 +221,7 @@ class MapsController < ApplicationController
 
     # # Different attraction searched using Foursquare
     # nearby_places = request_foursquare_api(
-    #   "https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=1000"
+    #   "https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=1000"
     #   )
 
     #   # Save json to file for development purpose not wasting api quota
