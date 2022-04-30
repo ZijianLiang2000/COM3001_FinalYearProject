@@ -227,93 +227,76 @@
             return sorted_data;
         }
 
+        function generateInnerHTML(){
+
+            // Create a Price level dictionary
+            `
+            - 1 = Cheap
+            - 2 = Moderate
+            - 3 = Expensive
+            - 4 = Very Expensive.
+            `
+
+            var priceLvl = {1 :"Cheap", 2 :"Moderate", 3 :"Expensive", 4 : "Very Expensive"};
+
+            // change inner html according to filter array objects
+            innerHtml = '<style> .card-img-top {width: 100%;height: 15vw;object-fit: cover;} </style><div class="container"><div class="row mt-4">';
+            for (let i = 0; i < filtered_data.length; i++) {
+                innerHtml += '<div class="col-sm-3 mb-4">';
+                innerHtml += '    <div class="card h-100" style="width: 18rem;  position: relative;">';
+                    if (filtered_data[i]["photos"][0] == null){
+                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"/>';
+                        innerHtml += '<div class="text-block" style="position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"><br><h5>'+filtered_data[i]["name"]+'</h5><p>'+filtered_data[i]["categories"][0]["name"]+'</p><br></div>'
+                    } else {
+                        console.log(filtered_data[i]["photos"][0]["prefix"] + "original" + filtered_data[i]["photos"][0]["suffix"]);
+                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="'+ filtered_data[i]["photos"][0]["prefix"] + 'original' + filtered_data[i]["photos"][0]["suffix"] + '"/>';
+                    }
+                innerHtml += '    <div class="card-body">';
+                innerHtml += '        <h5 class="card-title"><b>'+filtered_data[i]["name"]+'</b></h5>';
+                if (filtered_data[i]["rating"] != null){
+                    innerHtml += '    <h6 class="card-text">Ratings: '+filtered_data[i]["rating"]+' Stars</h6>';
+                }
+                innerHtml += '    <h6>Distance: '+ filtered_data[i]["distance"] +' (m)</h6>';
+                if (filtered_data[i]["price"] != null){
+                    innerHtml += '<h6>Price: '+ priceLvl[filtered_data[i]["price"]]+'</h6>'
+                }
+                if (filtered_data[i]["popularity"] != null){
+                    innerHtml += '<h6>Popularity: '+ filtered_data[i]["popularity"]+'</h6>'
+                }
+                innerHtml += '<p>Address: '+ filtered_data[i]["location"]["formatted_address"]+'</p>'
+                for (let j = 0; j < filtered_data[i]["categories"].length; j++) {
+                    innerHtml += '<span class="badge bg-success">'+ filtered_data[i]["categories"][j]["name"] +'</span> '
+                }
+                innerHtml += '<br><br><a class="btn btn-primary" href="'+ 'https://maps.google.com/?q='+ encodeURIComponent(filtered_data[i]["name"] +','+ filtered_data[i]["location"]["formatted_address"]) +'" style="color:#FFF;">Discover</a></div>';
+                innerHtml += '</div>';
+                innerHtml += '</div>';
+            };
+
+            innerHtml += '</div></div>';
+        }
+
+
         function categoryselect(){
 
             // First filter then sort
             // Filter
             filtered_data = returnFilter();
             filtered_data = returnSort(filtered_data);
-            // Sort
-            // XXXXXXXXXXXXXXXXXXXXXX
-            // change inner html according to filter array objects
-            innerHtml = '<style> .card-img-top {width: 100%;height: 15vw;object-fit: cover;} </style><div class="container"><div class="row mt-4">';
-            for (let i = 0; i < filtered_data.length; i++) {
-                innerHtml += '<div class="col-sm-3 mb-4">';
-                innerHtml += '    <div class="card h-100" style="width: 18rem;  position: relative;">';
-                    if (filtered_data[i]["photos"][0] == null){
-                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"/>';
-                        innerHtml += '<div class="text-block" style="position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"><br><h5>'+filtered_data[i]["name"]+'</h5><p>'+filtered_data[i]["categories"][0]["name"]+'</p><br></div>'
-                    } else {
-                        console.log(filtered_data[i]["photos"][0]["prefix"] + "original" + filtered_data[i]["photos"][0]["suffix"]);
-                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="'+ filtered_data[i]["photos"][0]["prefix"] + 'original' + filtered_data[i]["photos"][0]["suffix"] + '"/>';
-                    }
-                innerHtml += '    <div class="card-body">';
-                innerHtml += '        <h5 class="card-title"><b>'+filtered_data[i]["name"]+'</b></h5>';
-                if (filtered_data[i]["rating"] != null){
-                    innerHtml += '    <h6 class="card-text">Ratings: '+filtered_data[i]["rating"]+'</h6>';
-                }
-                innerHtml += '    <h6>Distance: '+ filtered_data[i]["distance"] +' (m)</h6>';
-                if (filtered_data[i]["price"] != null){
-                    innerHtml += '<h6>Price: '+ filtered_data[i]["price"]+'</h6>'
-                }
-                if (filtered_data[i]["popularity"] != null){
-                    innerHtml += '<h6>Popularity: '+ filtered_data[i]["popularity"]+'</h6>'
-                }
-                innerHtml += '<p>Address: '+ filtered_data[i]["location"]["formatted_address"]+'</p>'
-                for (let j = 0; j < filtered_data[i]["categories"].length; j++) {
-                    innerHtml += '<span class="badge bg-success">'+ filtered_data[i]["categories"][j]["name"] +'</span> '
-                }
-                innerHtml += '    </div>';
-                innerHtml += '    </div>';
-                innerHtml += '</div>';
-            };
+            generateInnerHTML();
 
-            innerHtml += '</div></div>';
             document.getElementById("myHtml").innerHTML=innerHtml;
+
         }
 
         function sortselect(){
             
+            // Firstly filter data
             filtered_data = returnFilter();
-            returnSort(filtered_data);
-
+            // Then sort
             filtered_data = returnSort(filtered_data);
-            // Sort
-            // XXXXXXXXXXXXXXXXXXXXXX
-            // change inner html according to filter array objects
-            innerHtml = '<style> .card-img-top {width: 100%;height: 15vw;object-fit: cover;} </style><div class="container"><div class="row mt-4">';
-            for (let i = 0; i < filtered_data.length; i++) {
-                innerHtml += '<div class="col-sm-3 mb-4">';
-                innerHtml += '    <div class="card h-100" style="width: 18rem;  position: relative;">';
-                    if (filtered_data[i]["photos"][0] == null){
-                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"/>';
-                        innerHtml += '<div class="text-block" style="position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"><br><h5>'+filtered_data[i]["name"]+'</h5><p>'+filtered_data[i]["categories"][0]["name"]+'</p><br></div>'
-                    } else {
-                        console.log(filtered_data[i]["photos"][0]["prefix"] + "original" + filtered_data[i]["photos"][0]["suffix"]);
-                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="'+ filtered_data[i]["photos"][0]["prefix"] + 'original' + filtered_data[i]["photos"][0]["suffix"] + '"/>';
-                    }
-                innerHtml += '    <div class="card-body">';
-                innerHtml += '        <h5 class="card-title"><b>'+filtered_data[i]["name"]+'</b></h5>';
-                if (filtered_data[i]["rating"] != null){
-                    innerHtml += '    <h6 class="card-text">Ratings: '+filtered_data[i]["rating"]+'</h6>';
-                }
-                innerHtml += '    <h6>Distance: '+ filtered_data[i]["distance"] +' (m)</h6>';
-                if (filtered_data[i]["price"] != null){
-                    innerHtml += '<h6>Price: '+ filtered_data[i]["price"]+'</h6>'
-                }
-                if (filtered_data[i]["popularity"] != null){
-                    innerHtml += '<h6>Popularity: '+ filtered_data[i]["popularity"]+'</h6>'
-                }
-                innerHtml += '<p>Address: '+ filtered_data[i]["location"]["formatted_address"]+'</p>'
-                for (let j = 0; j < filtered_data[i]["categories"].length; j++) {
-                    innerHtml += '<span class="badge bg-success">'+ filtered_data[i]["categories"][j]["name"] +'</span> '
-                }
-                innerHtml += '    </div>';
-                innerHtml += '    </div>';
-                innerHtml += '</div>';
-            };
 
-            innerHtml += '</div></div>';
+            generateInnerHTML();
+
             document.getElementById("myHtml").innerHTML=innerHtml;
 
 
@@ -364,10 +347,17 @@
                                     %b #{restaurant["name"]}
                                 - if  restaurant["rating"] != nil
                                     .starRating{:id => "starRating_#{index}"}
-                                    %h6#ratingVal Ratings: #{restaurant["rating"]}
+                                    %h6#ratingVal Ratings: #{restaurant["rating"]} Stars
                                 %h6 Distance: #{restaurant["distance"]} (m)
-                                - if  restaurant["price"] != nil
-                                    %h6 Price: #{restaurant["price"]}
+                                - if  restaurant["price"] == 1
+                                    %h6 Price: Cheap
+                                - if restaurant["price"] == 2
+                                    %h6 Price: Moderate
+                                - if restaurant["price"] == 3
+                                    %h6 Price: Expensive
+                                - if restaurant["price"] == 4
+                                    %h6 Price: Very Expensive
+
                                 - if  restaurant["popularity"] != nil
                                     %h6 Popularity: #{restaurant["popularity"]}
                                 %p.card-text
