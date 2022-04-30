@@ -226,11 +226,9 @@ body {
   }
 
   body {
-    width: 100vw;
-    height: 100vh;
+    background: -webkit-gradient(linear, left top, left bottom, from(#de6262), to(#ffb88c)) fixed;
     font-family: 'Roboto Slab', serif;
     text-align: center;
-    background: linear-gradient(to bottom, #de6262, #ffb88c);
   }
 
   .wrapper {
@@ -258,7 +256,7 @@ body {
   }
 
   .c-rating {
-    @include c-rating(toem(20px), button, representative);
+    @include c-rating(toem(10px), button, representative);
     
     &--small {
       font-size: 50%

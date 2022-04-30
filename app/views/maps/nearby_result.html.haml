@@ -38,16 +38,17 @@
                 console.log(iter_id);
 
                 //Read actual rating value
+                var regex = /[+-]?\d+(\.\d+)?/g;
                 var ratingVal = document.getElementById(iter_id).parentNode.querySelector("#ratingVal").innerHTML;
-                ratingVal = parseFloat(ratingVal.replace("Ratings: ",""));
+                ratingVal = parseFloat(ratingVal.match(regex).map(function(v) { return parseFloat(v); }));
                 console.log(ratingVal);
 
                 // Change it to star-adaptable value, which is every 0.25 scale
                 // firstly get the value's int part
                 valInt = ~~ratingVal;
                 valDec = (ratingVal.toFixed(2) - valInt).toFixed(2);
-                console.log(valInt);
-                console.log(valDec);
+                console.log("valInt:" + valInt);
+                console.log("Before: valDec: " + valDec);
                 // scale each value to a read-able scale
                 if (valDec > 0 && valDec < 0.25) {
                     valDec = 0.25
@@ -57,8 +58,11 @@
                     valDec = 0.75
                 } else if (valDec > 0.75) {
                     valDec = 0.75
+                } else if (valDec > 0.10) {
+                    valDec = 0
                 }
-                ratingVal = valInt + valDec
+                console.log("After: valDec: " + valDec);
+                ratingVal = parseFloat(valInt) + parseFloat(valDec)
                 console.log("Final Value: "+ratingVal);
 
                 //Replace each element correspondingly to star counts
@@ -99,7 +103,6 @@
                     filtered_data.push(original_data[i]);
                 }
             }
-
             console.log(filtered_data);
             return filtered_data;
         }
@@ -109,37 +112,119 @@
             // show something according to selected values
 
             var sortVal = $('#sortselect').val();
-            console.log(sortVal);
+            console.log(filtered_data[0]);
 
+            var sortseqVal = $('#sortseq_select').val();
+            // Sort each index
+            sorted_index_dict = {};
+            // Then append value into array
             sorted_data = [];
+
+            // function to sort a dictionary, reference from: https://stackoverflow.com/questions/25500316/sort-a-dictionary-by-value-in-javascript
+            function sortJsObject(dict, perc_change) {
+                // perc_change is increase or decrease
+                // Create items array
+                var items = Object.keys(dict).map(function(key) {
+                    return [key, dict[key]];
+                });
+
+                // Sort the array based on the second element
+
+                items.sort(function(first, second) {
+                    if(perc_change == "Ascending"){
+                        result = first[1] - second[1];
+                    } else if (perc_change == "Descending"){
+                        result = second[1] - first[1];
+                    } else {
+                        result = second[1] - first[1];
+                    }
+                    return result;
+                });
+
+                return items
+            }
 
             // Check through every restaurant in json
             if (sortVal == "Distance"){
-                for (let i = 0; i < original_data.length; i++) {
-                // If selected option All add everything in
-                var filterBy = {
-                    name: [location_cat_val]
-                };
-
-                var result = original_data[i].categories.filter(function (o) {
-                    if(o.name === filterBy.name[0]){
-                        console.log("Found:" + (i));
-                        filtered_data.push(original_data[i]);
+                console.log("Clicked Distance");
+                for (let i = 0; i < filtered_data.length; i++) {
+                    // Add distance of element of index i to dictionary and sort its value
+                    if(filtered_data[i]["distance"] != null){
+                        sorted_index_dict[i] = filtered_data[i]["distance"];
+                        console.log(filtered_data[i]["distance"]);
                     }
-                    return i;
-                });
+                }
+
+                console.log(JSON.stringify(sorted_index_dict));
+
+                console.log("Sorting!");
+
+                var sorted_dict = sortJsObject(sorted_index_dict,sortseqVal);
+
+                console.log(sorted_dict);
+
             }
             // Check every category layer for each restaurant and see if any chosen one fits
-            } else if (sortVal == "Rating"){
-                for (let i = 0; i < original_data.length; i++) {
-                    filtered_data.push(original_data[i]);
+             else if (sortVal == "Rating"){
+                 console.log("Clicked Rating");
+                for (let i = 0; i < filtered_data.length; i++) {
+                    if(filtered_data[i]["rating"] != null){
+                        sorted_index_dict[i] = filtered_data[i]["rating"];
+                        console.log(filtered_data[i]["rating"]);
+                    }
                 }
-            } else {
+                console.log(JSON.stringify(sorted_index_dict));
 
+                console.log("Sorting!");
+
+                var sorted_dict = sortJsObject(sorted_index_dict,sortseqVal);
+
+                console.log(sorted_dict);
+
+            } else if (sortVal == "Popularity"){
+                console.log("Clicked Popularity");
+                for (let i = 0; i < filtered_data.length; i++) {
+                    if(filtered_data[i]["popularity"] != null){
+                        sorted_index_dict[i] = filtered_data[i]["popularity"];
+                        console.log(filtered_data[i]["popularity"]);
+                    }
+                    console.log(filtered_data[i]["popularity"]);
+                }
+                console.log(JSON.stringify(sorted_index_dict));
+
+                console.log("Sorting!");
+
+                var sorted_dict = sortJsObject(sorted_index_dict,sortseqVal);
+
+                console.log(sorted_dict);
+                
+            }
+             else if (sortVal == "Price"){
+                console.log("Clicked Price");
+                for (let i = 0; i < filtered_data.length; i++) {
+                    if(filtered_data[i]["price"] != null){
+                        sorted_index_dict[i] = filtered_data[i]["price"];
+                        console.log(filtered_data[i]["price"]);
+                    }
+                    console.log(filtered_data[i]["price"]);
+                }
+                console.log(JSON.stringify(sorted_index_dict));
+
+                console.log("Sorting!");
+
+                var sorted_dict = sortJsObject(sorted_index_dict,sortseqVal);
+                
+                console.log(sorted_dict);
+            }
+            // dict value sorted either ascending or descending, get the keys (index) and save it in arr
+            for (let i = 0; i < sorted_dict.length; i++) { 
+                var sorted_index = sorted_dict[i][0];
+                console.log(sorted_dict[i][0]);
+                sorted_data.push(filtered_data[sorted_index]);
             }
 
-            console.log(filtered_data);
-            return filtered_data;
+            console.log(sorted_data);
+            return sorted_data;
         }
 
         function categoryselect(){
@@ -147,8 +232,9 @@
             // First filter then sort
             // Filter
             filtered_data = returnFilter();
+            filtered_data = returnSort(filtered_data);
             // Sort
-
+            // XXXXXXXXXXXXXXXXXXXXXX
             // change inner html according to filter array objects
             innerHtml = '<style> .card-img-top {width: 100%;height: 15vw;object-fit: cover;} </style><div class="container"><div class="row mt-4">';
             for (let i = 0; i < filtered_data.length; i++) {
@@ -188,10 +274,47 @@
 
         function sortselect(){
             
-
             filtered_data = returnFilter();
             returnSort(filtered_data);
 
+            filtered_data = returnSort(filtered_data);
+            // Sort
+            // XXXXXXXXXXXXXXXXXXXXXX
+            // change inner html according to filter array objects
+            innerHtml = '<style> .card-img-top {width: 100%;height: 15vw;object-fit: cover;} </style><div class="container"><div class="row mt-4">';
+            for (let i = 0; i < filtered_data.length; i++) {
+                innerHtml += '<div class="col-sm-3 mb-4">';
+                innerHtml += '    <div class="card h-100" style="width: 18rem;  position: relative;">';
+                    if (filtered_data[i]["photos"][0] == null){
+                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"/>';
+                        innerHtml += '<div class="text-block" style="position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"><br><h5>'+filtered_data[i]["name"]+'</h5><p>'+filtered_data[i]["categories"][0]["name"]+'</p><br></div>'
+                    } else {
+                        console.log(filtered_data[i]["photos"][0]["prefix"] + "original" + filtered_data[i]["photos"][0]["suffix"]);
+                        innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="'+ filtered_data[i]["photos"][0]["prefix"] + 'original' + filtered_data[i]["photos"][0]["suffix"] + '"/>';
+                    }
+                innerHtml += '    <div class="card-body">';
+                innerHtml += '        <h5 class="card-title"><b>'+filtered_data[i]["name"]+'</b></h5>';
+                if (filtered_data[i]["rating"] != null){
+                    innerHtml += '    <h6 class="card-text">Ratings: '+filtered_data[i]["rating"]+'</h6>';
+                }
+                innerHtml += '    <h6>Distance: '+ filtered_data[i]["distance"] +' (m)</h6>';
+                if (filtered_data[i]["price"] != null){
+                    innerHtml += '<h6>Price: '+ filtered_data[i]["price"]+'</h6>'
+                }
+                if (filtered_data[i]["popularity"] != null){
+                    innerHtml += '<h6>Popularity: '+ filtered_data[i]["popularity"]+'</h6>'
+                }
+                innerHtml += '<p>Address: '+ filtered_data[i]["location"]["formatted_address"]+'</p>'
+                for (let j = 0; j < filtered_data[i]["categories"].length; j++) {
+                    innerHtml += '<span class="badge bg-success">'+ filtered_data[i]["categories"][j]["name"] +'</span> '
+                }
+                innerHtml += '    </div>';
+                innerHtml += '    </div>';
+                innerHtml += '</div>';
+            };
+
+            innerHtml += '</div></div>';
+            document.getElementById("myHtml").innerHTML=innerHtml;
 
 
         }
@@ -202,17 +325,24 @@
                 -# Options to choose which map to display, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
                 %h4 Places Filter
                 %select#categoryselect{:onchange => "categoryselect()", :class => "form-select w-100%" }
-                    %option{:disabled => "disabled", :hidden => "", :selected => "selected", :value => "none"} Select a location category to filter
-                    %option{:value => "All"} All
-                %br
-
-                // For sorting, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
-                %h4 Sort by option
-                %select#sortselect{:onchange => "sortselect()", :class => "form-select w-100%" }
-                    %option{:value => "Distance"} Distance
-                    %option{:value => "Popularity"} Popularity
-                    %option{:value => "Rating"} Rating
-                    %option{:value => "Price"} Price
+                    %option{:value => "All", :selected => "selected"} All
+    
+        %br
+        .card{:style => "width: 25rem;"}
+            .card-body
+                .parent
+                    %h4 Sort by option
+                    .child-float-left-child{:style => "float: left;"}
+                        //For sorting, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
+                        %select#sortselect{:onchange => "sortselect()", :class => "form-select", :style => "width: 215px;" }
+                            %option{:value => "Distance", :selected => "selected"} Distance
+                            %option{:value => "Popularity"} Popularity
+                            %option{:value => "Rating"} Rating
+                            %option{:value => "Price"} Price
+                    .child-float-left-child{:style => "float: left; margin-left: 10px;"}
+                        %select#sortseq_select{:onchange => "sortselect()", :class => "form-select", :style => "width: 140px;" }
+                            %option{:value => "Ascending", :selected => "selected"} Ascending
+                            %option{:value => "Descending"} Descending
 
     #myHtml.myHtml
         .container
@@ -233,8 +363,8 @@
                                 %h5.card-title 
                                     %b #{restaurant["name"]}
                                 - if  restaurant["rating"] != nil
-                                    %h6#ratingVal Ratings: #{restaurant["rating"]}
                                     .starRating{:id => "starRating_#{index}"}
+                                    %h6#ratingVal Ratings: #{restaurant["rating"]}
                                 %h6 Distance: #{restaurant["distance"]} (m)
                                 - if  restaurant["price"] != nil
                                     %h6 Price: #{restaurant["price"]}
