@@ -35,7 +35,8 @@
             filtered_data = [];
 
             // Check through every restaurant in json
-            for (let i = 0; i < original_data.length; i++) {
+            if (location_cat_val != "All"){
+                for (let i = 0; i < original_data.length; i++) {
                 // Check every category  layer for each restaurant and see if any chosen one fits
                 var filterBy = {
                     name: [location_cat_val]
@@ -49,15 +50,21 @@
                     return i;
                 });
             }
+            } else {
+                for (let i = 0; i < original_data.length; i++) {
+                    filtered_data.push(original_data[i]);
+                }
+            }
 
             console.log(filtered_data);
 
             innerHtml = '<style> .card-img-top {width: 100%;height: 15vw;object-fit: cover;} </style><div class="container"><div class="row mt-4">';
             for (let i = 0; i < filtered_data.length; i++) {
                 innerHtml += '<div class="col-sm-3 mb-4">';
-                innerHtml += '    <div class="card h-100" style="width: 18rem;">';
+                innerHtml += '    <div class="card h-100" style="width: 18rem;  position: relative;">';
                     if (filtered_data[i]["photos"][0] == null){
                         innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"/>';
+                        innerHtml += '<div class="text-block" style="position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"><h5>'+filtered_data[i]["name"]+'</h5><p>'+filtered_data[i]["categories"][0]["name"]+'</p></div>'
                     } else {
                         console.log(filtered_data[i]["photos"][0]["prefix"] + "original" + filtered_data[i]["photos"][0]["suffix"]);
                         innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="'+ filtered_data[i]["photos"][0]["prefix"] + 'original' + filtered_data[i]["photos"][0]["suffix"] + '"/>';
@@ -69,6 +76,10 @@
                     } else {        
                 innerHtml += '    <p class="card-text">Ratings: '+filtered_data[i]["rating"]+'</p>';
                     }
+                innerHtml += '    <p>Distance: '+ filtered_data[i]["distance"] +' (m)</p><p>Address: '+ filtered_data[i]["location"]["formatted_address"]+'</p>';
+                for (let j = 0; j < filtered_data[i]["categories"].length; j++) {
+                    innerHtml += '<span class="badge bg-success">'+ filtered_data[i]["categories"][j]["name"] +'</span> '
+                }
                 innerHtml += '    </div>';
                 innerHtml += '    </div>';
                 innerHtml += '</div>';
@@ -92,9 +103,12 @@
             .row.mt-4
                 - @nearby_results["results"].each do |restaurant|
                     .col-sm-3.mb-4
-                        .card.h-100{:style => "width: 18rem;"}
+                        .card.h-100{:style => "width: 18rem; position: relative;"}
                             - if  restaurant["photos"][0] == nil
                                 %img.card-img-top{:alt => "Restaurant image", :src => "https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81", :style => "width: 100%;height: 15vw;object-fit: cover;"}/
+                                .text-block{:style => "position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"}
+                                    %h5 #{restaurant["name"]}
+                                    %p #{restaurant["categories"][0]["name"]}
                             - else
                                 %img.card-img-top{:alt => "Restaurant image", :src => (restaurant["photos"][0]["prefix"] + "original" + restaurant["photos"][0]["suffix"] ), :style => "width: 100%;height: 15vw;object-fit: cover;"}
                             .card-body

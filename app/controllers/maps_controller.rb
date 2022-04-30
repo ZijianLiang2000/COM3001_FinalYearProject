@@ -219,11 +219,12 @@ class MapsController < ApplicationController
     current_date = Time.now.strftime("%Y%m%d")
     puts(current_date)
 
-    # Different attraction searched using Foursquare
+    # # Different attraction searched using Foursquare
     # nearby_places = request_foursquare_api(
     #   "https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=1000"
     #   )
 
+    #   # Save json to file for development purpose not wasting api quota
     # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json","w") do |f|
     #   f.write(nearby_places.to_json)
     # end
