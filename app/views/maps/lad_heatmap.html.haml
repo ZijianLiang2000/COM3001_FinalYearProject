@@ -42,6 +42,10 @@
 :javascript
 
     function init(){
+        var rest_cat_val = $('#rest_cat_select').val();
+        document.getElementById('rest_cat_select').selectedIndex = gon.rest_cat;
+        console.log("Selected Restaurant Category: " + (gon.rest_cat));
+        
         var lad_option = document.getElementById("lad_option");
         lad_option.style.display = "none";
         
@@ -49,10 +53,6 @@
         console.log("Running Init function");
         document.getElementById('globalstyleselect').selectedIndex = "1";
         document.getElementById("globalstyleselect").dispatchEvent(new Event("change"));
-
-        var rest_cat_val = $('#rest_cat_select').val();
-        document.getElementById('rest_cat_select').selectedIndex = gon.rest_cat;
-        console.log("Selected Restaurant Category: " + (gon.rest_cat));
     }
 
     function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size) {
@@ -141,97 +141,47 @@
         viz = new tableau.Viz(containerDiv, url, options);
     }
 
+    function encapsulateViewViz(url, filter_name, filter_val){
+        console.log(url);
+        console.log(filter_name);
+        console.log(filter_val);
+        var containerDiv = document.getElementById("vizContainer"),
+            url = url,
+            options = {
+                // Options to show/filter Restaurant category according to selected type from user
+                filter_name: filter_val,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                device: "desktop",
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    workbook = viz.getWorkbook();
+                    console.log("Run this code when the viz has finished loading.");
+                    listenToMarksSelection();
+                    
+                }
+            }
+    initViz(containerDiv, url, options);
+    }
     // Option to show sheet 1 Heat map
     function applyOptions1() {
-
         rest_cat = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
-
         // Selected restaurant category options from user, eg: 3, we want to get rest_cat[3] = Thai Restaurant
         var rest_cat_value = $('#rest_cat_select').val();
-        console.log("rest_cat:" + rest_cat_value);
-
-        if(rest_cat_value !== null){
-        var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
-            options = {
-                // Options to show/filter Restaurant category according to selected type from user
-                "Restaurant Category" : rest_cat[rest_cat_value],
-                width: window.innerWidth,
-                height: window.innerHeight,
-                device: "desktop",
-                hideTabs: true,
-                onFirstInteractive: function () {
-                    workbook = viz.getWorkbook();
-                    console.log("Run this code when the viz has finished loading.");
-                    listenToMarksSelection();
-                    
-                }
-            };}
-        else{
-           var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
-            options = {
-                // Options to show/filter Restaurant category according to selected type from user
-                width: window.innerWidth,
-                height: window.innerHeight,
-                device: "desktop",
-                hideTabs: true,
-                onFirstInteractive: function () {
-                    workbook = viz.getWorkbook();
-                    console.log("Run this code when the viz has finished loading.");
-                    listenToMarksSelection();
-                    
-                }
-            };}
-    initViz(containerDiv, url, options);
+        var heatMap_url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetHeatmap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link";
+        encapsulateViewViz(heatMap_url,"Restaurant Category", rest_cat[rest_cat_value])
     }
 
     // Option to show sheet 2 for Density
         function applyOptions2() {
-
         rest_cat = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
-
         // Selected restaurant category options from user, eg: 3, we want to get rest_cat[3] = Thai Restaurant
         var rest_cat_value = $('#rest_cat_select').val();
-
-        if(rest_cat_value !== null){
-        var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
-            options = {
-                // Options to show/filter Restaurant category according to selected type from user
-                "Restaurant Category" : rest_cat[rest_cat_value],
-                width: window.innerWidth,
-                height: window.innerHeight,
-                device: "desktop",
-                hideTabs: true,
-                onFirstInteractive: function () {
-                    workbook = viz.getWorkbook();
-                    console.log("Run this code when the viz has finished loading.");
-                    listenToMarksSelection();
-                    
-                }
-            };}
-        else{
-            var containerDiv = document.getElementById("vizContainer"),
-            url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
-            options = {
-                // Options to show/filter Restaurant category according to selected type from user
-                width: window.innerWidth,
-                height: window.innerHeight,
-                device: "desktop",
-                hideTabs: true,
-                onFirstInteractive: function () {
-                    workbook = viz.getWorkbook();
-                    console.log("Run this code when the viz has finished loading.");
-                    listenToMarksSelection();
-                    
-                }
-            };}
-
-    initViz(containerDiv, url, options);
+        var densityMap_url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADWorksheetDensityMap?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link";
+        encapsulateViewViz(densityMap_url,"Restaurant Category", rest_cat[rest_cat_value]);
     }
 
-    function encapsulateViz(url){
+    function encapsulateDataViz(url){
         var containerDiv = document.getElementById("vizContainer"),
         url = url,
         options = {
@@ -252,12 +202,12 @@
 
     // Option to show ethnic structure
     function applyDataView1() {
-        encapsulateViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADEthnicStructure?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link");
+        encapsulateDataViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADEthnicStructure?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link");
     }
     
 
     function applyDataView2() {
-        encapsulateViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADPopulation?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link");
+        encapsulateDataViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADPopulation?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link");
     }
 
 
