@@ -231,56 +231,35 @@
     initViz(containerDiv, url, options);
     }
 
+    function encapsulateViz(url){
+        var containerDiv = document.getElementById("vizContainer"),
+        url = url,
+        options = {
+            // Options to show/filter Restaurant category according to selected type from user
+            width: window.innerWidth,
+            height: window.innerHeight,
+            device: "desktop",
+            hideTabs: true,
+            onFirstInteractive: function () {
+                workbook = viz.getWorkbook();
+                console.log("Run this code when the viz has finished loading.");
+                listenToMarksSelection();
+            }
+    };
+
+    initViz(containerDiv, url, options);
+    }
+
     // Option to show ethnic structure
     function applyDataView1() {
-
-    var containerDiv = document.getElementById("vizContainer"),
-    // url = "https://public.tableau.com/views/Population-LSOAHeatMap/Sheet3?:publish=yes&:display_count=n&:origin=viz_share_link"
-    url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADEthnicStructure?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link",
-    options = {
-        // Options to show/filter Restaurant category according to selected type from user
-        width: window.innerWidth,
-        height: window.innerHeight,
-        device: "desktop",
-        hideTabs: true,
-        onFirstInteractive: function () {
-            workbook = viz.getWorkbook();
-            console.log("Run this code when the viz has finished loading.");
-            listenToMarksSelection();
-        }
-    };
-
+        encapsulateViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADEthnicStructure?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link");
+    }
     
 
-    initViz(containerDiv, url, options);
-    }
-
     function applyDataView2() {
-
-    var containerDiv = document.getElementById("vizContainer"),
-    url = "https://public.tableau.com/views/LAD_Recommendation_Value/LADPopulation?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link",
-    options = {
-        // Options to show/filter Restaurant category according to selected type from user
-        width: window.innerWidth,
-        height: window.innerHeight,
-        device: "desktop",
-        hideTabs: true,
-        onFirstInteractive: function () {
-            workbook = viz.getWorkbook();
-            console.log("Run this code when the viz has finished loading.");
-            listenToMarksSelection();
-        }
-    };
-    initViz(containerDiv, url, options);
+        encapsulateViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADPopulation?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link");
     }
 
-    // Function to listen to adjustment of window
-    window.addEventListener("resize", () => {
-        console.log(
-            `Resizing the window ${window.innerHeight}, ${window.innerWidth}`
-        );
-        autoResize();
-    });
 
     // Resize dashboard window
     function autoResize(){
@@ -384,22 +363,22 @@
 
         // weight updates for statistics on population of cities
         if (rest_cat_value == 1 || rest_cat_value == 2 || rest_cat_value == 3 || rest_cat_value == 5){
-            Ethnic_Sort_by = "Asian_Percentage";
+            Ethnic_Sort_by = "Asian Percentage";
         } else if(rest_cat_value == 4 || rest_cat_value == 6 || rest_cat_value == 7) {
-            Ethnic_Sort_by = "White_Percentage";
+            Ethnic_Sort_by = "White Percentage";
         }
         else {
-            Ethnic_Sort_by = "White_Percentage";
+            Ethnic_Sort_by = "White Percentage";
         }
         // etc
-
+        console.log("Sort by:" + Ethnic_Sort_by);
         console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
         // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
-        workbook.changeParameterValueAsync("Asian %", Asian_Weight);
+        workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
         workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
-
+        console.log("Finished Adjusting weights");
         lad_option.style.display = "block";
     }
 
