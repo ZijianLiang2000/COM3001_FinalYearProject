@@ -1,3 +1,5 @@
+-# Star rating system Reference from: https://codepen.io/damianmuti/pen/KmEMdR
+
 = include_gon
 %head
     %style    
@@ -26,6 +28,45 @@
                 } 
                 else options.push(option.value)
             })
+
+            // Display stars when page is loaded
+            // Look for all stars div with same id when rating is available
+            var star_rating = document.querySelectorAll('div[id*="starRating"]');
+            for (var index = 0; index < star_rating.length; index++){
+                iter_id = star_rating[index].id;
+                console.log(index);
+                console.log(iter_id);
+
+                //Read actual rating value
+                var ratingVal = document.getElementById(iter_id).parentNode.querySelector("#ratingVal").innerHTML;
+                ratingVal = parseFloat(ratingVal.replace("Ratings: ",""));
+                console.log(ratingVal);
+
+                // Change it to star-adaptable value, which is every 0.25 scale
+                // firstly get the value's int part
+                valInt = ~~ratingVal;
+                valDec = (ratingVal.toFixed(2) - valInt).toFixed(2);
+                console.log(valInt);
+                console.log(valDec);
+                // scale each value to a read-able scale
+                if (valDec > 0 && valDec < 0.25) {
+                    valDec = 0.25
+                } else if (valDec > 0.25 && valDec < 0.5) {
+                    valDec = 0.25
+                } else if (valDec > 0.5 && valDec < 0.75) {
+                    valDec = 0.75
+                } else if (valDec > 0.75) {
+                    valDec = 0.75
+                }
+                ratingVal = valInt + valDec
+                console.log("Final Value: "+ratingVal);
+
+                //Replace each element correspondingly to star counts
+                document.getElementById(iter_id).innerHTML = '<div class="rating-holder"><div class="c-rating c-rating--big" data-rating-value="'+ ratingVal +'">'+
+                '<button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><button>10</button></div></div>';
+
+            }
+
         }
 
         // function to return filtered values according to select tag filter
@@ -176,7 +217,7 @@
     #myHtml.myHtml
         .container
             .row.mt-4
-                - @nearby_results["results"].each do |restaurant|
+                - @nearby_results["results"].each_with_index do |restaurant, index|
                     .col-sm-3.mb-4
                         .card.h-100{:style => "width: 18rem; position: relative;"}
                             - if  restaurant["photos"][0] == nil
@@ -192,7 +233,8 @@
                                 %h5.card-title 
                                     %b #{restaurant["name"]}
                                 - if  restaurant["rating"] != nil
-                                    %h6 Ratings: #{restaurant["rating"]}
+                                    %h6#ratingVal Ratings: #{restaurant["rating"]}
+                                    .starRating{:id => "starRating_#{index}"}
                                 %h6 Distance: #{restaurant["distance"]} (m)
                                 - if  restaurant["price"] != nil
                                     %h6 Price: #{restaurant["price"]}
