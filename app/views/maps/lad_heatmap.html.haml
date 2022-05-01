@@ -21,8 +21,11 @@
                 %h4 Data View:
                 %select#dataview{:onchange => "dataview()", :class => "form-select w-100%"}
                     %option{:selected => "selected", :value => "none"} Map
-                    %option{:value => "1"} Ethnic Structure
-                    %option{:value => "2"} Population Median Age
+                    %option{:value => "1"} Ethnic Structure (Chart)
+                    %option{:value => "2"} Population Median Age (Chart)
+                    %option{:value => "3"} Region Similarity (Clusters)
+                    %option{:value => "4"} Region Restaurant Density Similarity (Clusters)
+                    %option{:value => "5"} Region Rent and Similarity (Clusters)
                 %br
                 %h4 Restaurant Category:
                 %select#rest_cat_select{:onchange => "update_weight_to_tableau()", :class => "form-select w-100%"}
@@ -240,6 +243,18 @@
         encapsulateDataViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADPopulation?:language=zh-CN&publish=yes&:display_count=n&:origin=viz_share_link");
     }
 
+    function applyDataView3() {
+        encapsulateDataViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADCluster?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link");
+    }
+    
+
+    function applyDataView4() {
+        encapsulateDataViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADRestaurantCategoryDensity?:language=en-GB&publish=yes&:display_count=n&:origin=viz_share_link");
+    }
+
+    function applyDataView5() {
+        encapsulateDataViz("https://public.tableau.com/views/LAD_Recommendation_Value/LADClusterRentandHousing?:language=en-GB&:display_count=n&:origin=viz_share_link");
+    }
 
     // Resize dashboard window
     function autoResize(){
@@ -312,6 +327,24 @@
             document.getElementById("lad_option").style.top = "0px";
             document.getElementById("lad_option").style.left = "0px";
             applyDataView2();
+        }
+        if (value == "3") {
+            document.getElementById("lad_option").style.position = "absolute";
+            document.getElementById("lad_option").style.top = "130px";
+            document.getElementById("lad_option").style.left = "40px";
+            applyDataView3();
+        }
+        if (value == "4") {
+            document.getElementById("lad_option").style.position = "absolute";
+            document.getElementById("lad_option").style.top = "130px";
+            document.getElementById("lad_option").style.left = "40px";
+            applyDataView4();
+        }
+        if (value == "5") {
+            document.getElementById("lad_option").style.position = "absolute";
+            document.getElementById("lad_option").style.top = "130px";
+            document.getElementById("lad_option").style.left = "40px";
+            applyDataView5();
         }
     }
 
