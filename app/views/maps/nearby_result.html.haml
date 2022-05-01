@@ -302,7 +302,7 @@
 
         }
 
-    %div#lad_option{ :style => "position: relative; margin: auto;padding: 10px; top: 10px;left: 40px;" }
+    %div#lad_option{ :style => "position: relative; margin: auto; top: 10px;left: 40px;" }
         .card{:style => "width: 25rem;"}
             .card-body
                 -# Options to choose which map to display, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
@@ -326,6 +326,10 @@
                         %select#sortseq_select{:onchange => "sortselect()", :class => "form-select", :style => "width: 140px;" }
                             %option{:value => "Ascending", :selected => "selected"} Ascending
                             %option{:value => "Descending"} Descending
+                %br   
+                %br         
+                -# Button to Previous step
+                = back_link
 
     #myHtml.myHtml
         .container

@@ -28,35 +28,40 @@ class MapsController < ApplicationController
     lad20_code = params[:lad]
     map_style = params[:map_style]
     rest_cat = params[:rest_cat]
-    puts("received LAD Name: " + name)
-    puts("received LAD 2020 Code: " + lad20_code)
-    puts("received LAD Map Style: " + map_style)
-    puts("received LAD Restaurant Category: " + rest_cat)
- 
-    @map_style = map_style
-    @rest_cat = rest_cat
-    @lad_name = name
-    @lad20_code = lad20_code
-    
 
-    # Find LSOA areas under LAD Name from csv
-    lsoa_filter = []
-    # Loop through all rows
-    CSV.foreach(Rails.root.join('lib\LSOA11_WD20_LAD20_EW_LU.csv'), headers: true) do |row|
-      # If LAD name exist in LAD row
-      if(row[5].include? lad20_code)
-        # Add corresponding LSOA of LAD
-        puts("corresponding lsoa:" + row[1])
-        lsoa_filter.append(row[1].to_s)
+    if name != nil && (!name.nil?)
+
+      puts("received LAD Name: " + name)
+      puts("received LAD 2020 Code: " + lad20_code)
+      puts("received LAD Map Style: " + map_style)
+      puts("received LAD Restaurant Category: " + rest_cat)
+  
+      @map_style = map_style
+      @rest_cat = rest_cat
+      @lad_name = name
+      @lad20_code = lad20_code
+      
+
+      # Find LSOA areas under LAD Name from csv
+      lsoa_filter = []
+      # Loop through all rows
+      CSV.foreach(Rails.root.join('lib\LSOA11_WD20_LAD20_EW_LU.csv'), headers: true) do |row|
+        # If LAD name exist in LAD row
+        if(row[5].include? lad20_code)
+          # Add corresponding LSOA of LAD
+          puts("corresponding lsoa:" + row[1])
+          lsoa_filter.append(row[1].to_s)
+        end
       end
+
+      gon.lsoa_filter = lsoa_filter
+      gon.rest_cat = rest_cat
+      gon.lad_name = name
+      gon.lad20_code = lad20_code
+      gon.google_api_key = ENV["GOOGLE_API_KEY"]
+    else
+      redirect_to lad_heatmap_path
     end
-
-    gon.lsoa_filter = lsoa_filter
-    gon.rest_cat = rest_cat
-    gon.lad_name = name
-    gon.lad20_code = lad20_code
-    gon.google_api_key = ENV["GOOGLE_API_KEY"]
-
   end
 
   def lad_heatmap
@@ -69,11 +74,35 @@ class MapsController < ApplicationController
     rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
 
     puts("Restaurant Index: " + rest_cat_arr.index((rest_cat).to_s).to_s)
-    @rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
-    gon.rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
-    puts("Restaurant Category: " + (rest_cat).to_s)
-    puts("Price Segment: " + (price_seg).to_s)
-    puts("Acceptance Select: " + (acceptance_select).to_s)
+    if rest_cat != nil && (!rest_cat.nil?)
+      @rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
+      gon.rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
+      session["rest_cat"] = rest_cat_arr.index((rest_cat).to_s) + 1
+      session["price_seg"] = price_seg
+      session["acceptance_select"] = acceptance_select
+      
+      puts("Rest cat exists")
+    else
+      if session["rest_cat"] != nil && (!session["rest_cat"].nil?)
+        puts("Rest cat does not exists but applied from session")
+        @rest_cat = session["rest_cat"]
+        @price_seg = session["price_seg"]
+        @acceptance_select = session["acceptance_select"]
+        puts("Rest cat from session:")
+        puts(@rest_cat)
+        gon.rest_cat = @rest_cat
+        gon.price_seg = @price_seg
+        gon.acceptance_select = @acceptance_select
+      else
+        puts("Session does not exist")
+        puts(session["rest_cat"])
+        redirect_to user_option_path, alert: "User options not selected, please try again."
+      end
+    end
+    
+    puts("Restaurant Category: " + (@rest_cat).to_s)
+    puts("Price Segment: " + (@price_seg).to_s)
+    puts("Acceptance Select: " + (@acceptance_select).to_s)
   end
 
   def rest_cluster
@@ -219,23 +248,23 @@ class MapsController < ApplicationController
     current_date = Time.now.strftime("%Y%m%d")
     puts(current_date)
 
-    # Different attraction searched using Foursquare
-    nearby_places = request_foursquare_api(
-      "https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=1000"
-      )
+    # # Different attraction searched using Foursquare
+    # nearby_places = request_foursquare_api(
+    #   "https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=1000"
+    #   )
 
-      # Save json to file for development purpose not wasting api quota
-    File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json","w") do |f|
-      f.write(nearby_places.to_json)
-    end
-
-    # nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
-    # puts(nearby_places["results"].length())
-
-    # if(nearby_places["results"][0] == nil)
-    #   redirect_to lsoa_heatmap_path, alert: "Nearby info not found"
-    #   return
+    #   # Save json to file for development purpose not wasting api quota
+    # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json","w") do |f|
+    #   f.write(nearby_places.to_json)
     # end
+
+    nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
+    puts(nearby_places["results"].length())
+
+    if(nearby_places["results"][0] == nil)
+      redirect_to lsoa_heatmap_path, alert: "Nearby info not found"
+      return
+    end
 
     @nearby_results = nearby_places
     gon.nearby_places = nearby_places

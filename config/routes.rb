@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   post 'lad_heatmap' => 'maps#lad_heatmap'
   # Heatmap for LAD
   get 'user_option' => 'maps#user_option'
+  post 'user_option' => 'maps#user_option'
   # Heatmap for Clusters
     # Heatmap for LSOA
   get 'rest_cluster' => 'maps#rest_cluster'

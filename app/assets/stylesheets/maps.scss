@@ -1,8 +1,8 @@
 // Place all the styles related to the maps controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
-body {
-    font-family: "Lato", sans-serif;
+body h1, h2, h3, h4, h5, h6{
+    font-family: "Segoe UI", Arial, sans-serif;
   }
   
   .sidebar {
@@ -46,18 +46,22 @@ body {
     transform: translate(-50%, -50%);
   }
 
-  .sidebar .closebtn {
+  .closebtn {
     position: absolute;
     top: 0;
     right: 25px;
     font-size: 36px;
     margin-left: 50px;
     color: rgb(0, 0, 0);
+    text-decoration: none;
   }
   
-  .sidebar .closebtn:hover {
+  .closebtn:hover {
     color: rgb(123, 123, 123);
+    text-decoration: none;
   }
+
+  
 
   /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
     @media screen and (max-height: 450px) {
@@ -227,7 +231,7 @@ body {
 
   body {
     background: -webkit-gradient(linear, left top, left bottom, from(#de6262), to(#ffb88c)) fixed;
-    font-family: 'Roboto Slab', serif;
+    font-family: "Segoe UI", Arial, sans-serif;
     text-align: center;
   }
 
@@ -265,6 +269,28 @@ body {
     &--big {
       font-size: 150%;
     }
+  }
+
+  // referenced from: https://css-tricks.com/4-ways-to-animate-the-color-of-a-text-link-on-hover/
+  a.nav-link.home{
+    position: relative;
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 500;
+    color: rgb(93, 151, 206);
+    overflow: hidden;
+    background: linear-gradient(to right, rgb(246, 246, 246), rgb(232, 232, 232) 50%, rgb(255, 255, 255) 50%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    background-position: 100%;
+    transition: 0.3s;
+  }
+  a.nav-link.home:hover{
+    font-size: 21px;
+    font-weight: 530;
+    background-position: 0 50%;
   }
 
   

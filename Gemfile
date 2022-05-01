@@ -41,6 +41,7 @@ gem 'select2-rails'
 gem 'figaro'
 gem 'nokogiri'
 gem 'pycall'
+gem 'backpedal', :path => "E:\\zl00628_COM3001_Project\\gem_mod\\backpedal-master"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false

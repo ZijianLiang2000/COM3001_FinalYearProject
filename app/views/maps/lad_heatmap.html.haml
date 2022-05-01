@@ -6,9 +6,10 @@
     -# include script to add google embed iframe
     %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
-    
     %div#lad_option{ :style => "position: absolute; margin: auto;padding: 10px; top: 130px;left: 40px;" }
-        .card{:style => "width: 18rem;"}
+        .tips#tips
+        %br
+        .card#card_select{:style => "width: 40rem;"}
             .card-body
                 -# Options to choose which map to display
                 %h4 Map View:
@@ -35,6 +36,10 @@
                     %option{:value => "6"} Vegetarian
                     %option{:value => "7"} Cafe
                     %option{:value => "8"} Pub
+                %br
+                -# Button to Previous step
+                = back_link
+                
 
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
 
@@ -46,6 +51,18 @@
         document.getElementById('rest_cat_select').selectedIndex = gon.rest_cat;
         console.log("Selected Restaurant Category: " + (gon.rest_cat));
         
+        document.getElementById("tips").innerHTML=
+        `<div class="card" style="width: 40rem;">
+        <div class="card-body"><h5>Tips</h5><a class="closebtn" href="javascript:void(0)" onclick="closeTips()">&times;</a><p style='font-family: Segoe UI;'><small>Explore information related to each local authority area through hovering and tapping on it. 
+        The heatmap displays recommendation value in colour scale. Select different views and change restaurant categories to update recommendation value.
+        <br><ul>
+        <li>To move the map view: Hold "Shift" + "Left Button" and drag mouse</li>
+        <li>To zoom in and out: Scroll through the scroll wheel of mouse</li>
+        <li>To view presentation of area data: Hover mouse on an area</li>
+        <li>To view detailed information of area, explore nearby locations or select current LAD location: Click on an area</li>
+        </ul></small></p></div>
+        </div>`;
+
         var lad_option = document.getElementById("lad_option");
         lad_option.style.display = "none";
         
@@ -53,6 +70,11 @@
         console.log("Running Init function");
         document.getElementById('globalstyleselect').selectedIndex = "1";
         document.getElementById("globalstyleselect").dispatchEvent(new Event("change"));
+    }
+
+    function closeTips(){
+        document.getElementById("tips").style.display = "none";
+        document.getElementById("card_select").style="width: 18rem;"
     }
 
     function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size) {
@@ -140,6 +162,14 @@
         }
         viz = new tableau.Viz(containerDiv, url, options);
     }
+
+    window.addEventListener("resize", () => {
+        console.log(
+            `Resizing the window ${window.innerHeight}, ${window.innerWidth}`
+        );
+        autoResize();
+    });
+
 
     function encapsulateViewViz(url, filter_name, filter_val){
         console.log(url);

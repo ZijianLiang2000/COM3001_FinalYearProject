@@ -8,14 +8,14 @@
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%# <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %> 
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
 
   <body>
 
     <%# flast alert part %>
     <% flash.each do |type, msg| %>
-      <div class="alert alert-info">
+      <div class="alert alert-info" style="margin-bottom: 0px;">
         <%= msg %>
       </div>
     <% end %>
@@ -30,13 +30,10 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="user_option">LAD Heatmap<span class="sr-only"></span></a>
+            <a class="nav-link" href="user_option">Start<span class="sr-only"></span></a>
           </li>
-          <%# <li class="nav-item active">
-            <a class="nav-link" href="lsoa_heatmap">LSOA Heatmap<span class="sr-only"></span></a>
-          </li> %>
           <li class="nav-item">
-            <a class="nav-link" href="restaurant_search">Search Restaurant</a>
+            <a class="nav-link" href="restaurant_search">Explore</a>
           </li>
 
         </ul>

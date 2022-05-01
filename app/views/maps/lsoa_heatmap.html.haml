@@ -22,14 +22,15 @@
             %br
             %h4 Heatmap View:
             %select#globalstyleselect{:onchange => "styleselect()", :class => "form-select w-100%"}
-
                 - if @map_style == "1"
                     %option{:value => "1", :selected => "selected"} Heatmap
                     %option{:value => "2"} Density map
                 - elsif @map_style == "2"
                     %option{:value => "1"} Heatmap
                     %option{:value => "2", :selected => "selected"} Density map
-    
+            %br
+            -# Button to Previous step
+            = back_link
   
 %head
 %title Basic Embed

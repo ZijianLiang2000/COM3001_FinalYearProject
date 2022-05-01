@@ -1,5 +1,8 @@
 class ApplicationController < ActionController::Base
+    protect_from_forgery with: :exception
+    include SessionsHelper
     before_action :assign_env_variables
+    before_action :capture_path
     helper_method :get_detailed_addr, :filter_location_category
 
     def get_detailed_addr(place_id)

@@ -3,10 +3,10 @@
     .inner
       %h3.masthead-brand{:style => "color: white;"} LORECO
       %nav.nav.nav-masthead.justify-content-center
-        %a.nav-link.active{:href => "user_option", :style => "color: white;"} Get Started
-        %a.nav-link{:href => "restaurant_search", :style => "color: white;"} Explore Random Locations
-        %a.nav-link{:href => "#", :style => "color: white;"} Features Introduction
-        %a.nav-link{:href => "#", :style => "color: white;"} Contact
+        %a.nav-link.home{:href => "user_option", :style => "color: white;"} Get Started
+        %a.nav-link.home{:href => "restaurant_search", :style => "color: white;"} Explore Locations of Interests
+        %a.nav-link.home{:href => "#", :style => "color: white;"} Features Introduction
+        %a.nav-link.home{:href => "#", :style => "color: white;"} Contact
   %main.inner.cover{:role => "main"}
     %h1.cover-heading{:style => "color: white;"} Location Recommendation for Restaurants
     %p.lead{:style => "color: white;"} WELCOME.
@@ -16,9 +16,12 @@
       %p{:style => "color: black;"}
         Please Read
         = succeed "," do
-          %a{:href => "https://getbootstrap.com/"} XXX
-        = succeed "." do
-          %a{:href => "https://twitter.com/mdo"} University of Surrey
+          %a{:href => "#"} Terms and Agreement
+        = succeed "," do
+          %a{:href => "#"} Privacy Policy
+      %p{:style => "color: black;"}
+        = succeed "" do
+          %a This is a Final Year Project from the University of Surrey
 
 %script{:crossorigin => "anonymous", :integrity => "sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo", :src => "https://code.jquery.com/jquery-3.3.1.slim.min.js"}
 :javascript
