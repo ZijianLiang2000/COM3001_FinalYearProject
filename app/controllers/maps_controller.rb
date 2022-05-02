@@ -69,30 +69,53 @@ class MapsController < ApplicationController
     rest_cat = params[:rest_cat_value]
     price_seg = params[:price_seg_value]
     acceptance_select = params[:acceptance_value]
-    
+    rent_min = params[:rent_min]
+    rent_max = params[:rent_max]
+
+    # Validate rent_max larger than rent_min
+    if rent_max <= rent_min
+      redirect_to user_option_path, alert: "Minimum Rental should not be larger or equal to Maximum Rental, Please try again."
+    end
 
     rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
 
     puts("Restaurant Index: " + rest_cat_arr.index((rest_cat).to_s).to_s)
     if rest_cat != nil && (!rest_cat.nil?)
       @rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
+      @price_seg = price_seg
+      @acceptance_select = acceptance_select
+      @rent_min = rent_min
+      @rent_max = rent_max
+      
       gon.rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
       session["rest_cat"] = rest_cat_arr.index((rest_cat).to_s) + 1
       session["price_seg"] = price_seg
       session["acceptance_select"] = acceptance_select
+      session["rent_min"] = rent_min
+      session["rent_max"] = rent_max
       
       puts("Rest cat exists")
+
+      puts("Restaurant Category: " + (@rest_cat).to_s)
+      puts("Price Segment: " + (@price_seg).to_s)
+      puts("Acceptance Select: " + (@acceptance_select).to_s)
+      puts("Rent min: " + (@rent_min).to_s)
+      puts("Rent max: " + (@rent_max).to_s)
     else
       if session["rest_cat"] != nil && (!session["rest_cat"].nil?)
         puts("Rest cat does not exists but applied from session")
         @rest_cat = session["rest_cat"]
         @price_seg = session["price_seg"]
         @acceptance_select = session["acceptance_select"]
+        @rent_min = session["rent_min"]
+        @rent_max = session["rent_max"]
         puts("Rest cat from session:")
         puts(@rest_cat)
         gon.rest_cat = @rest_cat
         gon.price_seg = @price_seg
         gon.acceptance_select = @acceptance_select
+        gon.rent_min = @rent_min
+        gon.rent_max = @rent_max
       else
         puts("Session does not exist")
         puts(session["rest_cat"])
@@ -103,6 +126,8 @@ class MapsController < ApplicationController
     puts("Restaurant Category: " + (@rest_cat).to_s)
     puts("Price Segment: " + (@price_seg).to_s)
     puts("Acceptance Select: " + (@acceptance_select).to_s)
+    puts("Rent min: " + (@rent_min).to_s)
+    puts("Rent max: " + (@rent_max).to_s)
   end
 
   def rest_cluster

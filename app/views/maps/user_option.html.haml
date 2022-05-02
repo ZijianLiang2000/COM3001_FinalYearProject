@@ -9,19 +9,24 @@
                 -# = form_tag(activate_foobar_foobar_index_path, :method => :post) do
 
                 = form_with url: lad_heatmap_path do |f|
-                    = f.label :rest_cat, "Restaurant Category"
-                    %br
+                    %h5 Restaurant Category
                     = f.select(:rest_cat_value, ['Italian Restaurant', "Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"], {required: "required"}, class: "form-select w-100%")
                     %br
                     %br
-                    = f.label :acceptance, "Expected Customer Acceptance"
-                    %br
+                    %h5 Expected Customer Acceptance
                     = f.select(:acceptance_value, ['Low', "Medium","High"], {required: "required"}, class: "form-select w-100%")
                     %br
                     %br
-                    = f.label :price_seg, "Price Segment"
-                    %br
+                    %h5 Price Range
                     = f.select(:price_seg_value, ['Low', "Medium","High"],  {required: "required"}, class: "form-select w-100%") 
+                    %br
+                    .parent
+                        %h5 Rental Acceptance Range (Weekly / GBP)
+                        .child-float-left-child{:style => "float: left; width: 30%;"}
+                            = f.number_field(:rent_min,{min: 0, max: 9999,  class: "number", required: "required", style: "width: 100%;", placeholder: "Minimum"})
+                        .child-float-left-child{:style => "float: left; margin-left: 50px; width: 30%;"}
+                            = f.number_field(:rent_max, {min: 0, max: 9999,  class: "number", required: "required", style: "width: 100%;", placeholder: "Maximum"}) 
+                    %br
                     %br
                     %br
                     = f.submit "Next", class: "btn btn-success btn-block"
