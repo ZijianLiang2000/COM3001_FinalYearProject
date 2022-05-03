@@ -23,9 +23,9 @@
                     .parent
                         %h5 Rental Acceptance Range (Weekly / GBP)
                         .child-float-left-child{:style => "float: left; width: 30%;"}
-                            = f.number_field(:rent_min,{min: 0, max: 9999,  class: "number", required: "required", style: "width: 100%;", placeholder: "Minimum"})
+                            = f.number_field(:rent_min,{min: 0, max: 9999,  class: "form-control", required: "required", style: "width: 100%;", placeholder: "Minimum"})
                         .child-float-left-child{:style => "float: left; margin-left: 50px; width: 30%;"}
-                            = f.number_field(:rent_max, {min: 0, max: 9999,  class: "number", required: "required", style: "width: 100%;", placeholder: "Maximum"}) 
+                            = f.number_field(:rent_max, {min: 0, max: 9999,  class: "form-control", required: "required", style: "width: 100%;", placeholder: "Maximum"}) 
                     %br
                     %br
                     %br

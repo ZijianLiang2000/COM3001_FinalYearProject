@@ -141,7 +141,7 @@
         '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - curr_rest_num) +' Indirect Competitors </p>' +
         
         // button for nearby search
-        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">'+
+        '<form class="button_to" method="post" action="/nearby_result?name='+name+'&map=LAD">' +
         '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>'

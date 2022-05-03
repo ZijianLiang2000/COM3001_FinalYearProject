@@ -72,8 +72,17 @@ class MapsController < ApplicationController
     rent_min = params[:rent_min]
     rent_max = params[:rent_max]
 
+    puts("Rent min: " + rent_min.to_s)
+    puts("Rent max: " + rent_max.to_s)
+
+    if rent_max == nil || rent_min == nil
+      puts("Empty rent min and max, assign with session")
+      rent_max = session["rent_max"]
+      rent_min = session["rent_min"]
+    end
+
     # Validate rent_max larger than rent_min
-    if rent_max <= rent_min
+    if rent_max.to_i <= rent_min.to_i
       redirect_to user_option_path, alert: "Minimum Rental should not be larger or equal to Maximum Rental, Please try again."
     end
 
@@ -259,36 +268,52 @@ class MapsController < ApplicationController
     require 'net/http'
     require 'openssl'
 
-
-    if(params[:lat] == nil || params[:lat] == "" || params[:lng] == nil || params[:lng] == "")
-      redirect_to :back, alert: "Latitude and Longitude is empty, please try another place"
-      return
+    if(params[:lat] == nil && params[:name] == nil)
+      if(params[:map]=="LAD")
+        redirect_back(fallback_location: lad_heatmap_path, allow_other_host: true, alert: "Input parameters not provided") 
+        return
+      elsif(params[:map]=="LSOA")
+        redirect_back(fallback_location: lsoa_heatmap_path, allow_other_host: true, alert: "Input parameters not provided") 
+        return
+      end
     end
 
     lat = params[:lat]
     lng = params[:lng]
+    name = CGI.unescape(params[:name])
     
-    puts("Latitude:" + lat + "Longitude:" + lng)
+    puts("Latitude:" + lat.to_s + ", Longitude:" + lng.to_s + ", Name:" + name.to_s)
 
     current_date = Time.now.strftime("%Y%m%d")
     puts(current_date)
 
-    # # Different attraction searched using Foursquare
-    # nearby_places = request_foursquare_api(
-    #   "https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=1000"
-    #   )
+    # Different attraction searched using Foursquare
 
-    #   # Save json to file for development purpose not wasting api quota
-    # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json","w") do |f|
-    #   f.write(nearby_places.to_json)
-    # end
+    if(params[:name] != nil || params[:name] != "")
+      puts("Searching nearby places by LAD Name")
+      puts("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+    elsif(params[:lat] != nil || params[:lat] != "" || params[:lng] != nil || params[:lng] != "")
+      puts("Searching nearby places by LAD Latitude and Longitude")
+      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+    end
 
-    nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
-    puts(nearby_places["results"].length())
+      # Save json to file for development purpose not wasting api quota
+    File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json","w") do |f|
+      f.write(nearby_places.to_json)
+    end
 
-    if(nearby_places["results"][0] == nil)
-      redirect_to lsoa_heatmap_path, alert: "Nearby info not found"
-      return
+    # nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
+    # puts(nearby_places["results"].length())
+
+    if(nearby_places["results"] == nil)
+      if(params[:map]=="LAD")
+        redirect_back(fallback_location: lad_heatmap_path, allow_other_host: true, alert: "No results returned") 
+        return
+      elsif(params[:map]=="LSOA")
+        redirect_back(fallback_location: lsoa_heatmap_path, allow_other_host: true, alert: "No results returned") 
+        return
+      end
     end
 
     @nearby_results = nearby_places

@@ -87,7 +87,7 @@
         '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_value)] + ') </p>' +
         '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </p>' +
         
-        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'">' + 
+        '<form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'&map=LSOA">' + 
         '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form></div></div></div></body>'
