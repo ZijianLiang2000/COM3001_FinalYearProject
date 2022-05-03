@@ -289,16 +289,16 @@ class MapsController < ApplicationController
 
     # Different attraction searched using Foursquare
 
-    if(params[:name] != nil || params[:name] != "")
+    if(params[:name] != nil && params[:map]=="LAD")
       puts("Searching nearby places by LAD Name")
-      puts("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
-      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
-    elsif(params[:lat] != nil || params[:lat] != "" || params[:lng] != nil || params[:lng] != "")
+      puts("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+    elsif(params[:lat] != nil && params[:map]=="LSOA")
       puts("Searching nearby places by LAD Latitude and Longitude")
-      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=13000,19000%2C12009&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
     end
 
-      # Save json to file for development purpose not wasting api quota
+    # Save json to file for development purpose not wasting api quota
     File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json","w") do |f|
       f.write(nearby_places.to_json)
     end
@@ -317,7 +317,11 @@ class MapsController < ApplicationController
     end
 
     @nearby_results = nearby_places
+    @place_lat = lat
+    @place_lng = lng
     gon.nearby_places = nearby_places
+    gon.place_lat = lat
+    gon.place_lng = lng
   end
 
   # POST /maps or /maps.json

@@ -6,6 +6,7 @@
 
 %body{:onload => "init()"}
     %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
+    %script{:src => "http://maps.google.com/maps/api/js?key=#{ENV["GOOGLE_API_KEY"]}", :type => "text/javascript"}
     :javascript
         function init(){
 
@@ -27,6 +28,7 @@
                     console.log("Removed object")
                 } 
                 else options.push(option.value)
+
             })
 
             // Display stars when page is loaded
@@ -70,6 +72,8 @@
                 '<button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><button>10</button></div></div>';
 
             }
+
+            plotmap(results);
 
         }
 
@@ -243,7 +247,7 @@
             innerHtml = '<style> .card-img-top {width: 100%;height: 15vw;object-fit: cover;} </style><div class="container"><div class="row mt-4">';
             for (let i = 0; i < filtered_data.length; i++) {
                 innerHtml += '<div class="col-sm-3 mb-4">';
-                innerHtml += '    <div class="card h-100" style="width: 18rem;  position: relative;">';
+                innerHtml += '    <div class="card h-100" style="width: 18rem;  position: relative; top: 50px;">';
                     if (filtered_data[i]["photos"][0] == null){
                         innerHtml += '<img alt="Restaurant image" class="card-img-top w-auto" src="https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81"/>';
                         innerHtml += '<div class="text-block" style="position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"><br><h5>'+filtered_data[i]["name"]+'</h5><p>'+filtered_data[i]["categories"][0]["name"]+'</p><br></div>'
@@ -275,6 +279,80 @@
             innerHtml += '</div></div>';
         }
 
+        function plotmap(filtered_data){
+
+            var locations = [];
+            for (let i = 0; i < filtered_data.length; i++) {
+                try{
+                    var name = filtered_data[i]["name"];
+                    var lat = filtered_data[i]["geocodes"]["main"]["latitude"];
+                    var long = filtered_data[i]["geocodes"]["main"]["longitude"];
+                    var category = filtered_data[i]["categories"][0]["name"];
+                    var popularity = filtered_data[i]["popularity"];
+                    var distance = filtered_data[i]["distance"];
+                    console.log("\n");
+                    console.log("Plotting map");
+                    console.log(name);
+                    console.log(lat);
+                    console.log(long);
+
+                    locations.push([String(name), parseFloat(lat), parseFloat(long), parseInt(i+1), String(category), String(popularity), String(distance)]);
+                }catch{
+                    console.log("Lat and long does not exist for this location");
+                }
+            }
+
+            var point_index = locations[locations.length-1][3];
+            console.log("Point Index:");
+            console.log(point_index);
+
+            // Add selected position data on map
+            locations.push([null, parseFloat(gon.place_lat), parseFloat(gon.place_lng), point_index+1, "Current Location", null]);
+            console.log(locations);
+
+            // Reference from: https://stackoverflow.com/questions/3059044/google-maps-js-api-v3-simple-multiple-marker-example         
+            var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 9,
+            center: new google.maps.LatLng(locations[0][1], locations[0][2]),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            
+            var infowindow = new google.maps.InfoWindow();
+
+            var marker, i;
+            
+            // Put locations with lat and long results on google map
+            for (i = 0; i < locations.length-1; i++) {  
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                    map: map,
+            });
+
+            // Single marker for location selected
+            location_marker = new google.maps.Marker({
+                // Put the last point added in locations arr
+                    position: new google.maps.LatLng(locations[locations.length-1][1], locations[locations.length-1][2]),
+                    map: map,
+                    icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+                    });
+
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                infowindow.setContent("<b>"+String(locations[i][0]) + "</b><br>Category: " + String(locations[i][4]) + "<br>Popularity: " + String(locations[i][5])+ "<br>Distance: " + String(locations[i][6])+"(m)");
+                infowindow.open(map, marker);
+                }
+            })(marker, i));
+
+            google.maps.event.addListener(location_marker, 'click', (function(location_marker, i) {
+                return function() {
+                infowindow.setContent("<b>"+String(locations[locations.length-1][4])+"</b>");
+                infowindow.open(map, location_marker);
+                }
+            })(location_marker, i));
+            }
+        
+        
+        }
 
         function categoryselect(){
 
@@ -283,6 +361,7 @@
             filtered_data = returnFilter();
             filtered_data = returnSort(filtered_data);
             generateInnerHTML();
+            plotmap(filtered_data);
 
             document.getElementById("myHtml").innerHTML=innerHtml;
 
@@ -294,49 +373,53 @@
             filtered_data = returnFilter();
             // Then sort
             filtered_data = returnSort(filtered_data);
-
             generateInnerHTML();
+            plotmap(filtered_data);
+            console.log("Done");
 
             document.getElementById("myHtml").innerHTML=innerHtml;
 
-
         }
 
-    %div#lad_option{ :style => "position: relative; margin: auto; top: 10px;left: 40px;" }
-        .card{:style => "width: 25rem;"}
-            .card-body
-                -# Options to choose which map to display, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
-                %h4 Places Filter
-                %select#categoryselect{:onchange => "categoryselect()", :class => "form-select w-100%" }
-                    %option{:value => "All", :selected => "selected"} All
-    
-        %br
-        .card{:style => "width: 25rem;"}
-            .card-body
-                .parent
-                    %h4 Sort by option
-                    .child-float-left-child{:style => "float: left;"}
-                        //For sorting, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
-                        %select#sortselect{:onchange => "sortselect()", :class => "form-select", :style => "width: 215px;" }
-                            %option{:value => "Distance", :selected => "selected"} Distance
-                            %option{:value => "Popularity"} Popularity
-                            %option{:value => "Rating"} Rating
-                            %option{:value => "Price"} Price
-                    .child-float-left-child{:style => "float: left; margin-left: 10px;"}
-                        %select#sortseq_select{:onchange => "sortselect()", :class => "form-select", :style => "width: 140px;" }
-                            %option{:value => "Ascending", :selected => "selected"} Ascending
-                            %option{:value => "Descending"} Descending
-                %br   
-                %br         
-                -# Button to Previous step
-                = back_link
+    .parent
+        .child-float-left-child{:style => "float: left; width: 20%;"}
+            %div#lad_option{ :style => "position: relative; margin: auto; top: 10px;left: 40px;" }
+                .card{:style => "width: 25rem;"}
+                    .card-body
+                        -# Options to choose which map to display, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
+                        %h4 Places Filter
+                        %select#categoryselect{:onchange => "categoryselect()", :class => "form-select w-100%" }
+                            %option{:value => "All", :selected => "selected"} All
+            
+                %br
+                .card{:style => "width: 25rem;"}
+                    .card-body
+                        .parent
+                            %h4 Sort by option
+                            .child-float-left-child{:style => "float: left;"}
+                                //For sorting, first filter or apply all, then sort, so everytime onchange apply filter first, then sort
+                                %select#sortselect{:onchange => "sortselect()", :class => "form-select", :style => "width: 215px;" }
+                                    %option{:value => "Distance", :selected => "selected"} Distance
+                                    %option{:value => "Popularity"} Popularity
+                                    %option{:value => "Rating"} Rating
+                                    %option{:value => "Price"} Price
+                            .child-float-left-child{:style => "float: left; margin-left: 10px;"}
+                                %select#sortseq_select{:onchange => "sortselect()", :class => "form-select", :style => "width: 140px;" }
+                                    %option{:value => "Ascending", :selected => "selected"} Ascending
+                                    %option{:value => "Descending"} Descending
+                        %br   
+                        %br         
+                        -# Button to Previous step
+                        = back_link
+        .child-float-left-child{:style => "float: left; width: 80%; padding-top: 10px; padding-left: 10%;"}
+            #map{:style => "width: 1000px; height: 288.7px; position: relavant;"}
 
     #myHtml.myHtml
         .container
             .row.mt-4
                 - @nearby_results["results"].each_with_index do |restaurant, index|
                     .col-sm-3.mb-4
-                        .card.h-100{:style => "width: 18rem; position: relative;"}
+                        .card.h-100{:style => "width: 18rem; position: relative; top: 50px;"}
                             - if  restaurant["photos"][0] == nil
                                 %img.card-img-top{:alt => "Restaurant image", :src => "https://img.freepik.com/free-vector/stylish-hexagonal-line-pattern-background_1017-19742.jpg?w=1800&t=st=1651250824~exp=1651251424~hmac=3f2bd303f1048ad7eb4c54fe74bbc7e3cbd8cc4bbc56c94dfb44eb5a51ccda81", :style => "width: 100%;height: 15vw;object-fit: cover;"}/
                                 .text-block{:style => "position: absolute; top: 10%;left: 0px;background-color: black;color: white;padding-left: 20px;padding-right: 20px;opacity: 0.7;"}
