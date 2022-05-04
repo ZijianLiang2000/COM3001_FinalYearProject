@@ -359,8 +359,20 @@
         var map_type = $('#globalstyleselect').val();
 
         //default settings
-        var Weight_Population = 1;
-        var Asian_Weight = 1;
+        var Population_density_weight = 20;
+        var Asian_weight = 4;
+        var Black_weight = 4;
+        var White_weight = 4;
+        var Mixed_weight = 4;
+        var Others_weight = 4;
+        var Same_cat_restaurant_weight = 10;
+        var Diff_cat_restaurant_weight = 10;
+        var Employment_weight = 15;
+        var House_price_weight = 14;
+        var Income_weight = 13;
+        var Rent_weight = 18;
+        var Restaurant_industry_weight = 12;
+
         var Ethnic_Sort_by = "Default";
 
         console.log("Selected restaurant category: '" + rest_cat_value + "'")
@@ -368,10 +380,36 @@
         // weight updates on heatmap and density map
 
         // calculate value of weights of each parameter
-        // if rest_cat_value = 5 (Chinese Restaurant), then update weights
-        if (rest_cat_value == 5){
-            Weight_Population = 0.5;
-            Asian_Weight = 0.8;
+        // first for parameters of user options
+        // gon.rest_cat = @rest_cat
+        // gon.price_seg = @price_seg
+        // gon.acceptance_select = @acceptance_select
+        // gon.rent_min = @rent_min
+        // gon.rent_max = @rent_max
+
+        switch (gon.rest_cat) {
+        case 0:
+            day = "Sunday";
+            break;
+        case 1:
+            day = "Monday";
+            break;
+        case 2:
+            day = "Tuesday";
+            break;
+        case 3:
+            day = "Wednesday";
+            break;
+        case 4:
+            day = "Thursday";
+            break;
+        case 5:
+            day = "Friday";
+            break;
+        case 6:
+            day = "Saturday";
+        default:
+            console.log("Default case");
         }
 
         // weight updates for statistics on population of cities
