@@ -369,11 +369,63 @@
 
         console.log("Restaurant category passed in: " + rest_cat_val);
 
+        // Restaurant category array from 0 to 8, total 9 restaurant indices
+        // [ITA, IND, JAP, THA, GB, CN, VEG, CAFE, PUB]
+        var rest_cat_arr = [...Array(9).keys()];
+        // Matching restaurant category - restaurant and COO value scoring, from 1 - 5 points (User provides food related acceptance, reference other two acceptance)
+        var other_acceptance_score = [1.1366, 1.2659, 1.1745, 1.0, 5.0, 2.0, 4.0, 5.0, 5.0];
+        // Matching majority ethnicity of restaurant to group
+        var origin_ethnicity = ["White", "Asian", "Asian", "Asian", "All", "Asian", "All", "All", "All"];
+        // Price segment of each restaurant category
+        // [Rest_cat_0: [Low-price%, Medium-price%, Expensive%, Very-expensive%]]
+        var rest_cat_price_seg = [[0.23, 0.69, 0.07, 0.01], [0.23, 0.77, 0, 0], [0.24, 0.69, 0.05, 0.02], [0.17, 0.65, 0.14, 0.04],
+            [0.62, 0.37, 0.01, 0], [0.14, 0.72, 0.1, 0.03],[0.20, 0.67, 0.03, 0.01],[0.80, 0.10, 0.03, 0.01]];
+
+        // Price segment category array from 0 to 3, total 4 price segment indices
+        //var price_seg_arr = [...Array(4).keys()];
+        // Acceptance category array from 0 to 2, total 3 Acceptance indices
+        //var acceptance_arr = [...Array(3).keys()];
+
+        // 3 user options: rest_cat_val, price_seg_val, acceptance_select_val
+
+        // for every restaurant category
+        for(let i = 0; i < rest_cat_arr.length; i++) {
+
+            // Price segment
+            // Quick serve restaurant (QSR) is low to medium price, where weight gradually increase when approaching low lvl price from middle - 16£
+            // Fine dining is expensive to very expensive price level, where weight gradually increase when approaching higher lvl - over 32£
+            // Hence from 16£ to left and right side tends to be extreme in same absolute value of weight, += same value for opposite strategy.
+
+            if (rest_cat_val == rest_cat_arr[i]){
+                // print price segment percentage of corresponding restaurant
+                console.log("Majoriy origin ethnicity: " + origin_ethnicity[i] + ", Restaurant category price segment: " + rest_cat_price_seg[i] + ", Restaurant category restaurant and COO score: " + other_acceptance_score[i]);
+                // if corresponding restaurant category's user proposed price range has different number
+                switch(rest_cat_price_seg[i][price_seg_val]){
+                    // if corresponding restaurant category's price range is less than 0.02, then user's proposed price range is highly unsupported.
+                    // weight will drastically decrease
+                    case (< 0.02) :
+                   
+                    // weight will remain
+                    case (0.2 < 0.02):
+                    case (0.4 < 0.2):
+                    case (0.6 < 0.4):
+                    // mainstream restaurant price segment
+                    case (0.8 < 0.6):
+
+                }  
+            }
+        }
+    
+        
+        
+
+        console.log("Done calculating");
+
         // If price segment is cheap - 0 / moderate - 1 / expensive - 2 / very expensive - 3
         if(price_seg_val == "0"){
                 
             console.log("Price Segment Low");
-            // If acceptance is low - 0 / medium - 1 / high - 2
+            // If acceptance is low - 0
             switch (acceptance_select_val) {
             case "0":
                 console.log("Acceptance Low");
@@ -534,6 +586,7 @@
                     }
                 break;
             case "1":
+                // If acceptance is medium - 1
                 console.log("Acceptance Medium");
                 switch(rest_cat_val){
                     case "0":
@@ -692,6 +745,7 @@
                 }
                 break;
             case "2":
+                // If acceptance is high - 3
                 console.log("Acceptance High");
                 switch(rest_cat_val){
                     case "0":
@@ -2293,6 +2347,9 @@
                 break;
             }
         }    
+
+        // Adjust weight against rent which is independent from other user options, the larger the weight is,
+        // the more a restaurant is not recommended
 
         weight_arr = [Population_density_weight, Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
         Diff_cat_restaurant_weight, Employment_weight, House_price_weight, Income_weight, Rent_weight, Restaurant_industry_weight];
