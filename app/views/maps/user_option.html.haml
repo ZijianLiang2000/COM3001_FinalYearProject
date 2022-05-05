@@ -14,11 +14,11 @@
                     %br
                     %br
                     %h5 Expected Customer Acceptance
-                    = f.select(:acceptance_value, ['Low', "Medium","High"], {required: "required"}, class: "form-select w-100%")
+                    = f.select(:acceptance_value, [['Low',"0"], ["Medium","1"],["High","2"]], {required: "required"}, class: "form-select w-100%")
                     %br
                     %br
                     %h5 Price Range
-                    = f.select(:price_seg_value, ['Cheap (0-8£)', "Moderate (8-16£)","Expensive (16-32£)", "Very Expensive (Equal or above 32£)"],  {required: "required"}, class: "form-select w-100%") 
+                    = f.select(:price_seg_value, [["Cheap (0-8£)","0"], ["Moderate (8-16£)","1"],["Expensive (16-32£)","2"], ["Very Expensive (Equal or above 32£)","3"]],  {required: "required"}, class: "form-select w-100%") 
                     %br
                     .parent
                         %h5 Weekly Rent Acceptance Range (£)

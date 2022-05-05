@@ -348,6 +348,1958 @@
         }
     }
 
+    // Encapsulated function to calculate weights according to restaurant category, price segment and acceptance value
+    function encapsulated_weight_calc(rest_cat_val, price_seg_val, acceptance_select_val){
+
+        // Default weight values set in Tableau
+        var Population_density_weight = 20;
+        var Asian_weight = 4;
+        var Black_weight = 4;
+        var White_weight = 4;
+        var Mixed_weight = 4;
+        var Others_weight = 4;
+        var Same_cat_restaurant_weight = 10;
+        var Diff_cat_restaurant_weight = 10;
+        var Employment_weight = 15;
+        var House_price_weight = 14;
+        var Income_weight = 13;
+        var Rent_weight = 18;
+        var Restaurant_industry_weight = 12;
+
+
+        console.log("Restaurant category passed in: " + rest_cat_val);
+
+        // If price segment is cheap - 0 / moderate - 1 / expensive - 2 / very expensive - 3
+        if(price_seg_val == "0"){
+                
+            console.log("Price Segment Low");
+            // If acceptance is low - 0 / medium - 1 / high - 2
+            switch (acceptance_select_val) {
+            case "0":
+                console.log("Acceptance Low");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    }
+                break;
+            case "1":
+                console.log("Acceptance Medium");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            case "2":
+                console.log("Acceptance High");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            }
+
+        // If Price Segment is Medium    
+        } else if(price_seg_val == "1"){
+                
+            console.log("Price Segment Medium");
+            // If acceptance is low - 0 / medium - 1 / high - 2
+            switch (acceptance_select_val) {
+            case "0":
+                console.log("Acceptance Low");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    }
+                break;
+            case "1":
+                console.log("Acceptance Medium");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            case "2":
+                console.log("Acceptance High");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            }
+        } else if (price_seg_val == "2"){
+                
+            console.log("Price Segment High");
+            // If acceptance is low - 0 / medium - 1 / high - 2
+            switch (acceptance_select_val) {
+            case "0":
+                console.log("Acceptance Low");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    }
+                break;
+            case "1":
+                console.log("Acceptance Medium");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            case "2":
+                console.log("Acceptance High");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            }
+        } else {
+                
+            console.log("Price Segment Very High");
+            // If acceptance is low - 0 / medium - 1 / high - 2
+            switch (acceptance_select_val) {
+            case "0":
+                console.log("Acceptance Low");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    }
+                break;
+            case "1":
+                console.log("Acceptance Medium");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            case "2":
+                console.log("Acceptance High");
+                switch(rest_cat_val){
+                    case "0":
+                        console.log("Italian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "1":
+                        console.log("Indian Restaurant Selected");
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "2":
+                        console.log("Japanese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "3":
+                        console.log("Thai Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "4":
+                        console.log("British Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "5":
+                        console.log("Chinese Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "6":
+                        console.log("Vegetarian Restaurant Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "7":
+                        console.log("Cafe Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                    case "8":
+                        console.log("Pub Selected"); 
+                        Population_density_weight = 20;
+                        Asian_weight = 4;
+                        Black_weight = 4;
+                        White_weight = 4;
+                        Mixed_weight = 4;
+                        Others_weight = 4;
+                        Same_cat_restaurant_weight = 10;
+                        Diff_cat_restaurant_weight = 10;
+                        Employment_weight = 15;
+                        House_price_weight = 14;
+                        Income_weight = 13;
+                        Rent_weight = 181;
+                        Restaurant_industry_weight = 12;
+                        console.log("===========================TEST===========================");
+                        break;
+                }
+                break;
+            }
+        }    
+
+        weight_arr = [Population_density_weight, Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
+        Diff_cat_restaurant_weight, Employment_weight, House_price_weight, Income_weight, Rent_weight, Restaurant_industry_weight];
+
+        return weight_arr
+    }
+
     // JS scipt to update value when an option is selected for restuarant category
     // because some weights for importance change for different restaurants
     function update_weight_to_tableau(){
@@ -357,6 +2309,12 @@
 
         var rest_cat_value = $('#rest_cat_select').val();
         var map_type = $('#globalstyleselect').val();
+
+        // Price seg can be 
+        var price_seg = gon.price_seg;
+        var acceptance_select =  gon.acceptance_select;
+        var rent_min = gon.rent_min;
+        var rent_max = gon.rent_max;
 
         //default settings
         var Population_density_weight = 20;
@@ -376,7 +2334,7 @@
         var Ethnic_Sort_by = "Default";
 
         console.log("Selected restaurant category: '" + rest_cat_value + "'")
-
+        console.log("Selected acceptance: '" + acceptance_select + "'")
         // weight updates on heatmap and density map
 
         // calculate value of weights of each parameter
@@ -388,30 +2346,43 @@
         // gon.rent_max = @rent_max
 
         // When restaurant category for each option is
-        switch (gon.rest_cat) {
-        case 1:
-            day = "Monday";
+        switch (rest_cat_value) {
+        // Italian Restaurant
+        case "0":
+            encapsulated_weight_calc("0", price_seg, acceptance_select);
             break;
-        case 2:
-            day = "Tuesday";
+        // Indian Restaurant
+        case "1":            
+            encapsulated_weight_calc("1", price_seg, acceptance_select);
             break;
-        case 3:
-            day = "Wednesday";
+        // Japanese Restaurant
+        case "2":
+            encapsulated_weight_calc("2", price_seg, acceptance_select);
             break;
-        case 4:
-            day = "Thursday";
+        // Thai Restaurant
+        case "3":
+            encapsulated_weight_calc("3", price_seg, acceptance_select);
             break;
-        case 5:
-            day = "Friday";
+        // British Restaurant
+        case "4":
+            encapsulated_weight_calc("4", price_seg, acceptance_select);
             break;
-        case 6:
-            day = "Saturday";
-        case 7:
-            day = "Saturday";
-        case 8:
-            day = "Saturday";
-        case 9:
-            day = "Saturday";
+        // Chinese Restaurant
+        case "5":
+            encapsulated_weight_calc("5", price_seg, acceptance_select);
+            break;
+        // If restaurant is Vegetarian
+        case "6":
+            encapsulated_weight_calc("6", price_seg, acceptance_select);
+            break;
+        // If restaurant is Cafe
+        case "7":
+            encapsulated_weight_calc("7", price_seg, acceptance_select);
+            break;
+        // If restaurant is Cafe
+        case "8":
+            encapsulated_weight_calc("8", price_seg, acceptance_select);
+            break;
         default:
             console.log("Default case");
         }
@@ -428,10 +2399,10 @@
         // etc
         Weight_Population = 20;
         console.log("Sort by:" + Ethnic_Sort_by);
-        console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
+        console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_weight);
         // change all weights to if-condition weights defined
-        workbook.changeParameterValueAsync("Weight_Population", Weight_Population);
-        workbook.changeParameterValueAsync("Asian_weight", Asian_Weight);
+        workbook.changeParameterValueAsync("Weight_Population", Population_density_weight);
+        workbook.changeParameterValueAsync("Asian_weight", Asian_weight);
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
         workbook.changeParameterValueAsync("Rest_Cat", rest_cat_value);
         console.log("Finished Adjusting weights");

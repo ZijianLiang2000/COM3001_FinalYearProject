@@ -59,8 +59,8 @@ class MapsController < ApplicationController
       gon.lad_name = name
       gon.lad20_code = lad20_code
       gon.google_api_key = ENV["GOOGLE_API_KEY"]
-    else
-      redirect_to lad_heatmap_path
+    elselad_heatmap
+      redirect_to _path
     end
   end
 
@@ -68,10 +68,12 @@ class MapsController < ApplicationController
     gon.form_token = form_authenticity_token
     rest_cat = params[:rest_cat_value]
     price_seg = params[:price_seg_value]
+    puts("PRICE_SEG")
+    puts(price_seg)
     acceptance_select = params[:acceptance_value]
     rent_min = params[:rent_min]
     rent_max = params[:rent_max]
-
+    
     puts("Rent min: " + rent_min.to_s)
     puts("Rent max: " + rent_max.to_s)
 
@@ -89,7 +91,9 @@ class MapsController < ApplicationController
     rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
 
     puts("Restaurant Index: " + rest_cat_arr.index((rest_cat).to_s).to_s)
+    # If restaurant category is selected
     if rest_cat != nil && (!rest_cat.nil?)
+      puts("If selected in first load without reloading")
       @rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
       @price_seg = price_seg
       @acceptance_select = acceptance_select
@@ -97,6 +101,13 @@ class MapsController < ApplicationController
       @rent_max = rent_max
       
       gon.rest_cat = rest_cat_arr.index((rest_cat).to_s) + 1
+      gon.rest_cat = @rest_cat
+      gon.price_seg = @price_seg
+      gon.acceptance_select = @acceptance_select
+      gon.rent_min = @rent_min
+      gon.rent_max = @rent_max
+      
+      # Save to session so able to reload these in LAD
       session["rest_cat"] = rest_cat_arr.index((rest_cat).to_s) + 1
       session["price_seg"] = price_seg
       session["acceptance_select"] = acceptance_select
@@ -111,6 +122,8 @@ class MapsController < ApplicationController
       puts("Rent min: " + (@rent_min).to_s)
       puts("Rent max: " + (@rent_max).to_s)
     else
+      puts("If reloaded view use session variables")
+      # If session is set
       if session["rest_cat"] != nil && (!session["rest_cat"].nil?)
         puts("Rest cat does not exists but applied from session")
         @rest_cat = session["rest_cat"]

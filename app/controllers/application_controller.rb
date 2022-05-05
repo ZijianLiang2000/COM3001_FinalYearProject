@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
         return @restaurant_address
     end
 
-    # Get current path
+    # Get current path and set progress bar value
     def url_path
         current_path = request.original_url
         puts("Printing URL path")
