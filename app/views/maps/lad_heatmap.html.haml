@@ -387,10 +387,8 @@
         // gon.rent_min = @rent_min
         // gon.rent_max = @rent_max
 
+        // When restaurant category for each option is
         switch (gon.rest_cat) {
-        case 0:
-            day = "Sunday";
-            break;
         case 1:
             day = "Monday";
             break;
@@ -408,6 +406,12 @@
             break;
         case 6:
             day = "Saturday";
+        case 7:
+            day = "Saturday";
+        case 8:
+            day = "Saturday";
+        case 9:
+            day = "Saturday";
         default:
             console.log("Default case");
         }
@@ -422,6 +426,7 @@
             Ethnic_Sort_by = "White Percentage";
         }
         // etc
+        Weight_Population = 20;
         console.log("Sort by:" + Ethnic_Sort_by);
         console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_Weight);
         // change all weights to if-condition weights defined

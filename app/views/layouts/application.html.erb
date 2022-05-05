@@ -9,14 +9,11 @@
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%# <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  
+
   </head>
 
   <body>
-    <script>
-      console.log("Request Path: ");
-      console.log(current_page);
-    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
     <%# flast alert part %>
     <% flash.each do |type, msg| %>
@@ -44,7 +41,19 @@
         </ul>
       </div>
     </nav>
-    <progress class="progress is-small is-success" value="60" max="100" style="width: 100%; height: 5px;"></progress>
+    <progress class="progress is-small is-success" id="progress_bar" value= <%= url_path() %> max="100" style="width: 100%; height: 5px;"></progress>
     <%= yield %>
+
+
+
+    <script>
+      var progress_bar = document.getElementById("progress_bar");
+      console.log(progress_bar.value);
+      if(progress_bar.value == "0"){
+        console.log("No need to show progress");
+        progress_bar.style.display = "none";
+      }
+      
+    </script>
   </body>
 </html>
