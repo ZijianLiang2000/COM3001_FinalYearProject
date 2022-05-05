@@ -21,11 +21,11 @@
                     = f.select(:price_seg_value, [["Cheap (0-8£)","0"], ["Moderate (8-16£)","1"],["Expensive (16-32£)","2"], ["Very Expensive (Equal or above 32£)","3"]],  {required: "required"}, class: "form-select w-100%") 
                     %br
                     .parent
-                        %h5 Weekly Rent Acceptance Range (£)
+                        %h5 Weekly Maximum Rent Acceptance Interval
                         .child-float-left-child{:style => "float: left; width: 30%;"}
-                            = f.number_field(:rent_min,{min: 0, max: 9999,  class: "form-control", required: "required", style: "width: 100%;", placeholder: "Minimum"})
+                            = f.number_field(:rent_min,{min: 0, max: 9999,  class: "form-control", required: "required", style: "width: 100%;", placeholder: "From (£)"})
                         .child-float-left-child{:style => "float: left; margin-left: 50px; width: 30%;"}
-                            = f.number_field(:rent_max, {min: 0, max: 9999,  class: "form-control", required: "required", style: "width: 100%;", placeholder: "Maximum"}) 
+                            = f.number_field(:rent_max, {min: 0, max: 9999,  class: "form-control", required: "required", style: "width: 100%;", placeholder: "To (£)"}) 
                     %br
                     %br
                     %br
