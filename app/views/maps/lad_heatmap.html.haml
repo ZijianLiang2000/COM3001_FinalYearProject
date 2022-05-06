@@ -348,8 +348,39 @@
         }
     }
 
+    function ethnic_weight_update(origin_ethnicity, rest_cat_val){
+
+        var Asian_weight = 4;
+        var Black_weight = 4;
+        var White_weight = 4;
+        var Mixed_weight = 4;
+        var Others_weight = 4;
+
+        if(origin_ethnicity[rest_cat_val] == "Asian"){
+            Asian_weight += 2;
+            Black_weight -= 0.5;
+            White_weight -= 0.5;
+            Mixed_weight -= 0.5;
+            Others_weight -= 0.5;
+        } else if(origin_ethnicity[rest_cat_val] =="White"){
+            Asian_weight += 0.5;
+            Black_weight -= 0.5;
+            White_weight += 2;
+            Mixed_weight -= 0.5;
+            Others_weight -= 0.5;
+        } else if(origin_ethnicity[rest_cat_val] =="All"){
+            Asian_weight -= 0.25;
+            Black_weight -= 0.25;
+            White_weight += 1;
+            Mixed_weight -= 0.25;
+            Others_weight -= 0.25;
+        }
+        var ethnic_weight_arr = [Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight];
+        return ethnic_weight_arr;
+    }
+
     // Encapsulated function to calculate weights according to restaurant category, price segment and acceptance value
-    function encapsulated_weight_calc(rest_cat_val, price_seg_val, acceptance_min, acceptance_max){
+    function encapsulated_weight_calc(rest_cat_val, price_seg_val, food_acceptance_score, rent_accept_min, rent_accept_max){
 
         // Default weight values set in Tableau that are related to change of restaurant category
         var Asian_weight = 4;
@@ -359,8 +390,10 @@
         var Others_weight = 4;
         var Same_cat_restaurant_weight = 10;
         var Diff_cat_restaurant_weight = 10;
-        var Rent_acceptance_min = acceptance_min;
-        var Rent_acceptance_min = acceptance_max;
+        var Rent_acceptance_min = rent_accept_min;
+        var Rent_acceptance_max = rent_accept_max;
+
+        var ethnic_weight_arr = []
 
         console.log("Restaurant category passed in: " + rest_cat_val);
 
@@ -369,7 +402,10 @@
         var rest_cat_arr = [...Array(9).keys()];
         // Matching restaurant category - restaurant and COO value scoring, from 1 - 5 points (User provides food related acceptance, reference other two acceptance)
         var other_acceptance_score = [1.1366, 1.2659, 1.1745, 1.0, 5.0, 2.0, 4.0, 5.0, 5.0];
-        // Matching majority ethnicity of restaurant to group
+
+        // Matching majority ethnicity of restaurant to group, direct influencial ethnic group weights depends on this array
+        // If a certain single ethnicity, then +2, others -0.5 
+        // If all, then according to ethnicity structure of UK, all +1.5, others +1.
         var origin_ethnicity = ["White", "Asian", "Asian", "Asian", "All", "Asian", "All", "All", "All"];
         // Price segment of each restaurant category
         // [Rest_cat_0: [Low-price%, Medium-price%, Expensive%, Very-expensive%]]
@@ -383,6 +419,9 @@
 
         // 3 user options: rest_cat_val, price_seg_val, acceptance_select_val
 
+        // calculate the comprehensive overall acceptance score from user expected food acceptance and other objective stats
+        var overall_acceptance = (1 + food_acceptance_score) * (1/3) + other_acceptance_score[rest_cat_val]
+
         // for every restaurant category
         for(let i = 0; i < rest_cat_arr.length; i++) {
 
@@ -391,7 +430,6 @@
             // Fine dining is expensive to very expensive price level, where weight gradually increase when approaching higher lvl - over 32£
             // Hence from 16£ to left and right side tends to be extreme in same absolute value of weight, += same value for opposite strategy.
 
-            if (rest_cat_val == rest_cat_arr[i]){
                 // print price segment percentage of corresponding restaurant
                 console.log("Majoriy origin ethnicity: " + origin_ethnicity[i] + ", Restaurant category price segment: " + rest_cat_price_seg[i] + ", Restaurant category restaurant and COO score: " + other_acceptance_score[i]);
                 // if corresponding restaurant category's user proposed price range has different number
@@ -401,34 +439,91 @@
                     // if corresponding restaurant category's price range is less than 0.02, then user's proposed price range is highly unrecommended.
                     // weight will drastically decrease
                     case (rest_cat_price_seg[i][price_seg_val] < 0.02):
-                        console.log("Not suggested due to very few to no restaurant of current category in this price range");
-                        if(price_seg_val == 0){
+                    // if expected price range for current restaurant category has too little existing market
+                        if(overall_acceptance > 3){
+                            // if user find expected acceptance high
+                            // relatively higher recommendation weight compared to same level worst option
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
 
-                        }else if(price_seg_val == 1){
-
-                        }else if(price_seg_val == 2){
-                            
-                        }else{
-
+                        } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            // middle
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        } else if(overall_acceptance <= 1.5){
+                            // do not recommend
+                            // notify price range too high, existing market too small and acceptance low
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                         }
+                        console.log("Not suggested due to very few to no restaurant of current category in this price range");
                         break;
                     // weight will remain
                     case (rest_cat_price_seg[i][price_seg_val] > 0.02 && rest_cat_price_seg[i][price_seg_val] < 0.2):
+                        if(overall_acceptance > 3){
+                            // if user find expected acceptance high
+                            // relatively higher recommendation weight compared to same level worst option
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+
+                        } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            // middle
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        } else if(overall_acceptance <= 1.5){
+                            // do not recommend
+                            // notify price range too high, existing market too small and acceptance low
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        }
                         console.log("Few restaurant amounts for current restaurant category in this price range");
                         break;
                     case (rest_cat_price_seg[i][price_seg_val] > 0.2 && rest_cat_price_seg[i][price_seg_val] < 0.4):
+                        if(overall_acceptance > 3){
+                            // if user find expected acceptance high
+                            // relatively higher recommendation weight compared to same level worst option
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+
+                        } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            // middle
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        } else if(overall_acceptance <= 1.5){
+                            // do not recommend
+                            // notify price range too high, existing market too small and acceptance low
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        }
                         console.log("Mainstream percentage of restaurant amounts for current restaurant category focus on this price range");
                         break;
-                    case (rest_cat_price_seg[i][price_seg_val] > 0.4 && rest_cat_price_seg[i][price_seg_val] < 0.6): 
+                    case (rest_cat_price_seg[i][price_seg_val] > 0.4 && rest_cat_price_seg[i][price_seg_val] < 0.6):
+                        if(overall_acceptance > 3){
+                            // if user find expected acceptance high
+                            // relatively higher recommendation weight compared to same level worst option
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+
+                        } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            // middle
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        } else if(overall_acceptance <= 1.5){
+                            // do not recommend
+                            // notify price range too high, existing market too small and acceptance low
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        } 
                         console.log("Over half of restaurant on this price range");
                         break;
                     // mainstream restaurant price segment
-                    case (rest_cat_price_seg[i][price_seg_val] > 0.6 && rest_cat_price_seg[i][price_seg_val] < 0.8):   
+                    case (rest_cat_price_seg[i][price_seg_val] > 0.6 && rest_cat_price_seg[i][price_seg_val] < 0.8):
+                        if(overall_acceptance > 3){
+                            // if user find expected acceptance high
+                            // relatively higher recommendation weight compared to same level worst option
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+
+                        } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            // middle
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        } else if(overall_acceptance <= 1.5){
+                            // do not recommend
+                            // notify price range too high, existing market too small and acceptance low
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                        }   
                         console.log("Most of the restaurant focus on this price range");
                         break;
 
-                }  
-            }
+            }  
+            
         }
     
         console.log("Done calculating");
@@ -436,10 +531,26 @@
         // Adjust weight against rent which is independent from other user options, the larger the weight is,
         // the more a restaurant is not recommended
 
-        weight_arr = [Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
-        Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max];
+        Asian_weight = ethnic_weight_arr[0];
+        Black_weight = ethnic_weight_arr[1];
+        White_weight = ethnic_weight_arr[2];
+        Mixed_weight = ethnic_weight_arr[3];
+        Others_weight = ethnic_weight_arr[4];
+        
 
-        return weight_arr
+        var weight_arr = [Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
+            Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max];
+
+        var name_arr = `Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
+            Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max`;
+
+        for(let i = 0; i<weight_arr.length; i++){
+            console.log((name_arr.split(','))[i]);
+            console.log(weight_arr[i]);
+        }
+
+        return weight_arr;
+
     }
 
     // JS scipt to update value when an option is selected for restuarant category
@@ -544,7 +655,6 @@
         // check if parameters change, if not
 
         console.log("Sort by:" + Ethnic_Sort_by);
-        console.log("Weight Population:" + Weight_Population + ", Asian Weight: " + Asian_weight);
         // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
         workbook.changeParameterValueAsync("Asian_weight", Asian_weight);
