@@ -28,7 +28,8 @@ class MapsController < ApplicationController
     lad20_code = params[:lad]
     map_style = params[:map_style]
     rest_cat = params[:rest_cat]
-    weight_arr = params[:weight_arr]
+    #  convert passed weight_arr to array
+    weight_arr = params[:weight_arr].split(',')
 
     puts("weight_arr is: ")
     puts(weight_arr)
@@ -44,6 +45,7 @@ class MapsController < ApplicationController
       @rest_cat = rest_cat
       @lad_name = name
       @lad20_code = lad20_code
+      @weight_arr = weight_arr
       
 
       # Find LSOA areas under LAD Name from csv

@@ -141,7 +141,7 @@
         // Button to select a location, post params of location to controller
         '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&lad='+ code +'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'&weight_arr='+weight_arr+'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
-        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +
         '</form>' +
         // Card to display information about district
         '<div class="card" style="width: 18rem;">' +
@@ -377,7 +377,7 @@
             Mixed_weight -= 0.5;
             Others_weight -= 0.5;
         } else if(origin_ethnicity[rest_cat_val] =="White"){
-            Asian_weight += 0.5;
+            Asian_weight -= 0.5;
             Black_weight -= 0.5;
             White_weight += 2;
             Mixed_weight -= 0.5;
@@ -1328,7 +1328,7 @@
 
         // Pass weight_arr and other parameters to LSOA worksheet so we do not have to work on the logic again
         
-        window["weight_arr"] = weight_arr;
+        window["weight_arr"] = weight_arr.slice(0,9);
 
         // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);

@@ -172,6 +172,7 @@
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
+                    workbook = viz.getWorkbook();
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -239,7 +240,85 @@
     function update_weight_to_tableau(){
         console.log("Updating weights");
         weight_arr = gon.weight_arr;
+        rest_cat = gon.rest_cat;
+        //[Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
+        //    Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max]
         console.log(weight_arr);
+
+        // LSOA weights
+        var Chinese_weights = 0.67;
+        var Indian_weights = 0.67;
+        var Asian_mixed_weights = 0.67;
+        // Chinese and Indian each worty 1/6 of total 4 points in the Asian ethnicity as a whole
+        var Asian_Pak_Bang_Others = 2.4;
+        var Black_weights = 4;
+        var White_weights = 4;
+
+        // 4 individual mix category in total, Asian_mix weight * 4 = 2.68
+        var Mixed_without_Asian_weights = 2.68;
+        var Other_race_weights = 4;
+
+        // if rest_cat is Chinese or Indian, then independent weights for these two ethnics would be increasing higher
+        // If Indian restaurant
+        if(rest_cat == 1){
+            // weights increase for area of high Indian ethnnicity and mixed community
+            Indian_weights *= 2;
+            Asian_mixed_weights += 0.67;
+
+            console.log("Indian Mixed weights: " + Indian_weights);
+            console.log("Asian Mixed weights: " + Asian_mixed_weights);
+        }else if (rest_cat == 5){
+            // weights increase for area of high Indian ethnnicity and mixed community
+            Chinese_weights *= 2;
+            Asian_mixed_weights += 0.67;
+
+            console.log("Chinese weights: " + Chinese_weights);
+            console.log("Asian Mixed weights: " + Asian_mixed_weights);
+        } else {
+            // for other ethnicity restaurants
+
+            // Chinese and Indian weights would increase by originally (Asian += 0.5) to be allocated to 6 specific ethnicities, so each add 0.083
+            Chinese_weights += (weight_arr[0])/6;
+            Indian_weights += (weight_arr[0])/6;
+            Asian_Pak_Bang_Others += ((weight_arr[0])/6) * 3;
+
+            Asian_mixed_weights += (weight_arr[3])/4;
+
+            Black_weight = weight_arr[1];
+            White_weight = weight_arr[2];
+            Mixed_without_Asian_weights = ((weight_arr[3])/4) * 3;
+            Others_weight = weight_arr[4];
+        }
+
+        Same_cat_restaurant_weight = weight_arr[5];
+        Diff_cat_restaurant_weight = weight_arr[6];
+        Rent_acceptance_min = weight_arr[7];
+        Rent_acceptance_max = weight_arr[8];
+
+
+        console.log(Black_weight);
+        console.log(White_weight);
+        console.log(Mixed_without_Asian_weights);
+        console.log(Others_weight);
+        console.log(Same_cat_restaurant_weight);
+        console.log(Diff_cat_restaurant_weight);
+        console.log(Rent_acceptance_min);
+        console.log(Rent_acceptance_max);
+
+        workbook.changeParameterValueAsync("Asian_Chinese_weight", Chinese_weights);
+        workbook.changeParameterValueAsync("Asian_Indian_weight", Indian_weights);
+        workbook.changeParameterValueAsync("Asian_Pak_Bang_Mixed_Other_weight", Asian_Pak_Bang_Others);
+        workbook.changeParameterValueAsync("Mixed_White_Asian_weight", Asian_mixed_weights);
+        workbook.changeParameterValueAsync("Black_weight", Black_weight);
+        workbook.changeParameterValueAsync("White_weight", White_weight);
+        workbook.changeParameterValueAsync("Mixed_without_Asian_weight", Mixed_without_Asian_weights);
+        workbook.changeParameterValueAsync("Other_Race_weight", Others_weight);
+        workbook.changeParameterValueAsync("Same_Cat_Restaurant_weight", Same_cat_restaurant_weight);
+        workbook.changeParameterValueAsync("Diff_Cat_Restaurant_weight", Diff_cat_restaurant_weight);
+        workbook.changeParameterValueAsync("Rent_acceptance_min", Rent_acceptance_min);
+        workbook.changeParameterValueAsync("Rent_acceptance_min", Rent_acceptance_min);
+        console.log("Finished Adjusting weights");
+        
     }
 
     function listenToMarksSelection() {
