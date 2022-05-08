@@ -42,6 +42,12 @@
                 %br
                 -# Button to Previous step
                 = back_link
+
+    %div#lad_notification{ :style => "position: absolute; margin: auto;padding: 10px; top: 130px; right: 10%; width: 250px;" }
+        .notification#notification
+        %br
+        .card#card_select{:style => "width: 100%;"}
+            .card-body#notification_content
                 
 
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
@@ -68,6 +74,9 @@
 
         var lad_option = document.getElementById("lad_option");
         lad_option.style.display = "none";
+
+        var lad_notification = document.getElementById("lad_notification");
+        lad_notification.style.display = "none";
         
         // Select default option to be 1, so do not need to press every time
         console.log("Running Init function");
@@ -82,15 +91,20 @@
 
     function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size) {
 
+        // Load weight_arr after updated to pass to lsoa
+        var weight_arr = window["weight_arr"]
+
         // Current type restaurant number in area
         console.log("Number of selected type restaurant in lad:" + curr_rest_num);
         console.log("Number of all restaurant in lad:" + sum_rest_num);
+        console.log("LAD Code: " + code);
         
         total = 0
         for(var k in count) {
             console.log("Each:" + count[k]);
             total += parseInt(count[k])
         }
+
         console.log("RestCatVal:" + rest_cat_val)
         console.log("RestCatVal (int):" + parseInt(rest_cat_val))
         console.log("Area size:" + parseInt(area_size))
@@ -125,7 +139,7 @@
         src +
         '</iframe>' +
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&lad='+ code +'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'">'+
+        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&lad='+ code +'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'&weight_arr='+weight_arr+'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
@@ -393,7 +407,11 @@
         var Rent_acceptance_min = rent_accept_min;
         var Rent_acceptance_max = rent_accept_max;
 
-        var ethnic_weight_arr = []
+        // Array for another method to deal with ethnic weights and pass back to this function
+        var ethnic_weight_arr = [];
+
+        // Notification to users to notify overall acceptance, aggregation or diffusion, how its market is...
+        var notification = "";
 
         console.log("Restaurant category passed in: " + rest_cat_val);
 
@@ -411,11 +429,6 @@
         // [Rest_cat_0: [Low-price%, Medium-price%, Expensive%, Very-expensive%]]
         var rest_cat_price_seg = [[0.23, 0.69, 0.07, 0.01], [0.23, 0.77, 0, 0], [0.24, 0.69, 0.05, 0.02], [0.17, 0.65, 0.14, 0.04],[0.14, 0.72, 0.1, 0.03],
             [0.62, 0.37, 0.01, 0], [0.20, 0.67, 0.03, 0.01],[0.80, 0.10, 0.03, 0.01],[0.70, 0.22, 0.06, 0.02]];
-
-        // Price segment category array from 0 to 3, total 4 price segment indices
-        //var price_seg_arr = [...Array(4).keys()];
-        // Acceptance category array from 0 to 2, total 3 Acceptance indices
-        //var acceptance_arr = [...Array(3).keys()];
 
         // 3 user options: rest_cat_val, price_seg_val, acceptance_select_val
 
@@ -444,11 +457,13 @@
 
                     case (rest_cat_price_seg[i][price_seg_val] < 0.02):
                     console.log("Very small market for selected price range for current restaurant category");
+                    notification += "This restaurant category barely has any market for the selected price segment, ";
                     // if expected price range for current restaurant category has too little existing market
                     // its overall weight would be decrease and recommendation value would decrease
                     // because of high price range for a low
                         if(overall_acceptance > 3){
                             console.log("High overall acceptance");
+                            notification += "The overall acceptance (food, restaurant and country of origin) is high, ";
                             // if user find expected acceptance high
                             // relatively higher recommendation weight compared to same level worst option
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
@@ -456,6 +471,7 @@
                             // If price segment low,business category market small, overall acceptance high
                             if(price_seg_val == 0){
                             console.log("Price segment low");
+                            notification += "current price segment chosen is the low-price segment. However, if a restaurant category overall is expected to be mid to high price segment, expanding to a lower end market may provide larger potential with the corrent business strategy. ";
                             // ------
                             // if price segment is low, market is small, acceptance is high, restaurant tend to diffuse
                             // usually restaurants with current category would not have too small market in low price segment
@@ -463,42 +479,50 @@
                             // to sell more in lower price where market is not developed
                             // hence higher weight for diff_cat restaurant and lower weight for same_cat restaurant
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
                             // If price segment medium,business category market small, overall acceptance high
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // ------
                             // if price segment is middle, market is small, acceptance is high, restaurant tend to diffuse
                             
                             // hence higher weight for same_cat restaurant and lower weight for diff_cat restaurant
                             // Diffuse
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
 
                             // If price segment high,business category market small, overall acceptance high
                             }else if(price_seg_val == 2){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment extremely,business category market small, overall acceptance high
                             }else{
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment.";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is medium, ";
                             console.log("Medium overall acceptance");
                             // middle
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance middle
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             
                             // Then between agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
@@ -506,6 +530,7 @@
                             // If price segment medium, business category market small, overall acceptance middle
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Then agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
                             Diff_cat_restaurant_weight -= 0
@@ -513,46 +538,57 @@
                             }else if(price_seg_val == 2){
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance middle
                             }else{
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance <= 1.5){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is low, ";
                             console.log("Low overall acceptance");
                             // do not recommend
                             // notify price range too high, existing market too small and acceptance low
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance low
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment medium, business category market small, overall acceptance low
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment high, business category market small, overall acceptance low
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended. If a restaurant is in high price segment and has a small market with low acceptance, it faces significant risk. ";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance low
                             }else{
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.  If a restaurant is in a very high price segment and has a small market with low acceptance, it faces significant risk. ";
                             console.log("Price segment very high")
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
@@ -564,9 +600,12 @@
                     // weight will remain
                     // if market in segment is small
                     case (rest_cat_price_seg[i][price_seg_val] > 0.02 && rest_cat_price_seg[i][price_seg_val] < 0.2):
+                        notification += "This restaurant category has some market for the selected price segment, ";
                         console.log("Relatively small market for selected price range for current restaurant category");
+                        
                         if(overall_acceptance > 3){
                             console.log("High overall acceptance");
+                            notification += "The overall acceptance (food, restaurant and country of origin) is high, ";
                         
                             // if user find expected acceptance high
                             // relatively higher recommendation weight compared to same level worst option
@@ -576,7 +615,7 @@
                         
                             // If price segment low,business category market small, overall acceptance high
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // ------
                             // if price segment is low, market is small, acceptance is high, restaurant tend to diffuse
                             // usually restaurants with current category would not have too small market in low price segment
@@ -584,25 +623,30 @@
                             // to sell more in lower price where market is not developed
                             // hence higher weight for diff_cat restaurant and lower weight for same_cat restaurant
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
                             // If price segment medium,business category market small, overall acceptance high
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // ------
                             // if price segment is middle, market is small, acceptance is high, restaurant tend to diffuse
                             
                             // hence higher weight for same_cat restaurant and lower weight for diff_cat restaurant
                             // Diffuse
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
 
                             // If price segment high,business category market small, overall acceptance high
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment extremely,business category market small, overall acceptance high
@@ -610,16 +654,18 @@
                                 
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is medium, ";
                             console.log("Medium overall acceptance");
                             // middle
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance middle
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             
                             // Then between agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
@@ -627,54 +673,68 @@
                             // If price segment medium, business category market small, overall acceptance middle
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Then agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
                             Diff_cat_restaurant_weight -= 0
                             // If price segment high, business category market small, overall acceptance middle
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance middle
                             }else{
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             console.log("Price segment very high")
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance <= 1.5){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is low, ";
+                            notification += "current price segment chosen is low-price. ";
                             console.log("Low overall acceptance");
                             // do not recommend
                             // notify price range too high, existing market too small and acceptance low
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance low
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment medium, business category market small, overall acceptance low
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment high, business category market small, overall acceptance low
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance low
                             }else{
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             console.log("Price segment very high")
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
@@ -685,9 +745,11 @@
 
                     // if current restaurant category market is current middle
                     case (rest_cat_price_seg[i][price_seg_val] > 0.2 && rest_cat_price_seg[i][price_seg_val] < 0.4):
+                    notification += "This restaurant category has a medium market size for the selected price segment, ";
                         console.log("Medium size market for selected price range for current restaurant category");
                         if(overall_acceptance > 3){
                             console.log("High overall acceptance");
+                            notification += "The overall acceptance (food, restaurant and country of origin) is high, ";
                         
                             // if user find expected acceptance high
                             // relatively higher recommendation weight compared to same level worst option
@@ -695,7 +757,7 @@
                             
                             // If price segment low,business category market small, overall acceptance high
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // ------
                             // if price segment is low, market is small, acceptance is high, restaurant tend to diffuse
                             // usually restaurants with current category would not have too small market in low price segment
@@ -703,26 +765,31 @@
                             // to sell more in lower price where market is not developed
                             // hence higher weight for diff_cat restaurant and lower weight for same_cat restaurant
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
                             // If price segment medium,business category market small, overall acceptance high
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // ------
                             // if price segment is middle, market is small, acceptance is high, restaurant tend to diffuse
                             
                             // hence higher weight for same_cat restaurant and lower weight for diff_cat restaurant
                             // Diffuse
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
 
                             // If price segment high,business category market small, overall acceptance high
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
 
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment extremely,business category market small, overall acceptance high
@@ -730,16 +797,18 @@
                                 
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is medium, ";
                             console.log("Medium overall acceptance");
                             // middle
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance middle
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             
                             // Then between agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
@@ -747,49 +816,60 @@
                             // If price segment medium, business category market small, overall acceptance middle
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Then agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
                             Diff_cat_restaurant_weight -= 0
                             // If price segment high, business category market small, overall acceptance middle
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                         
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance middle
                             }else{
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance <= 1.5){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is low, ";
                             console.log("Low overall acceptance");
                             // do not recommend
                             // notify price range too high, existing market too small and acceptance low
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance low
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment medium, business category market small, overall acceptance low
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment high, business category market small, overall acceptance low
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance low
@@ -797,6 +877,8 @@
                             console.log("Price segment very high");
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
@@ -806,9 +888,11 @@
 
                     // if current market for restaurant category is mainstream
                     case (rest_cat_price_seg[i][price_seg_val] > 0.4 && rest_cat_price_seg[i][price_seg_val] < 0.6):
+                        notification += "The selected price segment is the mainstream positioning for similar businessies is the restaurant category, ";
                         console.log("Mainstream market for selected price range for current restaurant category");
                         if(overall_acceptance > 3){
                             console.log("High overall acceptance");
+                            notification += "The overall acceptance (food, restaurant and country of origin) is high, ";
                         
                             // if user find expected acceptance high
                             // relatively higher recommendation weight compared to same level worst option
@@ -817,7 +901,7 @@
                             
                             // If price segment low,business category market small, overall acceptance high
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // ------
                             // if price segment is low, market is small, acceptance is high, restaurant tend to diffuse
                             // usually restaurants with current category would not have too small market in low price segment
@@ -825,26 +909,31 @@
                             // to sell more in lower price where market is not developed
                             // hence higher weight for diff_cat restaurant and lower weight for same_cat restaurant
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
                             // If price segment medium,business category market small, overall acceptance high
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // ------
                             // if price segment is middle, market is small, acceptance is high, restaurant tend to diffuse
                             
                             // hence higher weight for same_cat restaurant and lower weight for diff_cat restaurant
                             // Diffuse
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
 
                             // If price segment high,business category market small, overall acceptance high
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
 
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment extremely,business category market small, overall acceptance high
@@ -852,16 +941,19 @@
                             console.log("Price segment very high");
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is medium, ";
                             console.log("Medium overall acceptance");
                             // middle
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance middle
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             
                             // Then between agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
@@ -869,55 +961,68 @@
                             // If price segment medium, business category market small, overall acceptance middle
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Then agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
                             Diff_cat_restaurant_weight -= 0
                             // If price segment high, business category market small, overall acceptance middle
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                         
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance middle
                             }else{
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             console.log("Price segment very high")
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance <= 1.5){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is low, ";
                             console.log("Low overall acceptance");
                             // do not recommend
                             // notify price range too high, existing market too small and acceptance low
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance low
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment medium, business category market small, overall acceptance low
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment high, business category market small, overall acceptance low
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance low
                             }else{
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             console.log("Price segment very high")
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
@@ -928,9 +1033,11 @@
 
                     // most restaurants choose this price range in this market for selected 
                     case (rest_cat_price_seg[i][price_seg_val] > 0.6 && rest_cat_price_seg[i][price_seg_val] < 0.8):
+                        notification += "The selected price segment is saturated for similar businessies is the restaurant category (better try different price segments for larger marketing potential), ";
                         console.log("Saturated market for selected price range for current restaurant category");
                         if(overall_acceptance > 3){
                             console.log("High overall acceptance");
+                            notification += "The overall acceptance (food, restaurant and country of origin) is high, ";
                         
                             // if user find expected acceptance high
                             // relatively higher recommendation weight compared to same level worst option
@@ -938,7 +1045,7 @@
                             
                             // If price segment low,business category market small, overall acceptance high
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // ------
                             // if price segment is low, market is small, acceptance is high, restaurant tend to diffuse
                             // usually restaurants with current category would not have too small market in low price segment
@@ -946,26 +1053,31 @@
                             // to sell more in lower price where market is not developed
                             // hence higher weight for diff_cat restaurant and lower weight for same_cat restaurant
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
                             // If price segment medium,business category market small, overall acceptance high
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // ------
                             // if price segment is middle, market is small, acceptance is high, restaurant tend to diffuse
                             
                             // hence higher weight for same_cat restaurant and lower weight for diff_cat restaurant
                             // Diffuse
                             console.log("Diffuse");
+                            notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 5
 
                             // If price segment high,business category market small, overall acceptance high
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
 
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment extremely,business category market small, overall acceptance high
@@ -973,16 +1085,18 @@
                                 
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance > 1.5 && overall_acceptance <= 3){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is medium, ";
                             console.log("Medium overall acceptance");
                             // middle
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance middle
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             
                             // Then between agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
@@ -990,54 +1104,67 @@
                             // If price segment medium, business category market small, overall acceptance middle
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Then agglomeration and diffusion
                             Same_cat_restaurant_weight += 0
                             Diff_cat_restaurant_weight -= 0
                             // If price segment high, business category market small, overall acceptance middle
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance middle
                             }else{
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             console.log("Price segment very high")
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             }
                         } else if(overall_acceptance <= 1.5){
+                            notification += "The overall acceptance (food, restaurant and country of origin) is low, ";
                             console.log("Low overall acceptance");
                             // do not recommend
                             // notify price range too high, existing market too small and acceptance low
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
                             // If price segment low, business category market small, overall acceptance low
                             if(price_seg_val == 0){
-                            console.log("Price segment low");
+                            notification += "current price segment chosen is low-price. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment medium, business category market small, overall acceptance low
                             }else if(price_seg_val == 1){
                             console.log("Price segment medium");
+                            notification += "current price segment chosen is the medium-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment high, business category market small, overall acceptance low
                             }else if(price_seg_val == 2){
                             console.log("Price segment high");
+                            notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance low
                             }else{
                             // Agglomerate
                             console.log("Agglomerate");
+                            notification += "current price segment chosen is the very-high price segment. ";
+                            notification += "Restaurant tend to agglomerate with restaurants of similar restaurant category or positioning to take advantage of attracting consumers, hence area with large amount of similar businesses would be recommended.";
                             console.log("Price segment very high")
                             Same_cat_restaurant_weight += 5
                             Diff_cat_restaurant_weight -= 5
@@ -1062,15 +1189,18 @@
         
 
         var weight_arr = [Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
-            Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max];
+            Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max, notification];
 
         var name_arr = `Asian_weight, Black_weight, White_weight, Mixed_weight, Others_weight, Same_cat_restaurant_weight,
-            Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max`;
+            Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max, notification`;
 
         for(let i = 0; i<weight_arr.length; i++){
             console.log((name_arr.split(','))[i]);
             console.log(weight_arr[i]);
         }
+
+        console.log("Notification:");
+        console.log(notification);
 
         return weight_arr;
 
@@ -1082,6 +1212,9 @@
         // hide block option every time onchange option
         var lad_option = document.getElementById("lad_option");
         lad_option.style.display = "none";
+
+        var lad_notification = document.getElementById("lad_notification");
+        lad_notification.style.display = "none";
 
         var rest_cat_value = $('#rest_cat_select').val();
         var map_type = $('#globalstyleselect').val();
@@ -1104,6 +1237,10 @@
         var Employment_weight = 15;
         var House_price_weight = 14;
         var Income_weight = 13;
+
+        // Rent weight adjusted in Tableau
+        // if Area rent within bound of Rent acceptance min - Rent acceptance max, weight * 1.5
+        // if Area rent > Rent acceptance max, weight * 10
         var Rent_weight = 18;
         var Restaurant_industry_weight = 12;
 
@@ -1174,9 +1311,9 @@
         Diff_cat_restaurant_weight = weight_arr[6];
         Rent_acceptance_min = weight_arr[7];
         Rent_acceptance_max = weight_arr[8];
+        Notification = weight_arr[9];
         
-        // check if parameters change, if not
-
+        
         console.log("Sort by:" + Ethnic_Sort_by);
         console.log("Updated parameters for weights");
         console.log(Asian_weight);
@@ -1188,6 +1325,10 @@
         console.log(Diff_cat_restaurant_weight);
         console.log(Rent_acceptance_min);
         console.log(Rent_acceptance_max);
+
+        // Pass weight_arr and other parameters to LSOA worksheet so we do not have to work on the logic again
+        
+        window["weight_arr"] = weight_arr;
 
         // change all weights to if-condition weights defined
         workbook.changeParameterValueAsync("Sort by", Ethnic_Sort_by);
@@ -1201,7 +1342,16 @@
         workbook.changeParameterValueAsync("Rent_acceptance_min", Rent_acceptance_min);
         workbook.changeParameterValueAsync("Rent_acceptance_min", Rent_acceptance_min);
         console.log("Finished Adjusting weights");
+
+        // display lad option when loaded
         lad_option.style.display = "block";
+        // display lad notification when loaded
+        lad_notification.style.display = "block";
+
+        // fill card of lad notification with content
+        document.getElementById("notification_content").innerHTML=
+        `<h5><b>About your selections</b></h5>
+        <p>`+ Notification +`</p>`;
     }
 
     function listenToMarksSelection() {
@@ -1212,6 +1362,7 @@
         // Display option block everytime map is loaded
         var lad_option = document.getElementById("lad_option");
         lad_option.style.display = "block";
+        
 
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
@@ -1262,7 +1413,7 @@
             lng = dict["经度(自动生成)"]
         }
 
-        var code = dict["Lad 2020 Code"];
+        var code = dict["ATTR(Lad 2020 Code)"];
         
         rest_cat_index = ["AGG(Number of Italian Restaurants in LAD)",
         "AGG(Number of Indian Restaurants in LAD)", "AGG(Number of Japanese Restaurants in LAD)",

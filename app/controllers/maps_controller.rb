@@ -28,6 +28,10 @@ class MapsController < ApplicationController
     lad20_code = params[:lad]
     map_style = params[:map_style]
     rest_cat = params[:rest_cat]
+    weight_arr = params[:weight_arr]
+
+    puts("weight_arr is: ")
+    puts(weight_arr)
 
     if name != nil && (!name.nil?)
 
@@ -59,8 +63,9 @@ class MapsController < ApplicationController
       gon.lad_name = name
       gon.lad20_code = lad20_code
       gon.google_api_key = ENV["GOOGLE_API_KEY"]
-    elselad_heatmap
-      redirect_to _path
+      gon.weight_arr = weight_arr
+    else
+      redirect_to lad_heatmap_path
     end
   end
 

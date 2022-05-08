@@ -236,7 +236,17 @@
         }
     }
 
+    function update_weight_to_tableau(){
+        console.log("Updating weights");
+        weight_arr = gon.weight_arr;
+        console.log(weight_arr);
+    }
+
     function listenToMarksSelection() {
+
+        // upload weights to tableau from lad
+        update_weight_to_tableau();
+        
 
         // Display option block everytime map is loaded
         var lad_option = document.getElementById("lad_option");
