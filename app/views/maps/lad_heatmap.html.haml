@@ -89,7 +89,7 @@
         document.getElementById("card_select").style="width: 18rem;"
     }
 
-    function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size) {
+    function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size, featured_norm_val) {
 
         // Load weight_arr after updated to pass to lsoa
         var weight_arr = window["weight_arr"]
@@ -123,7 +123,7 @@
         
         innerHtml = '<head><style>' +
         // Header part
-        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}.holder #nearby_search{position: absolute;top: 320px;left: 110px;}" +
+        ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;}" +
         '.holder #select_area{position: absolute;bottom: 60px; left: 30%;}'+
         '</style></head>' +
         '<body>' + 
@@ -146,19 +146,25 @@
         // Card to display information about district
         '<div class="card" style="width: 18rem;">' +
         '<div class="card-body">' +
-        '<h5 class="card-title">'+ name +'</h5>' +
-        '<h6 class="card-subtitle mb-2 text-muted">Area size: '+ parseInt(area_size) * 10 +' km²</h6>' +
+        '<h5 class="card-title">'+ name +'</h5><h6>Features: </h6>';
+
+        //
+        for(let i = 0; i<featured_norm_val.length;i++){
+            innerHtml += '<span class="badge bg-success">'+ featured_norm_val[i][1] +'</span>&nbsp;';
+        }
+
+        innerHtml += '<h6 class="card-subtitle mb-2 text-muted"><br>Area size: '+ parseInt(area_size) * 10 +' km²</h6>' +
         '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
-        '<h6 class="card-subtitle mb-2 text-muted"> '+ (total - 0) +' listed restaurants within and nearby </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_val)] + ') </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - curr_rest_num) +' Indirect Competitors </p>' +
+        '<h6 class="card-subtitle mb-2 text-muted"> '+ (total - 0) +' listed restaurants within and nearby </h6>' +
+        '<h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' listed restaurants in ' + name + ' </h6>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_val)] + ') </h6>' +
+        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (total - curr_rest_num) +' Indirect Competitors </h6>' +
         
         // button for nearby search
-        '<form class="button_to" method="post" action="/nearby_result?name='+name+'&lat='+lat+'&lng='+lng+'&map=LAD">' +
+        '<br><form class="button_to" method="post" action="/nearby_result?name='+name+'&lat='+lat+'&lng='+lng+'&map=LAD">' +
         '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
-        '</form>'
+        '</form>' + 
         '</div></div></div></body>'
 
 
@@ -168,7 +174,13 @@
     }
 
     function closeNav() {
+        // close sidebar by setting width to 0
         document.getElementById("mySidebar").style.width = "0";
+    }
+
+    function closeNotification(){
+        // hide card
+        document.getElementById("lad_notification").style.display = "none";
     }
 
     let viz
@@ -1350,13 +1362,14 @@
 
         // fill card of lad notification with content
         document.getElementById("notification_content").innerHTML=
-        `<h5><b>About your selections</b></h5>
+        `<h5><b>About your selections</b><a class="closebtn" href="javascript:void(0)" onclick="closeNotification()">&times;</a></h5>
         <p>`+ Notification +`</p>`;
     }
 
     function listenToMarksSelection() {
         console.log("listenToMarksSelection function is loaded");
         //Check every time when map is loaded, the value of restaurant category and update weights
+        //--------------------------------
         update_weight_to_tableau();
 
         // Display option block everytime map is loaded
@@ -1415,7 +1428,8 @@
 
         var code = dict["ATTR(Lad 2020 Code)"];
         
-        rest_cat_index = ["AGG(Number of Italian Restaurants in LAD)",
+        // Restaurant category indices
+        var rest_cat_index = ["AGG(Number of Italian Restaurants in LAD)",
         "AGG(Number of Indian Restaurants in LAD)", "AGG(Number of Japanese Restaurants in LAD)",
         "AGG(Number of Thai Restaurants in LAD)", "AGG(Number of British Restaurants in LAD)",
         "AGG(Number of Chinese Restaurants in LAD)", "AGG(Number of Vegetarian Restaurants in LAD)",
@@ -1425,6 +1439,46 @@
         var sum_rest_num = dict["AGG(Number of Restaurants in LAD)"];
 
         console.log("Current restaurant num:" + curr_rest_num);
+
+        // Restaurant normalized value to discover the advantage or disadvantage of an area.
+        // normalized value can show a measure's performance / score compared to all other areas
+        // Each var will have the val and name of the parameter
+        var pop_dense_norm = [dict["AGG(Population_Density_normalized)"], "Population Density"];
+        var income_norm = [dict["AGG(Household_Income_normalized)"], "Household Income"];
+        var house_price_norm = [dict["AGG(House_Price_normalized)"], "House Price"];
+        var weekly_rent_norm = [dict["ATTR(Normalized 2021)"], "Weekly Rent"];
+        var Asian_percentage_normalized = [dict["AGG(Asian_%_normalized)"], "Asian Percentage"];
+        var Black_percentage_normalized = [dict["AGG(Black_%_normalized)"], "Black Percentage"];
+        var White_percentage_normalized = [dict["AGG(White_%_normalized)"], "White Percentage"];
+        var Mixed_percentage_normalized = [dict["AGG(Mixed_%_normalized)"], "Mixed Percentage"];
+        var Other_percentage_normalized = [dict["AGG(Other_%_normalized)"], "Other Ethnicity Percentage"];
+        var employment_normalized = [dict["AGG(Employment_normalized)"], "Overall Employment"];
+        var same_cat_normalized = [dict["AGG(Same_cat_normalized)"], "Amount of same category restaurants"];
+        var diff_cat_normalized = [dict["AGG(Diff_cat_normalized)"], "Amount of different category restaurants"];
+
+        // loopable array for normalization
+        var normalized_arr = [pop_dense_norm, income_norm, house_price_norm, weekly_rent_norm, Asian_percentage_normalized, Black_percentage_normalized,
+        White_percentage_normalized, Mixed_percentage_normalized, Other_percentage_normalized, employment_normalized, same_cat_normalized, diff_cat_normalized];
+
+        // add these normalized value if they have featureable values
+        var featured_norm_val = [];
+
+        for(let i = 0; i<normalized_arr.length;i++){
+            // values other than house price and rent price, the higher the better
+            if(normalized_arr[i][0]>0.8 && normalized_arr[i][1] != "House Price" && normalized_arr[i][1] != "Weekly Rent"){
+                featured_norm_val.push(normalized_arr[i]);
+                console.log("Values larger than 0.8 among all areas");
+                console.log(normalized_arr[i][1]);
+            
+            }
+
+            // house price and rent price, the lower the better
+            if(normalized_arr[i][1] == "House Price" || normalized_arr[i][1] == "Weekly Rent" && normalized_arr[i][0] <= 0.2){
+                featured_norm_val.push(normalized_arr[i]);
+                console.log("House price or rent values less than 0.2 among all areas");
+                console.log(normalized_arr[i][1]);
+            }
+        }
 
         res_count = new Array();
         var dataview_value = $('#dataview').val();
@@ -1441,7 +1495,7 @@
                     // Returning a json format of count
                     res_count = msg.response;
                     console.log("Response: " + res_count)
-                    openNav(name,code, lat,lng,population,res_count,rest_cat_value, sum_rest_num, curr_rest_num,area_size);
+                    openNav(name,code, lat,lng,population,res_count,rest_cat_value, sum_rest_num, curr_rest_num,area_size, featured_norm_val);
                 },
                 error: function() {
                     alert('Unavailable to retreive restaurant amount in this area');
@@ -1450,7 +1504,6 @@
             
             // openNav(res_count, name,lat,lng,population);
             console.log("LAD Name:" + name + ", LAD Code: " + code +  ", Lat:" + lat + ",lng: " + lng + ", population: " + population);
-            
         }
     }
 

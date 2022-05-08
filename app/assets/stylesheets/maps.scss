@@ -29,22 +29,6 @@ body h1, h2, h3, h4, h5, h6{
   .sidebar a:hover {
     color: #f1f1f1;
   }
-  
-  #nearby_search{
-    margin: 0;
-    position: absolute;
-    left: 50%;  .sidebar .closebtn {
-      position: absolute;
-      top: 0;
-      right: 25px;
-      font-size: 36px;
-      margin-left: 50px;
-      color: red;
-    }
-    top:80%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-  }
 
   .closebtn {
     position: absolute;
