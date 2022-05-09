@@ -145,9 +145,12 @@
         '</form>' +
         // Card to display information about district
         '<div class="card" style="width: 18rem;">' +
-        '<div class="card-body">' +
-        '<h5 class="card-title">'+ name +'</h5><h6>Features: </h6>';
-
+        '<div class="card-body">';
+        if(featured_norm_val.length !== 0){
+            innerHtml += '<h5 class="card-title">'+ name +'</h5><h6>Features: </h6>';
+        }else{
+            innerHtml += '<h5 class="card-title">'+ name +'</h5>';
+        }
         //
         for(let i = 0; i<featured_norm_val.length;i++){
             innerHtml += '<span class="badge bg-success">'+ featured_norm_val[i][1] +'</span>&nbsp;';
@@ -445,8 +448,9 @@
         // 3 user options: rest_cat_val, price_seg_val, acceptance_select_val
 
         // calculate the comprehensive overall acceptance score from user expected food acceptance and other objective stats
-        var overall_acceptance = (1 + food_acceptance_score) * (1/3) + other_acceptance_score[rest_cat_val]
-
+        var overall_acceptance = (1 + food_acceptance_score) * (1/3) + other_acceptance_score[rest_cat_val];
+        console.log("Overall Acceptance: " + overall_acceptance);
+        console.log("Current price segment market size: " + rest_cat_price_seg[rest_cat_val][price_seg_val]);
         // for every restaurant category
         for(let i = 0; i < rest_cat_arr.length; i++) {
             // if rest_cat matches selected one
@@ -467,7 +471,7 @@
                     // if corresponding restaurant category's price range is less than 0.02, then user's proposed price range is highly unrecommended.
                     // weight will drastically decrease
 
-                    case (rest_cat_price_seg[i][price_seg_val] < 0.02):
+                    case (rest_cat_price_seg[i][price_seg_val] <= 0.02):
                     console.log("Very small market for selected price range for current restaurant category");
                     notification += "This restaurant category barely has any market for the selected price segment, hence beware of risk. ";
                     // if expected price range for current restaurant category has too little existing market
@@ -492,6 +496,7 @@
                             // hence higher weight for diff_cat restaurant and lower weight for same_cat restaurant
                             console.log("Diffuse");
                             notification += "Restaurant tend to diffuse with restaurants of similar restaurant category or positioning, hence area with large amount of those businesses would not be recommended.";
+                            
                             Same_cat_restaurant_weight -= 5
                             Diff_cat_restaurant_weight += 150
                             // If price segment medium,business category market small, overall acceptance high
@@ -510,7 +515,7 @@
 
                             // If price segment high,business category market small, overall acceptance high
                             }else if(price_seg_val == 2){
-                            console.log("Price segment medium");
+                            console.log("Price segment high");
                             notification += "current price segment chosen is the medium-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
@@ -519,7 +524,7 @@
                             Diff_cat_restaurant_weight -= 5
                             // If price segment extremely,business category market small, overall acceptance high
                             }else{
-                            console.log("Price segment high");
+                            console.log("Price segment very high");
                             notification += "current price segment chosen is the high-price segment.";
                             // Agglomerate
                             console.log("Agglomerate");
@@ -555,7 +560,7 @@
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance middle
                             }else{
-                            console.log("Price segment high");
+                            console.log("Price segment very high");
                             notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
@@ -611,7 +616,7 @@
 
                     // weight will remain
                     // if market in segment is small
-                    case (rest_cat_price_seg[i][price_seg_val] > 0.02 && rest_cat_price_seg[i][price_seg_val] < 0.2):
+                    case (rest_cat_price_seg[i][price_seg_val] > 0.02 && rest_cat_price_seg[i][price_seg_val] <= 0.2):
                         notification += "This restaurant category has a small portion of market for the selected price segment, which exists some risk. ";
                         console.log("Relatively small market for selected price range for current restaurant category");
                         
@@ -622,8 +627,6 @@
                             // if user find expected acceptance high
                             // relatively higher recommendation weight compared to same level worst option
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
-                            
-
                         
                             // If price segment low,business category market small, overall acceptance high
                             if(price_seg_val == 0){
@@ -756,7 +759,7 @@
                         break;
 
                     // if current restaurant category market is current middle
-                    case (rest_cat_price_seg[i][price_seg_val] > 0.2 && rest_cat_price_seg[i][price_seg_val] < 0.4):
+                    case (rest_cat_price_seg[i][price_seg_val] > 0.2 && rest_cat_price_seg[i][price_seg_val] <= 0.4):
                     notification += "This restaurant category has a medium market size for the selected price segment, ";
                         console.log("Medium size market for selected price range for current restaurant category");
                         if(overall_acceptance > 3){
@@ -844,7 +847,7 @@
                             Diff_cat_restaurant_weight -= 5
                             // If price segment very high, business category market small, overall acceptance middle
                             }else{
-                            console.log("Price segment high");
+                            console.log("Price segment very high");
                             notification += "current price segment chosen is the high-price segment. ";
                             // Agglomerate
                             console.log("Agglomerate");
@@ -899,7 +902,7 @@
                         break;
 
                     // if current market for restaurant category is mainstream
-                    case (rest_cat_price_seg[i][price_seg_val] > 0.4 && rest_cat_price_seg[i][price_seg_val] < 0.6):
+                    case (rest_cat_price_seg[i][price_seg_val] > 0.4 && rest_cat_price_seg[i][price_seg_val] <= 0.6):
                         notification += "The selected price segment is the mainstream positioning for similar businessies is the restaurant category, ";
                         console.log("Mainstream market for selected price range for current restaurant category");
                         if(overall_acceptance > 3){
@@ -909,7 +912,6 @@
                             // if user find expected acceptance high
                             // relatively higher recommendation weight compared to same level worst option
                             ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
-
                             
                             // If price segment low,business category market small, overall acceptance high
                             if(price_seg_val == 0){
@@ -1044,7 +1046,7 @@
                         break;
 
                     // most restaurants choose this price range in this market for selected 
-                    case (rest_cat_price_seg[i][price_seg_val] > 0.6 && rest_cat_price_seg[i][price_seg_val] < 0.8):
+                    case (rest_cat_price_seg[i][price_seg_val] > 0.6 && rest_cat_price_seg[i][price_seg_val] <= 0.8):
                         notification += "The selected price segment is saturated for similar businessies is the restaurant category (better try different price segments for larger marketing potential), ";
                         console.log("Saturated market for selected price range for current restaurant category");
                         if(overall_acceptance > 3){
@@ -1144,7 +1146,7 @@
                             console.log("Low overall acceptance");
                             // do not recommend
                             // notify price range too high, existing market too small and acceptance low
-                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val)
+                            ethnic_weight_arr = ethnic_weight_update(origin_ethnicity, rest_cat_val);
                             // If price segment low, business category market small, overall acceptance low
                             if(price_seg_val == 0){
                             notification += "current price segment chosen is low-price. ";

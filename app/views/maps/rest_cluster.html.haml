@@ -123,6 +123,8 @@
     // Info for sidebar to display after clicking on specific button
     function clusterInfo(clicked_id){
 
+        console.log("Cluster info function");
+
         // reading which button pressed
         console.log("Selected Cluster " + clicked_id);
         console.log(window.table);
@@ -131,7 +133,7 @@
         rest_cat = gon.rest_cat;
         lad_name = window.lad_name;
 
-        const info_arr = [];
+        var info_arr = [];
 
         // for all restaurants in cluster
         for (let i = 0; i < table["$0"]["$3"].length; i++){
@@ -174,6 +176,10 @@
             
         }
 
+
+        if(info_arr.length > 20){
+            info_arr = info_arr.slice(1,20);
+        }
         // find detailed information for places within clusters
         // Use AJAX to call method from controller
         $.ajax({
@@ -188,6 +194,8 @@
                 var price_avg = 0;
                 var price_avg_same = 0;
                 var price_avg_diff = 0;
+
+                console.log("Successfully received response");
 
                 // calculate average rating
                 for (let i = 0; i < (info_arr_full).length; i++){
@@ -293,8 +301,11 @@
                     innerHtml = innerHtml + '<button type="button" class="btn btn-success" onclick="location.href=' + "'" + "https://www.google.com/maps/search/?api=1&query=" + encodeURI((info_arr_full[i]["rest_cat"]) + " Near " + lad_name) + "&query_place_id=" + info_arr_full[i]["place_id"] + "'" + '" > Learn More </Button><br>';
 
                 } 
+
+                console.log("Place ID arr: ");
+                console.log(place_id_arr);
                 
-                innerHtml = innerHtml + '<form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  clicked_id + '&place_id_arr='+  place_id_arr + '">';
+                innerHtml = innerHtml + '<form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  clicked_id + '&place_id_arr='+ place_id_arr + '">';
                 innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />';
                 innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form>';
                 
@@ -325,20 +336,36 @@
         // if dataview is selected as Map
         if (value == "none") {
             innerHtml = '<head><style> .cluster_scrollable {max-height: 400px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;top: 260px;left: 50px;}</style></head>' +
-            '<body><div class="card" id="cluster_card" style="width: 21.5; height: 1000;"><div class="card-body"><div class="cluster_scrollable" >';
+            '<body><div class="card" id="cluster_card" style="width: 21.5; height: 1000;"><div class="card-body">';
+        // If agglomerate/diffusion show title difference
+            if(gon.loc_strategy == "Agglomerate"){
+                console.log("Setting card sort title as agglomerate");
+                innerHtml += '<h5>Ranked cluster sorted by agglomeration</h5><br><div class="cluster_scrollable">';
+            }else{
+                console.log("Setting card sort title as agglomerate");
+                innerHtml += '<h5>Ranked cluster sorted by diffusion</h5><br><div class="cluster_scrollable">';
+            }
         }
 
         // If map style is table
         if (value == "1") {
             // Change styling position of options
             innerHtml = '<head><style> .cluster_scrollable {max-height: 400px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;margin-top: 210px;left: 50px;}</style></head>' +
-        '<body><div class="card" id = "cluster_card" style="width: 21.5; height: 1000;"><div class="card-body"><div class="cluster_scrollable">';
+            '<body><div class="card" id = "cluster_card" style="width: 21.5; height: 1000;"><div class="card-body">';
+
+            // If agglomerate/diffusion show title difference
+            if(gon.loc_strategy == "Agglomerate"){
+                console.log("Setting card sort title as agglomerate");
+                innerHtml += '<h5>Ranked cluster sorted by agglomeration</h5><div class="cluster_scrollable">';
+            }else{
+                console.log("Setting card sort title as agglomerate");
+                innerHtml += '<h5>Ranked cluster sorted by diffusion</h5><div class="cluster_scrollable">';
+            }
         }
         // else datasheet for XXX
         if (value == "2") {
         }
         
-
         const rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
         
         // Recommendation Algorithm for evaluating a cluster
@@ -347,22 +374,10 @@
         curr_rest_num_max = 0;
         curr_rest_num_min = 999;
         diff_rest_num_max = 0;
-        diff_rest_num_min = 99;
+        diff_rest_num_min = 999;
+        card_dict = {};
         
         // current category
-        for (let i = 1; i <= button_num; i++) {
-            curr_rest_num = window["cluster_"+ i +"_curr_rest_num"];
-            if(curr_rest_num > curr_rest_num_max){
-                curr_rest_num_max = curr_rest_num;
-            } else if(curr_rest_num < curr_rest_num_min){
-                curr_rest_num_min = curr_rest_num;
-            }
-
-            console.log("Min and max same");
-            console.log(curr_rest_num_max);
-            console.log(curr_rest_num_min);
-        }
-        // different category
         for (let i = 1; i <= button_num; i++) {
             curr_rest_num = window["cluster_"+ i +"_curr_rest_num"];
             diff_rest_num = parseFloat(window["cluster_"+ i +"_rest_num"] - curr_rest_num);
@@ -372,18 +387,59 @@
             } else if(diff_rest_num < diff_rest_num_min){
                 diff_rest_num_min = diff_rest_num;
             }
+            
+            if(curr_rest_num > curr_rest_num_max){
+                curr_rest_num_max = curr_rest_num;
+            }else if(curr_rest_num < curr_rest_num_min){
+                curr_rest_num_min = curr_rest_num;
+            }
 
-            console.log("Max and min diff");
-            console.log(diff_rest_num_max);
-            console.log(diff_rest_num_min);
+            console.log("Min and max same");
+            console.log(curr_rest_num_max);
+            console.log(curr_rest_num_min);
+
+            // if agglomerate add and sort by current rest num
+            if(gon.loc_strategy == "Agglomerate"){
+                card_dict[i] = window["cluster_"+ i +"_curr_rest_num"];
+            }else{
+            // if agglomerate add and sort by current rest num
+                card_dict[i] = window["cluster_"+ i +"_rest_num"] - window["cluster_"+ i +"_curr_rest_num"];
+            }
         }
 
-        // Firstly print each cluster as card
-        for (let i = 1; i <= button_num; i++) {
-            innerHtml = innerHtml + ' <div class="col-sm-4"><div class="card" style="width: 18rem;"><div class="card-body"><h5 class="card-title">Cluster '+ i;
+        // Sort dict by value, referenced from: https://www.educative.io/edpresso/how-can-we-sort-a-dictionary-by-value-in-javascript
+        
+        var items = Object.keys(card_dict).map(
+        (key) => { return [key, card_dict[key]] });
+
+        if(gon.loc_strategy == "Agglomerate"){
+            items.sort(
+                (first, second) => { return second[1] - first[1] }
+            );
+        }else{
+        // if agglomerate add and sort by current rest num
+            items.sort(
+                (first, second) => { return second[1] - first[1] }
+            );
+        }
+        
+
+        var sorted = items.map(
+        (e) => { return e[0] });
+        
+        console.log("Before Sort ID array dict: ")
+        console.log(card_dict)
+        console.log("After Sort ID array dict: ")
+        console.log(sorted);
+        
+
+
+        // Firstly print each cluster as card and sorted
+        for (let i = 0; i < sorted.length; i++) {
+            innerHtml = innerHtml + ' <div class="col-sm-4"><div class="card" style="width: 18rem;"><div class="card-body"><h5 class="card-title">Cluster '+ sorted[i];
             //number of stars according to algorithm
-            curr_rest_num = window["cluster_"+ i +"_curr_rest_num"];
-            diff_rest_num = parseFloat(window["cluster_"+ i +"_rest_num"] - curr_rest_num);
+            curr_rest_num = parseFloat(window["cluster_"+ sorted[i] +"_curr_rest_num"]);
+            diff_rest_num = parseFloat(window["cluster_"+ sorted[i] +"_rest_num"] - curr_rest_num);
 
             console.log("Current rest num: " + curr_rest_num);
             console.log("Different rest num: " + diff_rest_num);
@@ -393,6 +449,7 @@
             var rating = 0;
 
             if(gon.loc_strategy == "Agglomerate"){
+                console.log("Agglomeration");
                 // simply normalize rating with most amount of same_cat_rest
                 rating = (curr_rest_num - curr_rest_num_min)/(curr_rest_num_max - curr_rest_num_min) * 5;
 
@@ -401,7 +458,8 @@
                 // firstly get the value's int part
                 valInt = ~~rating;
                 valDec = (rating.toFixed(2) - valInt).toFixed(2);
-                console.log("valInt:" + valInt);
+                console.log("Rating: " + rating);
+                console.log("valInt: " + valInt);
                 console.log("Before: valDec: " + valDec);
 
                 if (valDec > 0 && valDec < 0.25) {
@@ -418,6 +476,7 @@
 
                 console.log("After: valDec: " + valDec);
                 rating = parseFloat(valInt) + parseFloat(valDec)
+                console.log("Initial Rating: " + rating);
                 console.log("Final Value: "+rating);
 
 
@@ -426,9 +485,10 @@
                 // sort then rate
                 //rating = X;
             }else{
+                console.log("Diffusion");
                 // if diffuse
                 rating = (diff_rest_num - diff_rest_num_min)/(diff_rest_num_max - diff_rest_num_min) * 5;
-
+                console.log("Initial Rating: " + rating);
                 
                 // rating to be shown with star icon
                 // Change it to star-adaptable value, which is every 0.25 scale
@@ -464,19 +524,41 @@
             <div class="rating-holder"><div class="c-rating c-rating--big" data-rating-value="`+ rating +`">
             <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div></div>`;
             // No same category restaurant
-            if(window["cluster_"+ i +"_curr_rest_num"] == 0){
-                innerHtml = innerHtml + '<p class="card-text"> No '+rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
+            if(window["cluster_"+ sorted[i] +"_curr_rest_num"] == 0){
+                innerHtml = innerHtml + '<p class="card-text"> No '+rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ sorted[i] +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + sorted[i] +'"> Cluster ' + sorted[i] + '</button>';
             // 1 category restaurant
-            }else if(window["cluster_"+ i +"_curr_rest_num"] == 1){
-                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
+            }else if(window["cluster_"+ sorted[i] +"_curr_rest_num"] == 1){
+                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ sorted[i] +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + (window["cluster_"+ sorted[i] +"_rest_num"] - window["cluster_"+ sorted[i] +"_curr_rest_num"]) + ' Other cateogry restaurants in this cluster<br>' +
+                window["cluster_"+ sorted[i] +"_rest_num"] + ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + sorted[i] +'"> Cluster ' + sorted[i] + '</button>';
             // Multiple category restaurant
             }else{
-                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + 's in the cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
+                innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ sorted[i] +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + 's in the cluster<br>' + (window["cluster_"+ sorted[i] +"_rest_num"] - window["cluster_"+ sorted[i] +"_curr_rest_num"]) + ' Other cateogry restaurants in this cluster<br>' +
+                window["cluster_"+ sorted[i] +"_rest_num"] + ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + sorted[i] +'"> Cluster ' + sorted[i] + '</button>';
             }
-            
+
+        var info_arr = [];
+
+        // for all restaurants in cluster
+        for (let j = 0; j < table["$0"]["$3"].length; j++){
+            // if restaurant belongs to selected cluster
+            if (parseInt(table["$0"]["$3"][j]["0"]["value"]) == parseInt(sorted[i])){
+                // save restaurant into array
+                console.log("Added place id with same pair ")
+                info_arr.push(table["$0"]["$3"][j]["2"]["value"]);
+            }
         }
 
-        InnerHtml = innerHtml + '</ul></div></div></div></div></div></body>'
+        console.log("info_arr");
+        console.log(info_arr);
+
+
+        innerHtml = innerHtml + '<br><br><form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  sorted[i]  + '&cluster='+  sorted[i]  + '&place_id_arr='+ info_arr +'">';
+        innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />';
+        innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form></div></div><br><br>';
+
+        }
+
+        InnerHtml = innerHtml + '</ul></div></div></div></div></div></body>';
         console.log("Inner HTML:" + InnerHtml);
 
         document.getElementById("clusterButtons").innerHTML=innerHtml;
@@ -575,7 +657,7 @@
                 // current type of restaurants amount
                 if (rest_cat_arr[parseInt(rest_cat)] == cluster_rest_cat){
                     curr_rest_num = curr_rest_num + 1;
-                                // number of total restaurants in one cluster
+                    // number of total restaurants in one cluster
                     window[("cluster_" + (table["$0"]["$3"][i][0]["value"]) + "_curr_rest_num")] += 1; 
                     console.log("added curr amount: " + curr_rest_num);
                 }
