@@ -195,6 +195,7 @@ class MapsController < ApplicationController
     lsoa11_code = params[:lsoa_code]
     cluster_id = params[:cluster]
     place_id_arr = params[:place_id_arr]
+    loc_strategy = params[:loc_strategy]
 
     puts("Received params: " + rest_cat + ", " + lad_name + ", " + lsoa11_code)
 
@@ -212,12 +213,14 @@ class MapsController < ApplicationController
     @lad_name = lad_name
     @rest_cat = rest_cat
     @cluster_id = cluster_id
+    @loc_strategy = loc_strategy
     
 
     gon.lsoa11_code = lsoa11_code
     gon.rest_cat = rest_cat
     gon.lad_name = lad_name
     gon.cluster_id = cluster_id
+    gon.loc_strategy = loc_strategy
   
 
   end

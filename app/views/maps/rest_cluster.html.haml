@@ -9,13 +9,16 @@
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
 
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
-%div#lad_option{ :style => "margin: auto; top: 140px; left: 50px; position: absolute" }
+%div#lad_option{ :style => "margin: auto; top: 140px; left: 50px; position: absolute;" }
     .card{:style => "width: 25rem;"}
         .card-body
+            .back{:style => "margin: auto; top:5px; right: 10px; position: absolute"}
+                = back_link
             %h5 Data View
             %select#dataview{:onchange => "dataview()", :class => "form-select w-100%"}
                 %option{:selected => "selected", :value => "none"} Map
                 %option{:value => "1"} Cluster Restaurant Category Structure
+        
 
 :javascript
 
@@ -96,7 +99,7 @@
 
         innerHtml = '<head><style>' +
         // Header part
-        "'.holder #select_restaurant{position: absolute;bottom: 60px; left: 30%;}'" +
+        ".holder #select_rest{position: absolute;bottom: 30px; left: 30%;}" +
         '</style></head>' +
         '<body>' + 
         // Close Button
@@ -104,14 +107,14 @@
         // Google map frame
         '<div class="holder"><iframe id="map_frame"' +
         ' width="450"' +
-        ' height="800"' +
+        ' height="705"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
         src +
         '</iframe>' +
         // Card to display information about district
-        '<input class="btn btn-success" id="select_cluster" type="submit" value="More about restaurant" />' +
+        '<input class="btn btn-success" id="select_rest" type="submit" value="More about restaurant" />' +
         '</body>'
 
         document.getElementById("mySidebar").innerHTML=innerHtml;
@@ -248,7 +251,7 @@
                 // Google map frame
                 '<div class="holder"><iframe id="map_frame"' +
                 ' width="450"' +
-                ' height="800"' +
+                ' height="705"' +
                 ' style="border:0"' +
                 ' loading="lazy"' +
                 ' allowfullscreen' +
@@ -305,7 +308,7 @@
                 console.log("Place ID arr: ");
                 console.log(place_id_arr);
                 
-                innerHtml = innerHtml + '<form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  clicked_id + '&place_id_arr='+ place_id_arr + '">';
+                innerHtml = innerHtml + '<form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  clicked_id + '&place_id_arr='+ place_id_arr + '&loc_strategy='+ gon.loc_strategy + '">';
                 innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />';
                 innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form>';
                 
@@ -335,8 +338,9 @@
 
         // if dataview is selected as Map
         if (value == "none") {
-            innerHtml = '<head><style> .cluster_scrollable {max-height: 400px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;top: 260px;left: 50px;}</style></head>' +
-            '<body><div class="card" id="cluster_card" style="width: 21.5; height: 1000;"><div class="card-body">';
+            innerHtml = '<head><style> .cluster_scrollable {max-height: 300px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;top: 260px;left: 50px;}</style></head>' +
+            '<body><div class="card" id="cluster_card" style= "height: 400px;"><div class="card-body" style="height: 400px;">';
+            
         // If agglomerate/diffusion show title difference
             if(gon.loc_strategy == "Agglomerate"){
                 console.log("Setting card sort title as agglomerate");
@@ -350,7 +354,7 @@
         // If map style is table
         if (value == "1") {
             // Change styling position of options
-            innerHtml = '<head><style> .cluster_scrollable {max-height: 400px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;margin-top: 210px;left: 50px;}</style></head>' +
+            innerHtml = '<head><style> .cluster_scrollable {max-height: 350px;overflow-y: auto; width: 340px;} #cluster_card{position: absolute;margin-top: 210px;left: 50px;}</style></head>' +
             '<body><div class="card" id = "cluster_card" style="width: 21.5; height: 1000;"><div class="card-body">';
 
             // If agglomerate/diffusion show title difference
@@ -550,9 +554,9 @@
 
         console.log("info_arr");
         console.log(info_arr);
+ 
 
-
-        innerHtml = innerHtml + '<br><br><form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  sorted[i]  + '&cluster='+  sorted[i]  + '&place_id_arr='+ info_arr +'">';
+        innerHtml = innerHtml + '<br><br><form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+ sorted[i]  + '&place_id_arr='+ info_arr + '&loc_strategy='+ gon.loc_strategy +'">';
         innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />';
         innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form></div></div><br><br>';
 
@@ -578,7 +582,8 @@
                 // Options to show area LSOA code for user when at start
                 "LSOA11 Code" : gon.lsoa11_code,
                 width: window.innerWidth,
-                height: window.innerHeight,
+                // height minus the additional height from navbar and progress bar
+                height: window.innerHeight - 61,
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
@@ -706,7 +711,7 @@
 
     // Resize dashboard window
     function autoResize(){
-        const height = window.innerHeight;
+        const height = window.innerHeight - 56;
         const width = window.innerWidth;
         viz.setFrameSize(width, height);
     }
@@ -765,4 +770,5 @@
 
 -# Side panel for google maps
 #mySidebar.sidebar
+-# Button to Previous step
 #clusterButtons
