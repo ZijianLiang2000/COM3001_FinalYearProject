@@ -182,10 +182,43 @@
             data: {'info_arr': info_arr,  authenticity_token: $('[name="csrf-token"]')[0].content },
             success:function(msg){
                 // Returning a json format of count
-                info_arr_full = msg.response;
+                var info_arr_full = msg.response;
                 // To get value of json response, eg do: info_arr_full["0"]["1"]["value"]
+                var rating_avg = 0;
+                var price_avg = 0;
+                var price_avg_same = 0;
+                var price_avg_diff = 0;
+
+                // calculate average rating
                 for (let i = 0; i < (info_arr_full).length; i++){
-                    console.log("Response: " + info_arr_full[i]["ratings"]);
+                    console.log("Response: " + String(info_arr_full));
+                    rating_avg += parseFloat(info_arr_full[i]["rating"]);
+                }
+
+                rating_avg = (rating_avg / (info_arr_full).length).toFixed(2);
+
+
+                // calculate average price level
+                for (let i = 0; i < (info_arr_full).length; i++){
+                    if (info_arr_full[i]["price_level"] != null){
+                        console.log("Response: " + String(info_arr_full));
+                        price_avg += parseFloat(info_arr_full[i]["price_level"]);
+                    }
+                }
+
+                price_avg = (price_avg / (info_arr_full).length).toFixed(2);
+                price_avg_lvl = 0
+
+                switch(true){
+                    case(price_avg == 0): price_avg_lvl = "Free"; break;
+                    case(price_avg > 0 && price_avg < 1.0): price_avg_lvl = "Between Free and Inexpensive"; break;
+                    case (price_avg == 1): price_avg_lvl = "Inexpensive"; break;
+                    case(price_avg > 1.0 && price_avg < 2.0): price_avg_lvl = "Between Inexpensive and Moderate"; break;
+                    case (price_avg == 2): price_avg_lvl = "Moderate"; break;
+                    case(price_avg > 2.0 && price_avg < 3.0): price_avg_lvl = "Between Moderate and Expensive"; break;
+                    case (price_avg == 3): price_avg_lvl = "Expensive"; break;
+                    case(price_avg > 3.0 && price_avg < 4.0): price_avg_lvl = "Between Expensive and Very Expensive"; break;
+                    case (price_avg == 4): price_avg_lvl = "Very Expensive"; break;
                 }
                 
                 sum_rest_num = window.sum_rest_num;
@@ -218,7 +251,9 @@
                 '<div class="card-body">' +
                 '<h5 class="card-title"> Cluster '+ clicked_id +' in ' + lad_name + '</h5>' +
                 '<div class="scrollable">' + 
-                '<br><h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' Restaurant(s) </h6>' +
+                '<br><h6 class="card-subtitle mb-2 text-muted"> Average Rating: '+ rating_avg +'</h6>' +
+                '<h6 class="card-subtitle mb-2 text-muted"> Average Price Level: '+ price_avg_lvl +'</h6>' +
+                '<h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' Restaurant(s) </h6>' +
                 '<h6 class="card-subtitle mb-2 text-muted"> '+ curr_rest_num +' Direct Competitors (' + rest_cat_arr[parseInt(rest_cat)] + ') </h6>' +
                 '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </h6>'
                 
@@ -239,12 +274,21 @@
                 for (let i = 0; i < (info_arr_full).length; i++){
                     place_id_arr.push(info_arr_full[i]["place_id"]);
 
-                    console.log("Response: " + info_arr_full[i]["ratings"]);
+                    console.log("Response: " + info_arr_full[i]["rating"]);
 
                     innerHtml = innerHtml + '<br><h5 class="card-subtitle mb-2 text-muted"> '+ info_arr_full[i]["name"] +' <span class="badge rounded-pill bg-info text-dark">' + cat_tag[info_arr_full[i]["rest_cat"]] + '</span> </h5>';
                     innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Rating: '+ info_arr_full[i]["rating"] +' </h6>';
                     if (info_arr_full[i]["price_level"] != null){
-                        innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Price Level: '+ info_arr_full[i]["price_level"] +' </h6>';
+
+                        switch(info_arr_full[i]["price_level"]){
+                            case 0: price_lvl = "Free"; break;
+                            case 1: price_lvl = "Inexpensive"; break;
+                            case 2: price_lvl = "Moderate"; break;
+                            case 3: price_lvl = "Expensive"; break;
+                            case 4: price_lvl = "Very Expensive"; break;
+                        }
+
+                        innerHtml = innerHtml + '<h6 class="card-subtitle mb-2 text-muted"> Price Level: '+ price_lvl +' </h6>';
                     }
                     innerHtml = innerHtml + '<button type="button" class="btn btn-success" onclick="location.href=' + "'" + "https://www.google.com/maps/search/?api=1&query=" + encodeURI((info_arr_full[i]["rest_cat"]) + " Near " + lad_name) + "&query_place_id=" + info_arr_full[i]["place_id"] + "'" + '" > Learn More </Button><br>';
 
@@ -299,21 +343,133 @@
         
         // Recommendation Algorithm for evaluating a cluster
 
+        // Find global max and min curr_rest_num
+        curr_rest_num_max = 0;
+        curr_rest_num_min = 999;
+        diff_rest_num_max = 0;
+        diff_rest_num_min = 99;
+        
+        // current category
+        for (let i = 1; i <= button_num; i++) {
+            curr_rest_num = window["cluster_"+ i +"_curr_rest_num"];
+            if(curr_rest_num > curr_rest_num_max){
+                curr_rest_num_max = curr_rest_num;
+            } else if(curr_rest_num < curr_rest_num_min){
+                curr_rest_num_min = curr_rest_num;
+            }
+
+            console.log("Min and max same");
+            console.log(curr_rest_num_max);
+            console.log(curr_rest_num_min);
+        }
+        // different category
+        for (let i = 1; i <= button_num; i++) {
+            curr_rest_num = window["cluster_"+ i +"_curr_rest_num"];
+            diff_rest_num = parseFloat(window["cluster_"+ i +"_rest_num"] - curr_rest_num);
+            console.log("Diff rest num:" + diff_rest_num);
+            if(diff_rest_num > diff_rest_num_max){
+                diff_rest_num_max = diff_rest_num;
+            } else if(diff_rest_num < diff_rest_num_min){
+                diff_rest_num_min = diff_rest_num;
+            }
+
+            console.log("Max and min diff");
+            console.log(diff_rest_num_max);
+            console.log(diff_rest_num_min);
+        }
+
         // Firstly print each cluster as card
         for (let i = 1; i <= button_num; i++) {
-            innerHtml = innerHtml + ' <div class="col-sm-4"><div class="card"  style="width: 18rem;"><div class="card-body"><h5 class="card-title">Cluster '+ i;
+            innerHtml = innerHtml + ' <div class="col-sm-4"><div class="card" style="width: 18rem;"><div class="card-body"><h5 class="card-title">Cluster '+ i;
             //number of stars according to algorithm
+            curr_rest_num = window["cluster_"+ i +"_curr_rest_num"];
+            diff_rest_num = parseFloat(window["cluster_"+ i +"_rest_num"] - curr_rest_num);
+
+            console.log("Current rest num: " + curr_rest_num);
+            console.log("Different rest num: " + diff_rest_num);
 
             // Algorithm part recommend
-            var rating = 4.25;
+            // See if agglomerate or diffusion, then see restaurant type and price segment 
+            var rating = 0;
+
+            if(gon.loc_strategy == "Agglomerate"){
+                // simply normalize rating with most amount of same_cat_rest
+                rating = (curr_rest_num - curr_rest_num_min)/(curr_rest_num_max - curr_rest_num_min) * 5;
+
+                // rating to be shown with star icon
+                // Change it to star-adaptable value, which is every 0.25 scale
+                // firstly get the value's int part
+                valInt = ~~rating;
+                valDec = (rating.toFixed(2) - valInt).toFixed(2);
+                console.log("valInt:" + valInt);
+                console.log("Before: valDec: " + valDec);
+
+                if (valDec > 0 && valDec < 0.25) {
+                    valDec = 0.25
+                } else if (valDec > 0.25 && valDec < 0.5) {
+                    valDec = 0.25
+                } else if (valDec > 0.5 && valDec < 0.75) {
+                    valDec = 0.75
+                } else if (valDec > 0.75) {
+                    valDec = 0.75
+                } else if (valDec > 0.10) {
+                    valDec = 0
+                }
+
+                console.log("After: valDec: " + valDec);
+                rating = parseFloat(valInt) + parseFloat(valDec)
+                console.log("Final Value: "+rating);
+
+
+                console.log("Score: ");
+                console.log(rating);
+                // sort then rate
+                //rating = X;
+            }else{
+                // if diffuse
+                rating = (diff_rest_num - diff_rest_num_min)/(diff_rest_num_max - diff_rest_num_min) * 5;
+
+                
+                // rating to be shown with star icon
+                // Change it to star-adaptable value, which is every 0.25 scale
+                // firstly get the value's int part
+                valInt = ~~rating;
+                valDec = (rating.toFixed(2) - valInt).toFixed(2);
+                console.log("valInt:" + valInt);
+                console.log("Before: valDec: " + valDec);
+
+                if (valDec > 0 && valDec < 0.25) {
+                    valDec = 0.25
+                } else if (valDec > 0.25 && valDec < 0.5) {
+                    valDec = 0.25
+                } else if (valDec > 0.5 && valDec < 0.75) {
+                    valDec = 0.75
+                } else if (valDec > 0.75) {
+                    valDec = 0.75
+                } else if (valDec > 0.10) {
+                    valDec = 0
+                }
+
+                console.log("After: valDec: " + valDec);
+                rating = parseFloat(valInt) + parseFloat(valDec)
+                console.log("Final Value: "+rating);
+                
+                console.log("Score: ");
+                console.log(rating);
+            }
+
+            // normalize between 0 and 5: zi = (xi – Min) / (Max – Min) * 5
 
             innerHtml = innerHtml + `<br>
             <div class="rating-holder"><div class="c-rating c-rating--big" data-rating-value="`+ rating +`">
             <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div></div>`;
+            // No same category restaurant
             if(window["cluster_"+ i +"_curr_rest_num"] == 0){
                 innerHtml = innerHtml + '<p class="card-text"> No '+rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
+            // 1 category restaurant
             }else if(window["cluster_"+ i +"_curr_rest_num"] == 1){
                 innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + ' in this cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
+            // Multiple category restaurant
             }else{
                 innerHtml = innerHtml + '<p class="card-text">' + window["cluster_"+ i +"_curr_rest_num"] + ' ' +rest_cat_arr[parseInt(gon.rest_cat)] + 's in the cluster<br>' + window["cluster_"+ i +"_rest_num"] +  ' Restaurant(s) in this cluster</p><button type="button" class="btn btn-outline-primary" onclick="clusterInfo(this.id)" id = "' + i +'"> Cluster ' + i + '</button></div></div><br><br>';
             }
@@ -340,7 +496,7 @@
                 // Options to show area LSOA code for user when at start
                 "LSOA11 Code" : gon.lsoa11_code,
                 width: window.innerWidth,
-                height: window.innerHeight - 100,
+                height: window.innerHeight,
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
@@ -528,7 +684,3 @@
 -# Side panel for google maps
 #mySidebar.sidebar
 #clusterButtons
-
-    
-
-%br

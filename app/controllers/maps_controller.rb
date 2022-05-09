@@ -3,6 +3,7 @@ class MapsController < ApplicationController
   require 'uri'
   require 'json'
   before_action :set_map, only: %i[ show edit update destroy ]
+  before_action :dissolve, only: [ :user_option ]
 
   # GET /maps or /maps.json
   def index
@@ -162,9 +163,11 @@ class MapsController < ApplicationController
   def rest_cluster
     gon.form_token = form_authenticity_token
     name = params[:name]
+    lad_name = params[:lad_name]
     code = params[:code]
     rest_cat = params[:rest_cat]
-    lad_name = params[:lad_name]
+    price_seg_val = params[:price_seg_val]
+    loc_strategy = params[:loc_strategy]
 
     puts("received LSOA name: " + name)
     puts("received LSOA code: " + code)
@@ -173,12 +176,16 @@ class MapsController < ApplicationController
     @lsoa11_name = name
     @lsoa11_code = code
     @rest_cat = rest_cat
+    @price_seg_val = price_seg_val
+    @loc_strategy = loc_strategy
 
     gon.lsoa11_name = name
     gon.lsoa11_code = code
     gon.rest_cat = rest_cat
     gon.lad_name = lad_name
-    
+    gon.price_seg_val = price_seg_val
+    gon.loc_strategy = loc_strategy
+
   end
 
   def location_in_cluster
@@ -275,7 +282,7 @@ class MapsController < ApplicationController
     # store retreived data as session
     session[:rest_details_arr] = rest_details_arr
     
-    # rest_details_arr = session[:rest_details_arr]
+    rest_details_arr = session[:rest_details_arr]
 
     puts("Done filling in restaurant data")
     render json: { response: rest_details_arr }
@@ -295,12 +302,13 @@ class MapsController < ApplicationController
       elsif(params[:map]=="LSOA")
         redirect_back(fallback_location: lsoa_heatmap_path, allow_other_host: true, alert: "Input parameters not provided") 
         return
-      end
+      end 
     end
 
     lat = params[:lat]
     lng = params[:lng]
-    name = CGI.unescape(params[:name])
+    name = params[:name]
+    map = params[:map]
     
     puts("Latitude:" + lat.to_s + ", Longitude:" + lng.to_s + ", Name:" + name.to_s)
 
@@ -310,12 +318,14 @@ class MapsController < ApplicationController
     # Different attraction searched using Foursquare
 
     if(params[:name] != nil && params[:map]=="LAD")
+      name = CGI.unescape(params[:name])
       puts("Searching nearby places by LAD Name")
       puts("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
       nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
     elsif(params[:lat] != nil && params[:map]=="LSOA")
       puts("Searching nearby places by LAD Latitude and Longitude")
-      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=2000")
+      puts("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=2000")
     end
 
     # Save json to file for development purpose not wasting api quota
@@ -323,8 +333,8 @@ class MapsController < ApplicationController
       f.write(nearby_places.to_json)
     end
 
-    # nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
-    # puts(nearby_places["results"].length())
+    #nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
+    #puts(nearby_places["results"].length())
 
     if(nearby_places["results"] == nil)
       if(params[:map]=="LAD")
@@ -339,6 +349,7 @@ class MapsController < ApplicationController
     @nearby_results = nearby_places
     @place_lat = lat
     @place_lng = lng
+    @map = map
     gon.nearby_places = nearby_places
     gon.place_lat = lat
     gon.place_lng = lng

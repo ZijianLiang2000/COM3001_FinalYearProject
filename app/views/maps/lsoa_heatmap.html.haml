@@ -46,6 +46,13 @@
         console.log("RestCatVal:" + rest_cat_value)
         console.log("RestCatVal (int):" + parseInt(rest_cat_value))
 
+        var price_seg_val = window.price_seg_val;
+        var loc_strategy = window.loc_strategy;
+
+        console.log(rest_cat_val);
+        console.log(price_seg_val);
+        console.log(loc_strategy);
+
         restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
 
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
@@ -74,14 +81,15 @@
         src +
         '</iframe>' +
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/rest_cluster?name='+name+'&code='+ code + '&rest_cat='+ parseInt(rest_cat_value) +'&lad_name='+ gon.lad_name +'">'+
+        '<form class="button_to" method="post" action="/rest_cluster?name='+name+'&code='+ code + '&rest_cat='+ parseInt(rest_cat_value) +'&lad_name='+ gon.lad_name +
+        '&price_seg_val='+price_seg_val+'&loc_strategy='+loc_strategy+'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
         // Card to display information about district
-        '<div class="card" style="width: 18rem;">' +
+        '<div class="card" style="width: 20rem;">' +
         '<div class="card-body">' +
-        '<h5 class="card-title">'+ name +'</h5>';
+        '<h5 class="card-title">'+ name +'</h5><h6>Features: </h6>';
         //
         for(let i = 0; i<featured_norm_val.length;i++){
             innerHtml += '<span class="badge bg-success">'+ featured_norm_val[i][1] +'</span>&nbsp;';
@@ -94,7 +102,7 @@
         
         '<br><form class="button_to" method="post" action="/nearby_result?lat='+lat+'&lng='+lng+'&map=LSOA">' + 
         '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
-        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' + 
         '</form></div></div></div></body>'
 
 
@@ -177,7 +185,6 @@
                 device: "desktop",
                 hideTabs: true,
                 onFirstInteractive: function () {
-                    console.log(workbook);
                     console.log("Run this code when the viz has finished loading.");
                     listenToMarksSelection();
                     
@@ -249,6 +256,9 @@
         //    Diff_cat_restaurant_weight, Rent_acceptance_min, Rent_acceptance_max]
         console.log(weight_arr);
 
+        // Population density weight decrease, not that important as LSOA because when area is smaller between
+        // More fluidity
+        var Population_density_weights = 10;
         // LSOA weights
         var Chinese_weights = 0.67;
         var Indian_weights = 0.67;
@@ -266,14 +276,15 @@
         // If Indian restaurant
         if(rest_cat == 1){
             // weights increase for area of high Indian ethnnicity and mixed community
-            Indian_weights *= 2;
+
+            Indian_weights *= 3;
             Asian_mixed_weights += 0.67;
 
             console.log("Indian Mixed weights: " + Indian_weights);
             console.log("Asian Mixed weights: " + Asian_mixed_weights);
         }else if (rest_cat == 5){
             // weights increase for area of high Indian ethnnicity and mixed community
-            Chinese_weights *= 2;
+            Chinese_weights *= 3;
             Asian_mixed_weights += 0.67;
 
             console.log("Chinese weights: " + Chinese_weights);
@@ -288,40 +299,99 @@
 
             Asian_mixed_weights += (weight_arr[3])/4;
 
-            Black_weight = weight_arr[1];
-            White_weight = weight_arr[2];
+            Black_weights = weight_arr[1];
+            White_weights = weight_arr[2];
             Mixed_without_Asian_weights = ((weight_arr[3])/4) * 3;
-            Others_weight = weight_arr[4];
+            Other_race_weights = weight_arr[4];
         }
 
-        Same_cat_restaurant_weight = weight_arr[5];
-        Diff_cat_restaurant_weight = weight_arr[6];
+        Same_cat_restaurant_weights = weight_arr[5];
+        Diff_cat_restaurant_weights = weight_arr[6];
         Rent_acceptance_min = weight_arr[7];
         Rent_acceptance_max = weight_arr[8];
+        rest_cat_val = weight_arr[9];
+        price_seg_val = weight_arr[10];
+        rest_cat = rest_cat_val;
+        rent_weight = 18;
+        house_price_weight = 8;
+        income_weight = 13;
 
 
-        console.log(Black_weight);
-        console.log(White_weight);
+        // augment each restaurant category depending on agglomeration or diffusion as its the main factor
+        if(Same_cat_restaurant_weights>Diff_cat_restaurant_weights){
+            Same_cat_restaurant_weights = Same_cat_restaurant_weights + 10;
+        } else {
+            Diff_cat_restaurant_weights = Diff_cat_restaurant_weights + 10;
+        }
+
+        // influence of price segment on area with (no data about all restaurant price because too expensive) but income, rent and house price can be referenced.
+
+        // if price segment low
+        if(price_seg_val == 0){
+            // income factor would drastically decrease (val designated to be larger better), rent and house price highly increase (val designated to be less better)
+            income_weight /= 4;
+            rent_weight *= 10;
+            house_price_weight *= 10;
+        }else if(price_seg_val == 1){
+            // income factor would somehow decrease (val designated to be larger better), rent and house price increase a bit (val designated to be less better)
+            income_weight /= 2;
+            rent_weight *= 10;
+            house_price_weight *= 10;
+        }else if(price_seg_val == 1){
+            // income factor would increase (val designated to be larger better), rent and house price decrease (val designated to be less better)
+            income_weight *= 2;
+            rent_weight /= 10;
+            house_price_weight /= 10;
+        }else {
+            // income factor would drastically increase (val designated to be larger better), rent and house price drastically decrease (val designated to be less better)
+            income_weight *= 4;
+            rent_weight /= 10;
+            house_price_weight /= 10;
+        }
+
+        console.log(Black_weights);
+        console.log(White_weights);
         console.log(Mixed_without_Asian_weights);
-        console.log(Others_weight);
-        console.log(Same_cat_restaurant_weight);
-        console.log(Diff_cat_restaurant_weight);
+        console.log(Other_race_weights);
+        console.log(Same_cat_restaurant_weights);
+        console.log(Diff_cat_restaurant_weights);
         console.log(Rent_acceptance_min);
         console.log(Rent_acceptance_max);
+        console.log(income_weight);
+        console.log(rent_weight);
+        console.log(house_price_weight);
 
         workbook.changeParameterValueAsync("Asian_Chinese_weight", Chinese_weights);
         workbook.changeParameterValueAsync("Asian_Indian_weight", Indian_weights);
         workbook.changeParameterValueAsync("Asian_Pak_Bang_Mixed_Other_weight", Asian_Pak_Bang_Others);
         workbook.changeParameterValueAsync("Mixed_White_Asian_weight", Asian_mixed_weights);
-        workbook.changeParameterValueAsync("Black_weight", Black_weight);
-        workbook.changeParameterValueAsync("White_weight", White_weight);
+        workbook.changeParameterValueAsync("Black_weight", Black_weights);
+        workbook.changeParameterValueAsync("White_weight", White_weights);
         workbook.changeParameterValueAsync("Mixed_without_Asian_weight", Mixed_without_Asian_weights);
-        workbook.changeParameterValueAsync("Other_Race_weight", Others_weight);
-        workbook.changeParameterValueAsync("Same_Cat_Restaurant_weight", Same_cat_restaurant_weight);
-        workbook.changeParameterValueAsync("Diff_Cat_Restaurant_weight", Diff_cat_restaurant_weight);
+        workbook.changeParameterValueAsync("Other_Race_weight", Other_race_weights);
+        workbook.changeParameterValueAsync("Same_Cat_Restaurant_weight", Same_cat_restaurant_weights);
+        workbook.changeParameterValueAsync("Diff_Cat_Restaurant_weight", Diff_cat_restaurant_weights);
         workbook.changeParameterValueAsync("Rent_acceptance_min", Rent_acceptance_min);
         workbook.changeParameterValueAsync("Rent_acceptance_min", Rent_acceptance_min);
+        workbook.changeParameterValueAsync("Weight_Population", Population_density_weights);
+        workbook.changeParameterValueAsync("rest_cat", rest_cat);
+        workbook.changeParameterValueAsync("Income_weight", income_weight);
+        workbook.changeParameterValueAsync("Rent_weight", rent_weight);
+        workbook.changeParameterValueAsync("House_price_weight", house_price_weight);
         console.log("Finished Adjusting weights");
+
+        // Pass restaurant category and price segment to compare price with cluster restaurants
+        // Also pass agglomeration or diffusion through the change of weight
+        if(Same_cat_restaurant_weights > Diff_cat_restaurant_weights){
+            // Agglomeration
+            loc_strategy = "Agglomerate";
+        } else {
+            loc_strategy = "Diffusion";
+        }
+
+        window.price_seg_val = price_seg_val;
+        window.loc_strategy = loc_strategy;
+        //cluster_data = [rest_cat_val, price_seg_val, loc_strategy]
         
     }
 
@@ -419,8 +489,8 @@
         var White_percentage_normalized = [dict["AGG(White_%_normalized)"], "White Percentage"];
         var Mixed_percentage_normalized = [dict["AGG(Mixed_%_normalized)"], "Mixed Percentage (w/o Mixed Asian)"];
         var Other_percentage_normalized = [dict["AGG(Other_%_normalized)"], "Other Ethnicity Percentage"];
-        var same_cat_normalized = [dict["AGG(Same_cat_normalized)"], "Density of same category restaurants"];
-        var diff_cat_normalized = [dict["AGG(Diff_cat_normalized)"], "Density of different category restaurants"];
+        var same_cat_normalized = [dict["AGG(Same_cat_normalized)"], "Amount of same category restaurants"];
+        var diff_cat_normalized = [dict["AGG(Diff_cat_normalized)"], "Amount of different category restaurants"];
 
         // loopable array for normalization
         var normalized_arr = [pop_dense_norm, income_norm, house_price_norm, weekly_rent_norm, Chinese_percentage_normalized,Indian_percentage_normalized,
