@@ -31,4 +31,7 @@ Rails.application.routes.draw do
   
   get 'location_in_cluster' => 'maps#location_in_cluster'
   post 'location_in_cluster' => 'maps#location_in_cluster'
+
+  get 'get_rest_detail_in_cluster' => 'maps#get_rest_detail_in_cluster'
+  post 'get_rest_detail_in_cluster' => 'maps#get_rest_detail_in_cluster'
 end

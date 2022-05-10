@@ -260,7 +260,7 @@ class MapsController < ApplicationController
   end
 
   def get_rest_detail_in_cluster
-    puts("get_rest_detail")
+    puts("get restaurant detail in cluster")
     
     same_cat_place_id = (params[:same_cat_place_id])
     max_index = 0
@@ -270,34 +270,46 @@ class MapsController < ApplicationController
     reviews = []
 
     # obtain restaurant place id
-    
-    for place_id in same_cat_place_id
-      p "place_id: " + place_id.to_s
-      reviews.append([])
-
-      # detail_result = request_api(
-      #   "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{place_id}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,reviews"
-      # )
-
-      puts(detail_result["result"]["name"])
-      puts(detail_result["result"]["reviews"])
-
-      # Simulation of retreiving results of details
-      reviews[i] = {}
-      reviews[i].store("name", detail_result["result"]["name"])
-      reviews[i].store("place_id", info["2"]["value"])
-      reviews[i].store("reviews", detail_result["result"]["reviews"])
-        
-      i += 1
+    if same_cat_place_id.length() > 3
+      same_cat_place_id = same_cat_place_id[1..3]
     end
+
+    # for place_id in same_cat_place_id
+    #   p "place_id: " + place_id.to_s
+    #   reviews.append(data=[])
+
+    #   detail_result = request_api(
+    #     "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{place_id}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,reviews"
+    #   )
+
+    #   puts(detail_result["result"]["name"])
+    #   puts(detail_result["result"]["reviews"])
+
+    #   # Simulation of retreiving results of details
+    #   begin  
+    #     reviews[i] = {}
+    #     reviews[i].store("name", detail_result["result"]["name"])
+    #     reviews[i].store("place_id", place_id)
+    #     # Retreive 1 to 5 reviews for each restaurant
+    #     reviews[i].store("reviews", detail_result["result"]["reviews"])
+
+
+    #   i += 1
+    #   end
+      
+      # store retreived data as session
+      # Save json to file for development purpose not wasting api quota
+      # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json","w") do |f|
+      #   f.write(reviews.to_json)
+      # end
+
+      reviews = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json"))
+    
+    # end
     
     # store retreived data as session
-    session[:reviews] = reviews
-    
-    reviews = session[:reviews]
-
     puts("Done filling in restaurant data")
-    render json: { response: reviews }
+    render json: { response: [reviews] }
   end
 
 
@@ -311,42 +323,50 @@ class MapsController < ApplicationController
 
     rest_details_arr = []
 
-    # obtain restaurant place id
+    obtain restaurant place id
     
-    # for restaurant in info_arr
-    #   p "Restaurant: " + i.to_s
-    #     rest_details_arr.append([])
-    #     for info in restaurant
-    #       if info["2"] != nil && (!info["2"].nil?)
-    #         if info["2"]["value"] != nil && (!info["2"]["value"].nil?)
-    #           p "Restaurant data: "
-    #           p info["2"]["value"]
+    for restaurant in info_arr
+      p "Restaurant: " + i.to_s
+        rest_details_arr.append([])
+        for info in restaurant
+          if info["2"] != nil && (!info["2"].nil?)
+            if info["2"]["value"] != nil && (!info["2"]["value"].nil?)
+              p "Restaurant data: "
+              p info["2"]["value"]
 
-    #           detail_result = request_api(
-    #             "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{info["2"]["value"]}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,rating"
-    #           )
+              detail_result = request_api(
+                "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{info["2"]["value"]}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,rating"
+              )
 
-    #           puts(detail_result["result"]["name"])
-    #           puts(info["2"]["value"])
-    #           puts(info["3"]["value"])
-    #           puts(detail_result["result"]["rating"])
-    #           puts(detail_result["result"]["price_level"])
+              puts(detail_result["result"]["name"])
+              puts(info["2"]["value"])
+              puts(info["3"]["value"])
+              puts(detail_result["result"]["rating"])
+              puts(detail_result["result"]["price_level"])
 
-    #           # Simulation of retreiving results of details
-    #           rest_details_arr[i] = {}
-    #           rest_details_arr[i].store("name", detail_result["result"]["name"])
-    #           rest_details_arr[i].store("place_id", info["2"]["value"])
-    #           rest_details_arr[i].store("rest_cat", info["3"]["value"])
-    #           rest_details_arr[i].store("rating", detail_result["result"]["rating"])
-    #           rest_details_arr[i].store("price_level", detail_result["result"]["price_level"])
-    #         end
-    #       end
-    #     end
-    #   i += 1
-    # end
+              # Simulation of retreiving results of details
+              rest_details_arr[i] = {}
+              rest_details_arr[i].store("name", detail_result["result"]["name"])
+              rest_details_arr[i].store("place_id", info["2"]["value"])
+              rest_details_arr[i].store("rest_cat", info["3"]["value"])
+              rest_details_arr[i].store("rating", detail_result["result"]["rating"])
+              rest_details_arr[i].store("price_level", detail_result["result"]["price_level"])
+            end
+          end
+        end
+      i += 1
+    end
     
     # store retreived data as session
-    # session[:rest_details_arr] = rest_details_arr
+    # Save json to file for development purpose not wasting api quota
+    # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail.json","w") do |f|
+    #   f.write(rest_details_arr.to_json)
+    # end
+
+    #nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
+    #puts(nearby_places["results"].length())
+
+    session[:rest_details_arr] = rest_details_arr
     
     rest_details_arr = session[:rest_details_arr]
 

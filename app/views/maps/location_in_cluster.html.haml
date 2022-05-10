@@ -12,14 +12,16 @@
     %h1{:style => "color: white;"} Restaurants in Cluster #{@cluster_id}
     %h5{:style => "color: white;"} Selected Local Authority: #{@lad_name}
     %h5{:style => "color: white;"} Code: #{@lsoa11_code}
-    %h5{:style => "color: white;"} Price Average: #{@price_avg}
-    %h5{:style => "color: white;"} Rating Average: #{@rating_avg}
+    - if @price_avg != nil
+        %h5{:style => "color: white;"} Price Average: #{@price_avg}
+        %h5{:style => "color: white;"} Rating Average: #{@rating_avg}
 
 -# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 -# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
 
 
 %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"}
+  
   
 %head
 %title Basic Embed
@@ -258,8 +260,24 @@
                 data: {'same_cat_place_id': same_cat_place_id,  authenticity_token: $('[name="csrf-token"]')[0].content },
                 success:function(msg){
 
-
+                    console.log("")
                     console.log("Successfully received response");
+
+                    
+                    console.log(msg); //json output
+
+                    // for each restaurant
+                    for(let i = 0; i<msg["response"][0].length; i++){
+                        // print each review
+                        for(let j = 0; j<msg["response"][0][i]["reviews"].length; j++){
+                            console.log(msg["response"][0][i]["reviews"][j]);
+                            rating = msg["response"][0][i]["reviews"][j]["rating"];
+                            relative_time_description = msg["response"][0][i]["reviews"][j]["relative_time_description"];
+                            text = msg["response"][0][i]["reviews"][j]["relative_time_description"];
+
+                            // Apply text to be sententic analysed
+                        }
+                    }
 
                 },
                 error: function() {
