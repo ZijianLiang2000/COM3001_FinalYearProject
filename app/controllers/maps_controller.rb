@@ -312,6 +312,22 @@ class MapsController < ApplicationController
     render json: { response: [reviews] }
   end
 
+  # Function for semantic analysis on reviews in cluster
+  def absa_reviews
+    p "Analyzing reviews"
+    review_texts = params[:text]
+    puts(review_texts)
+    p "Done!!!"
+
+    # Python script
+    
+      p "Running scrypt: "
+    puts(review_result)
+
+    p "Done Semantic"
+    render json: { response: [review_result] }
+  end
+
 
   def get_rest_detail
     puts("get_rest_detail")
@@ -323,7 +339,7 @@ class MapsController < ApplicationController
 
     rest_details_arr = []
 
-    obtain restaurant place id
+    # obtain restaurant place id
     
     for restaurant in info_arr
       p "Restaurant: " + i.to_s

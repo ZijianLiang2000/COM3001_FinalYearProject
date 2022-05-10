@@ -262,21 +262,47 @@
 
                     console.log("")
                     console.log("Successfully received response");
-
                     
                     console.log(msg); //json output
 
                     // for each restaurant
                     for(let i = 0; i<msg["response"][0].length; i++){
+
+                        var review_texts = "";
+
                         // print each review
                         for(let j = 0; j<msg["response"][0][i]["reviews"].length; j++){
+
                             console.log(msg["response"][0][i]["reviews"][j]);
                             rating = msg["response"][0][i]["reviews"][j]["rating"];
                             relative_time_description = msg["response"][0][i]["reviews"][j]["relative_time_description"];
-                            text = msg["response"][0][i]["reviews"][j]["relative_time_description"];
+                            text = msg["response"][0][i]["reviews"][j]["text"];
 
-                            // Apply text to be sententic analysed
+                            review_texts += text + "//"; 
                         }
+
+                        // collect all review texts in array for a restaurant
+                        // Apply text to be sententic analysed
+                        // ajax request for another controller function to run python script
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/absa_reviews",
+                            data: {'text': review_texts,  authenticity_token: $('[name="csrf-token"]')[0].content },
+                            success:function(msg){
+
+                                console.log("")
+                                console.log("Successfully received response");
+                                
+                                console.log(msg); //json output
+
+                            },
+                            error: function() {
+                                alert('Unavailable to retreive restaurant detailed info at this moment');
+                            }
+                        
+                        });
+                        
                     }
 
                 },
@@ -343,4 +369,3 @@
 
 -# Side panel for google maps
 #mySidebar.sidebar
-
