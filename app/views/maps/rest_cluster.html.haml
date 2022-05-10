@@ -181,7 +181,7 @@
 
 
         if(info_arr.length > 20){
-            info_arr = info_arr.slice(1,20);
+            info_arr = info_arr.slice(1,10);
         }
         // find detailed information for places within clusters
         // Use AJAX to call method from controller
@@ -202,8 +202,10 @@
 
                 // calculate average rating
                 for (let i = 0; i < (info_arr_full).length; i++){
-                    console.log("Response: " + String(info_arr_full));
-                    rating_avg += parseFloat(info_arr_full[i]["rating"]);
+                    if (info_arr_full[i]["rating"] != null){
+                        console.log("Response: " + String(info_arr_full));
+                        rating_avg += parseFloat(info_arr_full[i]["rating"]);
+                    }
                 }
 
                 rating_avg = (rating_avg / (info_arr_full).length).toFixed(2);
@@ -308,7 +310,7 @@
                 console.log("Place ID arr: ");
                 console.log(place_id_arr);
                 
-                innerHtml = innerHtml + '<form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  clicked_id + '&place_id_arr='+ place_id_arr + '&loc_strategy='+ gon.loc_strategy + '">';
+                innerHtml = innerHtml + '<form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  clicked_id + '&place_id_arr='+ place_id_arr + '&loc_strategy='+ gon.loc_strategy + '&price_avg='+price_avg+'&rating_avg='+rating_avg+'">';
                 innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />';
                 innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form>';
                 

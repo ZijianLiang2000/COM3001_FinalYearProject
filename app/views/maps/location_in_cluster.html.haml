@@ -12,6 +12,8 @@
     %h1{:style => "color: white;"} Restaurants in Cluster #{@cluster_id}
     %h5{:style => "color: white;"} Selected Local Authority: #{@lad_name}
     %h5{:style => "color: white;"} Code: #{@lsoa11_code}
+    %h5{:style => "color: white;"} Price Average: #{@price_avg}
+    %h5{:style => "color: white;"} Rating Average: #{@rating_avg}
 
 -# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 -# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
@@ -201,8 +203,73 @@
         console.log("listenToMarksSelection function is loaded");
         workbook = viz.getWorkbook();
         update_weight_to_tableau();
+        getUnderlyingData();
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
+
+    function getUnderlyingData(){
+
+        const rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"];
+
+        console.log("Worksheets:" + workbook.getActiveSheet());
+        sheet = workbook.getActiveSheet();
+        // If the active sheet is not a dashboard, then you can just enter:
+        // viz.getWorkbook().getActiveSheet();
+        options = {
+            maxRows: 0, // Max rows to return. Use 0 to return all rows
+            ignoreAliases: false,
+            ignoreSelection: true,
+            includeAllColumns: false
+        };
+
+        sheet.getSummaryDataAsync(options).then(function(t){
+            console.log("Retreiving Underlying data");
+            table = t;
+            var tgt = document.getElementById("dataTarget");
+            var result_json = JSON.stringify(table);
+            console.log(result_json);
+            console.log("written JSON");
+
+            console.log(rest_cat_arr[parseInt(gon.rest_cat)]);
+            
+            // array to store same and diff rest cat place id for sentament analysis
+            var same_cat_place_id = [];
+            var diff_cat_place_id = [];
+
+            //Loop through all restaurants in view
+            for (let i = 0; i < table["$0"]["$3"].length; i++){
+                console.log("Printing table data");
+                // if it is current type of restaurant
+                if(rest_cat_arr[parseInt(gon.rest_cat)] == table["$0"]["$3"][i][3]["value"]){
+                    console.log("Printing same type of restaurant data");
+                    console.log(table["$0"]["$3"][i]);
+                    same_cat_place_id.push(table["$0"]["$3"][i][1]["value"]);
+                } else {
+                    console.log("Printing diff type of restaurant data");
+                    console.log(table["$0"]["$3"][i]);
+                    diff_cat_place_id.push(table["$0"]["$3"][i][1]["value"]);
+                }
+            }
+
+            // Call ajax to use google maps api to find detailed reviews
+            $.ajax({
+                type: "POST",
+                url: "/get_rest_detail_in_cluster",
+                data: {'same_cat_place_id': same_cat_place_id,  authenticity_token: $('[name="csrf-token"]')[0].content },
+                success:function(msg){
+
+
+                    console.log("Successfully received response");
+
+                },
+                error: function() {
+                    alert('Unavailable to retreive restaurant detailed info at this moment');
+                }
+            
+            });
+            
+        });
+    }  
 
     function onMarksSelection(marksEvent) {
         console.log("onMarksSelection function is loaded");

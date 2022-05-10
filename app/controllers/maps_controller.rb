@@ -196,6 +196,8 @@ class MapsController < ApplicationController
     cluster_id = params[:cluster]
     place_id_arr = params[:place_id_arr]
     loc_strategy = params[:loc_strategy]
+    price_avg = params[:price_avg]
+    rating_avg = params[:rating_avg]
 
     puts("Received params: " + rest_cat + ", " + lad_name + ", " + lsoa11_code)
 
@@ -214,14 +216,29 @@ class MapsController < ApplicationController
     @rest_cat = rest_cat
     @cluster_id = cluster_id
     @loc_strategy = loc_strategy
+    @price_avg = price_avg
+    @rating_avg = rating_avg
     
-
     gon.lsoa11_code = lsoa11_code
     gon.rest_cat = rest_cat
     gon.lad_name = lad_name
     gon.cluster_id = cluster_id
     gon.loc_strategy = loc_strategy
-  
+    gon.price_avg = price_avg
+    gon.rating_avg = rating_avg
+
+    #  work with levelling these param in ruby
+  #   switch(true){
+  #     case(price_avg == 0): price_avg_lvl = "Free"; break;
+  #     case(price_avg > 0 && price_avg < 1.0): price_avg_lvl = "Between Free and Inexpensive"; break;
+  #     case (price_avg == 1): price_avg_lvl = "Inexpensive"; break;
+  #     case(price_avg > 1.0 && price_avg < 2.0): price_avg_lvl = "Between Inexpensive and Moderate"; break;
+  #     case (price_avg == 2): price_avg_lvl = "Moderate"; break;
+  #     case(price_avg > 2.0 && price_avg < 3.0): price_avg_lvl = "Between Moderate and Expensive"; break;
+  #     case (price_avg == 3): price_avg_lvl = "Expensive"; break;
+  #     case(price_avg > 3.0 && price_avg < 4.0): price_avg_lvl = "Between Expensive and Very Expensive"; break;
+  #     case (price_avg == 4): price_avg_lvl = "Very Expensive"; break;
+  # }
 
   end
 
@@ -242,7 +259,48 @@ class MapsController < ApplicationController
     render json: { response: restaurant_Category_Count }
   end
 
-  # 
+  def get_rest_detail_in_cluster
+    puts("get_rest_detail")
+    
+    same_cat_place_id = (params[:same_cat_place_id])
+    max_index = 0
+
+    i = 0
+
+    reviews = []
+
+    # obtain restaurant place id
+    
+    for place_id in same_cat_place_id
+      p "place_id: " + place_id.to_s
+      reviews.append([])
+
+      # detail_result = request_api(
+      #   "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{place_id}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,reviews"
+      # )
+
+      puts(detail_result["result"]["name"])
+      puts(detail_result["result"]["reviews"])
+
+      # Simulation of retreiving results of details
+      reviews[i] = {}
+      reviews[i].store("name", detail_result["result"]["name"])
+      reviews[i].store("place_id", info["2"]["value"])
+      reviews[i].store("reviews", detail_result["result"]["reviews"])
+        
+      i += 1
+    end
+    
+    # store retreived data as session
+    session[:reviews] = reviews
+    
+    reviews = session[:reviews]
+
+    puts("Done filling in restaurant data")
+    render json: { response: reviews }
+  end
+
+
   def get_rest_detail
     puts("get_rest_detail")
     
@@ -255,42 +313,42 @@ class MapsController < ApplicationController
 
     # obtain restaurant place id
     
-    for restaurant in info_arr
-      p "Restaurant: " + i.to_s
-        rest_details_arr.append([])
-        for info in restaurant
-          if info["2"] != nil && (!info["2"].nil?)
-            if info["2"]["value"] != nil && (!info["2"]["value"].nil?)
-              p "Restaurant data: "
-              p info["2"]["value"]
+    # for restaurant in info_arr
+    #   p "Restaurant: " + i.to_s
+    #     rest_details_arr.append([])
+    #     for info in restaurant
+    #       if info["2"] != nil && (!info["2"].nil?)
+    #         if info["2"]["value"] != nil && (!info["2"]["value"].nil?)
+    #           p "Restaurant data: "
+    #           p info["2"]["value"]
 
-              detail_result = request_api(
-                "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{info["2"]["value"]}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,rating"
-              )
+    #           detail_result = request_api(
+    #             "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{info["2"]["value"]}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,rating"
+    #           )
 
-              puts(detail_result["result"]["name"])
-              puts(info["2"]["value"])
-              puts(info["3"]["value"])
-              puts(detail_result["result"]["rating"])
-              puts(detail_result["result"]["price_level"])
+    #           puts(detail_result["result"]["name"])
+    #           puts(info["2"]["value"])
+    #           puts(info["3"]["value"])
+    #           puts(detail_result["result"]["rating"])
+    #           puts(detail_result["result"]["price_level"])
 
-              # Simulation of retreiving results of details
-              rest_details_arr[i] = {}
-              rest_details_arr[i].store("name", detail_result["result"]["name"])
-              rest_details_arr[i].store("place_id", info["2"]["value"])
-              rest_details_arr[i].store("rest_cat", info["3"]["value"])
-              rest_details_arr[i].store("rating", detail_result["result"]["rating"])
-              rest_details_arr[i].store("price_level", detail_result["result"]["price_level"])
-            end
-          end
-        end
-      i += 1
-    end
+    #           # Simulation of retreiving results of details
+    #           rest_details_arr[i] = {}
+    #           rest_details_arr[i].store("name", detail_result["result"]["name"])
+    #           rest_details_arr[i].store("place_id", info["2"]["value"])
+    #           rest_details_arr[i].store("rest_cat", info["3"]["value"])
+    #           rest_details_arr[i].store("rating", detail_result["result"]["rating"])
+    #           rest_details_arr[i].store("price_level", detail_result["result"]["price_level"])
+    #         end
+    #       end
+    #     end
+    #   i += 1
+    # end
     
     # store retreived data as session
     # session[:rest_details_arr] = rest_details_arr
     
-    # rest_details_arr = session[:rest_details_arr]
+    rest_details_arr = session[:rest_details_arr]
 
     puts("Done filling in restaurant data")
     render json: { response: rest_details_arr }
