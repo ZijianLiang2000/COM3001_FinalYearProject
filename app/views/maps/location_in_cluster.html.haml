@@ -28,23 +28,13 @@
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
 :javascript
 
-    function openNav(name,code,lat,lng,population,rest_cat_value, sum_rest_num, curr_rest_num) {
+    function openNav(rest_place_id, lat, long) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         // Current type restaurant number in area
-        console.log("Number of selected type restaurant in LSOA:" + curr_rest_num);
-        console.log("Number of all restaurant in LSOA:" + sum_rest_num);
-        
-        console.log("RestCatVal:" + rest_cat_value)
-        console.log("RestCatVal (int):" + parseInt(rest_cat_value))
-
-        restaurant_Category_Encode = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
-
-        // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
         src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
         // Let LSOA default map to show be identical to previous map if next stage
         console.log(src);
         console.log("Token: " + gon.form_token);
-        console.log("Map style: " + map_style);
         
         innerHtml = '<head><style>' +
         // Header part
@@ -64,19 +54,15 @@
         src +
         '</iframe>' +
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/rest_cluster?name='+name+'&code='+ code + '&rest_cat='+ parseInt(rest_cat_value) +'&lad_name='+ gon.lad_name +'">'+
-        '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
+        '<form class="button_to" method="post" action="/result_page?name='+rest_place_id+'&lat='+ lat + '&long='+ long +'&lad_name='+ gon.lad_name +'">'+
+        '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + rest_place_id + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
         // Card to display information about district
         '<div class="card" style="width: 18rem;">' +
         '<div class="card-body">' +
-        '<h5 class="card-title">'+ name +'</h5>' +
+        '<h5 class="card-title">'+ rest_place_id +'</h5>' +
         '<h6 class="card-subtitle mb-2 text-muted">('+ lat + ', ' + lng + ')</h6>' +
-        '<h6 class="card-subtitle mb-2 text-muted">Population: '+ population +'</h6>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="total"> '+ sum_rest_num +' listed restaurants in ' + name + ' </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="dir_compt"> '+ curr_rest_num +' Direct Competitors (' + restaurant_Category_Encode[parseInt(rest_cat_value)] + ') </p>' +
-        '<h6 class="card-subtitle mb-2 text-muted" id="indir_compt"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </p>' +
         
         '</div></div></div></body>'
 
@@ -278,23 +264,28 @@
                             relative_time_description = msg["response"][0][i]["reviews"][j]["relative_time_description"];
                             text = msg["response"][0][i]["reviews"][j]["text"];
 
-                            review_texts += text + "//"; 
+                            review_texts = msg["response"][0][i]["reviews"][0]["text"];
                         }
 
                         // collect all review texts in array for a restaurant
                         // Apply text to be sententic analysed
                         // ajax request for another controller function to run python script
 
+                        
                         $.ajax({
                             type: "POST",
                             url: "/absa_reviews",
                             data: {'text': review_texts,  authenticity_token: $('[name="csrf-token"]')[0].content },
                             success:function(msg){
 
-                                console.log("")
+                                console.log("");
                                 console.log("Successfully received response");
                                 
                                 console.log(msg); //json output
+
+                                document.getElementById("semantic_analysis").innerHTML=
+                                `<h5><b>Aspect-based semantic analysis</b><a class="closebtn" href="javascript:void(0)" onclick="closeNotification()">&times;</a></h5>
+                                <p>`+ msg +`</p>`;
 
                             },
                             error: function() {
@@ -355,10 +346,15 @@
 
         // only Google API when one mark is selected
         if (marks.length == 1){
+            if (dict["loc_strategy"] == null){
+                console.log("Place ID:" + rest_place_id + ", Category: " + rest_cat);
+                openNav_Restaurant(rest_place_id,rest_cat, gon.lad_name, lat, long);
+                console.log("Sent to openNav");
+            } else {
+                openNav(rest_place_id, lat, long);
+            }
             // If selected a restaurant
-            console.log("Place ID:" + rest_place_id + ", Category: " + rest_cat);
-            openNav_Restaurant(rest_place_id,rest_cat, gon.lad_name, lat, long);
-            console.log("Sent to openNav");
+            
         }
     }
 
@@ -366,6 +362,7 @@
     
 
 %body#stylediv
-
+%div#semantic_analysis{ :style => "position: absolute; margin: auto;padding: 10px; top: 130px; left: 10%; width: 450px;" }
+    .semantic_analysis#semantic_analysis
 -# Side panel for google maps
 #mySidebar.sidebar

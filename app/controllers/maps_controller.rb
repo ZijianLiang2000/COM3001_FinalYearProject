@@ -321,11 +321,23 @@ class MapsController < ApplicationController
 
     # Python script
     
-      p "Running scrypt: "
-    puts(review_result)
+    p "Running scrypt: "
+
+    # request api
+    # nethttp.rb
+    require 'uri'
+    require 'net/http'
+
+    uri = URI(URI.encode("http://127.0.0.1:5000/absa/"+review_texts))
+    puts(uri)
+    res = Net::HTTP.get_response(uri)
+    puts res.body if res.is_a?(Net::HTTPSuccess)
+
+    puts(res)
+    result = res.body
 
     p "Done Semantic"
-    render json: { response: [review_result] }
+    render json: { response: [result] }
   end
 
 
