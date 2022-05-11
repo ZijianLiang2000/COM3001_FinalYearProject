@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :user_rest_loc_data
+  devise_for :users
   resources :district_data
   resources :restaurant_data
   resources :maps
@@ -40,4 +42,7 @@ Rails.application.routes.draw do
 
   get 'result_page' => 'maps#result_page'
   post 'result_page' => 'maps#result_page'
+
+  get 'my_history' => 'user_rest_loc_data#show'
+  post 'my_history' => 'user_rest_loc_data#show'
 end

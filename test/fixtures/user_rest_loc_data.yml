@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  lsoa_name: MyString
+  lad_name: MyString
+  cluster_name: MyString
+  lat: MyString
+  long: MyString
+  rest_cat: MyString
+  score: 1
+  user: 1
+
+two:
+  lsoa_name: MyString
+  lad_name: MyString
+  cluster_name: MyString
+  lat: MyString
+  long: MyString
+  rest_cat: MyString
+  score: 1
+  user: 1

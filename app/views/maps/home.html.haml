@@ -7,9 +7,22 @@
         %a.nav-link.home{:href => "restaurant_search", :style => "color: white;"} Explore Locations of Interests
         %a.nav-link.home{:href => "#", :style => "color: white;"} Features Introduction
         %a.nav-link.home{:href => "#", :style => "color: white;"} Contact
-  %main.inner.cover{:role => "main"}
-    %h1.cover-heading{:style => "color: white;"} Location Recommendation for Restaurants
-    %p.lead{:style => "color: white;"} WELCOME.
+  // If user signed in
+  - if current_user
+    %main.inner.cover{:role => "main"}
+      %h1.cover-heading{:style => "color: white;"} Location Recommendation for Restaurants
+      %p.lead{:style => "color: white;"} WELCOME BACK
+    // if not signed in
+  - else
+    %main.inner.cover{:role => "main"}
+      %h1.cover-heading{:style => "color: white;"} Location Recommendation for Restaurants
+      %p.lead{:style => "color: white;"} WELCOME TO LORECO
+      #row{:style => "width: 100%; margin: 0 auto;"}
+        #block{:style => "width: 100px; display: inline-block;"}
+          = button_to "Sign up", new_user_registration_path, :class => "btn btn-success btn-dark", method: :get
+        #block{:style => "width: 100px; display: inline-block;"}
+          = button_to "Login", new_user_session_path, :class => "btn btn-success btn-dark", method: :get
+
 
   %footer.mastfoot.mt-auto
     .inner

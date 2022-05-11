@@ -7,13 +7,21 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%# <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %> 
+    <%# <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'  %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
   </head>
 
   <body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        setTimeout(function(){
+        $('.alert').fadeOut();
+        }, 2000);
+      })
+    </script>
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 
     <%# flast alert part %>
     <% flash.each do |type, msg| %>
@@ -23,21 +31,45 @@
     <% end %>
 
     <%# Navbar part %>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="home" style="margin-left: 20px;">Loreco</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <a class="navbar-brand" href="/home" style="margin-left: 20px;">Loreco</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#toggleMobileMenu" aria-controls="toggleMobileMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
+      <div class="collapse navbar-collapse" id="toggleMobileMenu">
+        <ul class="navbar-nav mr-auto text-center">
           <li class="nav-item active">
-            <a class="nav-link" href="user_option">Start<span class="sr-only"></span></a>
+            <a class="nav-link" href="/user_option">Start<span class="sr-only"></span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="restaurant_search">Explore</a>
+            <a class="nav-link" href="/restaurant_search">Explore</a>
           </li>
+        </ul>
+        <ul class="navbar-nav ms-auto text-center">
+          <% if user_signed_in? %>
+            <li class="nav-item">
+              <form action="my_history" method="post">
+                <button type="submit" name="history" class="btn btn-secondary">My History</button>
+                <input type="hidden" name="user_id" value= <%=@user_id%> />
+                <input type="hidden" name="authenticity_token" value= <%=@form_token%> />
+              </form>
+            </li>
+            <li class="nav-item ">
+              <%= link_to "Profile", edit_user_registration_path, class:"nav-link active" %>
+            </li>
+            <li class="nav-item ">
+              <%= link_to "Log Out", destroy_user_session_path,  "data-turbo-method": :delete, class:"nav-link active" %>
+            </li>
+          <% else %>
+            <li class="nav-item ">
+              <%= link_to "Sign up", new_user_registration_path, class:"nav-link active" %>
+            </li>
 
+            <li class="nav-item">
+              <%= link_to "Sign In", new_user_session_path, class:"nav-link active" %>
+            </li>
+          <% end %>
         </ul>
       </div>
     </nav>

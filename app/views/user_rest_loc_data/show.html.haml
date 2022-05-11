@@ -1,0 +1,32 @@
+.login{:style => "color: white; margin: auto;width: 50%;padding: 50px;"}
+  %h2 My History
+
+  - count = 1
+  - rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
+  - @user_rest_loc_datum.each do|user_rest_loc_datum|
+    %h2 Location Selection #{count}
+    %p
+      %h5 Local Authority District Name: #{user_rest_loc_datum.lad_name}
+    %p
+      %h5 Lower Layer Super Output Name: #{user_rest_loc_datum.lsoa_code}
+    %p
+      %h5 Geocode
+      Latitude:
+      = user_rest_loc_datum.lat
+      Longitude:
+      = user_rest_loc_datum.long
+      %h5 Restaurant category:
+      #{rest_cat_arr[(user_rest_loc_datum.rest_cat).to_i]}
+      %h5 Evaluation Result:
+      = user_rest_loc_datum.score
+      %h5 User:
+      = user_rest_loc_datum.user.email
+      %h5 Date:
+      = user_rest_loc_datum.created_at
+
+    %br
+
+    - count += 1
+
+    -# = link_to 'Edit', edit_user_rest_loc_datum_path(@user_rest_loc_datum)
+  = back_link

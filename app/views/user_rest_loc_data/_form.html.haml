@@ -1,0 +1,34 @@
+= form_for @user_rest_loc_datum do |f|
+  - if @user_rest_loc_datum.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@user_rest_loc_datum.errors.count, "error")} prohibited this user_rest_loc_datum from being saved:"
+      %ul
+        - @user_rest_loc_datum.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :lsoa_name
+    = f.text_field :lsoa_name
+  .field
+    = f.label :lad_name
+    = f.text_field :lad_name
+  .field
+    = f.label :cluster_name
+    = f.text_field :cluster_name
+  .field
+    = f.label :lat
+    = f.text_field :lat
+  .field
+    = f.label :long
+    = f.text_field :long
+  .field
+    = f.label :rest_cat
+    = f.text_field :rest_cat
+  .field
+    = f.label :score
+    = f.number_field :score
+  .field
+    = f.label :user
+    = f.number_field :user
+  .actions
+    = f.submit 'Save'

@@ -58,7 +58,7 @@
         '</iframe>' +
 
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/result_page?place_id='+rest_place_id+'&lat='+ lat + '&long='+ lng +'&lad_name='+ gon.lad_name +'&loc_strategy='+ gon.loc_strategy +'">'+
+        '<form class="button_to" method="post" action="/result_page?rest_cat='+ gon.rest_cat +'&lsoa_code='+gon.lsoa11_code+'&place_id='+rest_place_id+'&lat='+ lat + '&long='+ lng +'&lad_name='+ gon.lad_name +'&loc_strategy='+ gon.loc_strategy +'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + gon.lad_name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +

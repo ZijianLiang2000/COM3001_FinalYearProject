@@ -28,6 +28,8 @@ gem 'gon'
 gem 'json'
 gem 'progress_bar'
 gem 'activerecord-import'
+gem "select2-rails"
+gem "cancan"
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
@@ -44,8 +46,7 @@ gem 'pycall'
 gem 'backpedal', :path => "E:\\zl00628_COM3001_Project\\gem_mod\\backpedal-master"
 gem 'activerecord-session_store'
 gem 'rubypython'
-gem 'delayed_job'
-gem 'open3'
+gem 'devise'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false

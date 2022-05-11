@@ -19,6 +19,10 @@ class RestaurantDataController < ApplicationController
   def edit
   end
 
+  def search
+  
+  end
+
   # Methods for google_result are commented out in case of unexpected costs
   # def google_result
   #   address = params[:address]

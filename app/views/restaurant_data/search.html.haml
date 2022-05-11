@@ -2,20 +2,22 @@
   .row
     .col-lg-12.mt-5
       .mx-auto.mt-5{:style => "width: 400px; color: white;"}
-        = form_with(url: restaurant_result_path, method: 'get', local: true) do
+        = form_with(url: nearby_result_path, method: 'get', local: true) do |f|
           .form-group
-            %h1 Travel Advisor Search
-            = label_tag :address, 'Postcode Address'
-            = text_field_tag :address, nil, placeholder: 'Eg. GU1 4BU', class: 'form-control'
-            %br
-            = label_tag :limit, 'Limit'
-            = number_field_tag :limit, 30, placeholder: 'Eg. 30', min: 1, max: 30, class: 'form-control'
-            %br
-            = label_tag :dist_radius, 'Distance Radius'
-            = number_field_tag :dist_radius, 2, placeholder: 'Eg. 2', min: 1, max: 10, class: 'form-control'
+            %h1 Exploring Locations
+            = label_tag :name, 'Location Name'
+            = text_field_tag :name, nil, placeholder: 'eg. London', class: 'form-control'
+
+            = label_tag :categories, 'Location Categories'
+            - cat_options = [["Arts and Entertainment","10000"], ["Business and Professional Services","11000"],["Community and Government","12000"],["Dining and Drinking", "13000"],["Event","14000"],["Health and Medicine", "15000"],["Landmarks and Outdoors", "16000"],["Retail","17000"],["Sports and Recreation","18000"],["Travel and Transportation", "19000"]]
+            = f.select(:categories, cat_options, {required: "required"}, class: "form-select w-100%")
 
           %br
           = button_tag 'Search', class: 'btn btn-success btn-block'
+          %br
+          %br
+          %h1 High Street Explorer
+    %iframe{:src => "https://www.ordnancesurvey.co.uk/demos/high-streets/high-streets/index.html", :style => "height:753px; width:1834px; border:none; margin-top: 30px;", :title => "High streets"}
 
 -# .container
 -#   .row

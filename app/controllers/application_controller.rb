@@ -5,6 +5,17 @@ class ApplicationController < ActionController::Base
     before_action :capture_path
     before_action :url_path
     helper_method :url_path, :get_detailed_addr, :filter_location_category
+    before_action :authenticate_user!
+    before_action :application
+    
+    def application
+        if current_user.present?
+            @user_id = current_user.id
+            @form_token = form_authenticity_token
+            p "Printing user id"
+            p @user_id
+        end
+    end
 
     # Helper function to get detailed address for place_id
     def get_detailed_addr(place_id)

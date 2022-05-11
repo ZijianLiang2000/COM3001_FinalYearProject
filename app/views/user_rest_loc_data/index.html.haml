@@ -1,0 +1,35 @@
+%h1 Listing user_rest_loc_data
+
+%table
+  %thead
+    %tr
+      %th Lsoa name
+      %th Lad name
+      %th Cluster name
+      %th Lat
+      %th Long
+      %th Rest cat
+      %th Score
+      %th User
+      %th
+      %th
+      %th
+
+  %tbody
+    - @user_rest_loc_data.each do |user_rest_loc_datum|
+      %tr
+        %td= user_rest_loc_datum.lsoa_name
+        %td= user_rest_loc_datum.lad_name
+        %td= user_rest_loc_datum.cluster_name
+        %td= user_rest_loc_datum.lat
+        %td= user_rest_loc_datum.long
+        %td= user_rest_loc_datum.rest_cat
+        %td= user_rest_loc_datum.score
+        %td= user_rest_loc_datum.user
+        %td= link_to 'Show', user_rest_loc_datum
+        %td= link_to 'Edit', edit_user_rest_loc_datum_path(user_rest_loc_datum)
+        %td= link_to 'Destroy', user_rest_loc_datum, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New User rest loc datum', new_user_rest_loc_datum_path

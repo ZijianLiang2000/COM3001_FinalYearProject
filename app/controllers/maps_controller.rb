@@ -4,6 +4,8 @@ class MapsController < ApplicationController
   require 'json'
   before_action :set_map, only: %i[ show edit update destroy ]
   before_action :dissolve, only: [ :user_option ]
+  skip_before_action :authenticate_user!, only: [:home]
+  
 
   # GET /maps or /maps.json
   def index
@@ -21,6 +23,9 @@ class MapsController < ApplicationController
 
   # GET /maps/1/edit
   def edit
+  end
+
+  def home
   end
 
   def lsoa_heatmap
@@ -397,19 +402,41 @@ class MapsController < ApplicationController
     @lat=params[:lat]
     @long=params[:long]
     @lad_name=params[:lad_name]
+    @lsoa_code=params[:lsoa_code]
     @loc_strategy=params[:loc_strategy]
+    @rest_cat=params[:rest_cat]
 
     p @place_id
     p @lat
     p @long
     p @lad_name
+    p @lsoa_code
     p @loc_strategy
+    p @rest_cat
 
     gon.place_id = @place_id
     gon.lat=@lat
     gon.long=@long
     gon.lad_name=@lad_name
+    gon.lsoa_code=@lsoa_code
     gon.loc_strategy=@loc_strategy
+
+    # Algorithm to calculate score
+
+
+    # Save relationship between restaurant location history and current user
+    @user = current_user
+    user_loc_datum=UserRestLocDatum.new()
+    
+    user_loc_datum.lsoa_code=@lsoa_code
+    user_loc_datum.lad_name=@lad_name
+    user_loc_datum.lat=@lat
+    user_loc_datum.long=@long
+    user_loc_datum.rest_cat=@rest_cat
+    user_loc_datum.score=123
+    user_loc_datum.user_id = @user.id
+    
+    user_loc_datum.save!
     
   end
 
@@ -426,6 +453,12 @@ class MapsController < ApplicationController
       elsif(params[:map]=="LSOA")
         redirect_back(fallback_location: lsoa_heatmap_path, allow_other_host: true, alert: "Input parameters not provided") 
         return
+      elsif(params[:map]=="Location_in_cluster")
+        redirect_back(fallback_location: location_in_cluster_path, allow_other_host: true, alert: "Input parameters not provided") 
+        return
+      elsif(params[:map]=="Cluster")
+        redirect_back(fallback_location: rest_cluster_path, allow_other_host: true, alert: "Input parameters not provided") 
+        return
       end 
     end
 
@@ -433,7 +466,8 @@ class MapsController < ApplicationController
     lng = params[:lng]
     name = params[:name]
     map = params[:map]
-    
+
+    categories = params[:categories]
     puts("Latitude:" + lat.to_s + ", Longitude:" + lng.to_s + ", Name:" + name.to_s)
 
     current_date = Time.now.strftime("%Y%m%d")
@@ -450,6 +484,11 @@ class MapsController < ApplicationController
       puts("Searching nearby places by LAD Latitude and Longitude")
       nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=2000")
       puts("https://api.foursquare.com/v3/places/search?ll=#{lat},#{lng}&categories=10000, 13000,19000,12009,16000,14000&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50&radius=2000")
+    # If come from explore page
+    else
+      puts("Searching nearby places by LAD Latitude and Longitude")
+      nearby_places = request_foursquare_api("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=#{categories}&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
+      puts("https://api.foursquare.com/v3/places/search?near=#{name}, United Kingdom&categories=#{categories}&fields=categories,geocodes,photos,price,rating,popularity,name,fsq_id,distance,location&sort=DISTANCE&limit=50")
     end
 
     # Save json to file for development purpose not wasting api quota
@@ -466,6 +505,12 @@ class MapsController < ApplicationController
         return
       elsif(params[:map]=="LSOA")
         redirect_back(fallback_location: lsoa_heatmap_path, allow_other_host: true, alert: "No results returned") 
+        return
+      elsif(params[:map]=="Location_in_cluster")
+        redirect_back(fallback_location: location_in_cluster_path, allow_other_host: true, alert: "Input parameters not provided") 
+        return
+      elsif(params[:map]=="Cluster")
+        redirect_back(fallback_location: rest_cluster_path, allow_other_host: true, alert: "Input parameters not provided") 
         return
       end
     end
