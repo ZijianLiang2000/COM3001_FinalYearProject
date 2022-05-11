@@ -3,18 +3,17 @@
 
 %body{:onload => "applyOptions()"}
 
--# Enable gon to work, so that ENV variables can be passed to js
-
-= include_gon
-
 .title{:style => "margin-top: 10px; margin-left: 10px;"}
     = back_link
     %h1{:style => "color: white;"} Restaurants in Cluster #{@cluster_id}
-    %h5{:style => "color: white;"} Selected Local Authority: #{@lad_name}
-    %h5{:style => "color: white;"} Code: #{@lsoa11_code}
-    - if @price_avg != nil
+    %h5{:style => "color: white;"} Selected Local Authority: #{@lad_name}, Code: #{@lsoa11_code}
+    - if @price_avg != nil && @price_avg.to_f != 0
         %h5{:style => "color: white;"} Price Average: #{@price_avg}
+    - if @rating_avg != nil && @rating_avg.to_f != 0
         %h5{:style => "color: white;"} Rating Average: #{@rating_avg}
+    - if @rating_avg != nil && @rating_avg.to_f != 0 && @price_avg != nil && @price_avg.to_f != 0
+        %h5{:style => "color: white;"} Rating Average: #{@rating_avg}, Price Average: #{@price_avg}
+    
 
 -# %input{:type => "number", :type => "text", :id => "filter_input", :placeholder => "Search Area to Filter", :class => "form-control mb-2"}
 -# = button_tag 'Search', class: 'btn btn-success btn-block', id: "applyFilter"
@@ -28,10 +27,14 @@
 %script{:src => "https://public.tableau.com/javascripts/api/tableau-2.min.js", :type => "text/javascript"}
 :javascript
 
-    function openNav(rest_place_id, lat, long) {
+    function openNav(rest_place_id, lat, lng) {
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
+        console.log("Opennav function");
+        console.log(rest_place_id);
+        console.log(lat + ", " + lng);
+        console.log("Token: " + gon.form_token);
         // Current type restaurant number in area
-        src = ' src="https://www.google.com/maps/embed/v1/view?key='+gon.google_api_key+'&center=' + lat + ',' + lng + '&zoom=15">'
+        src = ' src = "https://www.google.com/maps/embed/v1/place?key='+gon.google_api_key+'&q=place_id:'+ rest_place_id +'">'
         // Let LSOA default map to show be identical to previous map if next stage
         console.log(src);
         console.log("Token: " + gon.form_token);
@@ -53,17 +56,23 @@
         ' allowfullscreen' +
         src +
         '</iframe>' +
+
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/result_page?name='+rest_place_id+'&lat='+ lat + '&long='+ long +'&lad_name='+ gon.lad_name +'">'+
-        '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + rest_place_id + '" />' +
+        '<form class="button_to" method="post" action="/result_page?place_id='+rest_place_id+'&lat='+ lat + '&long='+ lng +'&lad_name='+ gon.lad_name +'&loc_strategy='+ gon.loc_strategy +'">'+
+        '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + gon.lad_name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
         // Card to display information about district
         '<div class="card" style="width: 18rem;">' +
         '<div class="card-body">' +
-        '<h5 class="card-title">'+ rest_place_id +'</h5>' +
-        '<h6 class="card-subtitle mb-2 text-muted">('+ lat + ', ' + lng + ')</h6>' +
-        
+        '<h5 class="card-title">Select restaurant location in '+gon.lad_name+'</h5>' +
+        '<h6 class="card-subtitle mb-2 text-muted"><p>Near the restaurant in Restaurant Place ID: '+ rest_place_id +"<br>("+ lat + ', ' + lng + ')</h6>' +
+        // button for nearby search
+        '<br><form class="button_to" method="post" action="/nearby_result?name='+gon.lad_name+'&lat='+lat+'&lng='+lng+'&map=Location_in_cluster">' +
+        '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
+        '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+        '</form>' + 
+
         '</div></div></div></body>'
 
 
@@ -82,7 +91,7 @@
         console.log("Rest_Cat:" + rest_cat)
 
         // Google maps API iFrame source - latitude and longitude of clicked LSOA area on map
-        src = ' src = "https://www.google.com/maps/embed/v1/place?key='+gon.google_api_key+'&q=place_id:'+ place_id +'">'
+        src = ' src = "https://www.google.com/maps/embed/v1/place?key='+gon.google_api_key+'&q=place_id:'+ place_id +'">';
         
         // Let LSOA default map to show be identical to previous map if next stage
 
@@ -220,9 +229,10 @@
 
             console.log(rest_cat_arr[parseInt(gon.rest_cat)]);
             
-            // array to store same and diff rest cat place id for sentament analysis
+            // array to store same and diff rest cat place id for semantic analysis
             var same_cat_place_id = [];
             var diff_cat_place_id = [];
+            var pushed_place_id = [];
 
             //Loop through all restaurants in view
             for (let i = 0; i < table["$0"]["$3"].length; i++){
@@ -239,17 +249,41 @@
                 }
             }
 
+            if(same_cat_place_id.length < 1){
+                console.log("pushed place id is diff type");
+                pushed_place_id = diff_cat_place_id;
+            } else {
+                console.log("pushed place id is same type");
+                pushed_place_id = same_cat_place_id;
+            }
+
             // Call ajax to use google maps api to find detailed reviews
             $.ajax({
                 type: "POST",
                 url: "/get_rest_detail_in_cluster",
-                data: {'same_cat_place_id': same_cat_place_id,  authenticity_token: $('[name="csrf-token"]')[0].content },
+                data: {'place_id': pushed_place_id,  authenticity_token: $('[name="csrf-token"]')[0].content },
                 success:function(msg){
 
                     console.log("")
                     console.log("Successfully received response");
                     
                     console.log(msg); //json output
+
+                     innerHTML = "<head><style>.scrollable {max-height: 300px;overflow-y: auto;}</style></head>" +
+                    '<div class="card" style="width: 18rem;">' +
+                    '<div class="card-body">';
+
+                    // if restaurant reviews are for same type
+                    if(pushed_place_id == same_cat_place_id){
+                        innerHTML += '<h5 class="card-title"> Reviews of same category restaurants in same cluster ' +
+                        '<div class="scrollable"><br>';
+                    }else{
+                        innerHTML += '<h5 class="card-title"> Reviews of different category restaurants in same cluster ' +
+                        '<div class="scrollable"><br>';
+                    }
+
+                   
+
 
                     // for each restaurant
                     for(let i = 0; i<msg["response"][0].length; i++){
@@ -265,14 +299,29 @@
                             text = msg["response"][0][i]["reviews"][j]["text"];
 
                             review_texts = msg["response"][0][i]["reviews"][0]["text"];
+
+                            innerHTML += "<h5>" + msg["response"][0][i]["name"] + "</h5>";
+                            innerHTML += "<h5>Rating: " + rating + "</h5>";
+                            innerHTML += "<p>" + text + "</p>";
+                            innerHTML += "<span class='badge bg-success'>" + relative_time_description + "</span><br><br>";
+
                         }
+
+
+
+                    }
+
+                        console.log("Review analyzed:" + review_texts);
+
+                        innerHTML += "</div></div></div></body>";
+
+                        document.getElementById("reviews").innerHTML = innerHTML;
 
                         // collect all review texts in array for a restaurant
                         // Apply text to be sententic analysed
                         // ajax request for another controller function to run python script
 
-                        
-                        $.ajax({
+                    $.ajax({
                             type: "POST",
                             url: "/absa_reviews",
                             data: {'text': review_texts,  authenticity_token: $('[name="csrf-token"]')[0].content },
@@ -280,25 +329,30 @@
 
                                 console.log("");
                                 console.log("Successfully received response");
-                                
-                                console.log(msg); //json output
+                                console.log(msg["response"]["data"]["0"]["0"]);
+                                console.log(msg["response"]["data"]["0"]["1"]);
+                                console.log(msg["response"]["data"]["0"]["2"]);
+                                console.log(msg["response"]["data"]["0"]["3"]); //json output
 
-                                document.getElementById("semantic_analysis").innerHTML=
-                                `<h5><b>Aspect-based semantic analysis</b><a class="closebtn" href="javascript:void(0)" onclick="closeNotification()">&times;</a></h5>
-                                <p>`+ msg +`</p>`;
+                                msg = msg["response"]["data"]["0"]
+
+                                document.getElementById("semantic_analysis").innerHTML = "Example Review: <p>"+ review_texts +"<p>"
+
+                                for(let k = 0; k<4; k++){
+                                    document.getElementById("semantic_analysis").innerHTML +=
+                                    `<h6>`+ String(msg[String(k)][0]).replace("Sentiment.","Sentiment: ") + "</h6><p>"+  Math.round(Math.max(...msg[String(k)][1]) * 100) +"%</p>";
+                                }
 
                             },
                             error: function() {
                                 alert('Unavailable to retreive restaurant detailed info at this moment');
                             }
-                        
+                    
                         });
-                        
-                    }
 
                 },
                 error: function() {
-                    alert('Unavailable to retreive restaurant detailed info at this moment');
+                    alert('Unavailable to retreive restaurant review semantic analysis currently');
                 }
             
             });
@@ -345,15 +399,16 @@
         console.log("Length:" + marks.length);
 
         // only Google API when one mark is selected
+        // If selected a restaurant
         if (marks.length == 1){
             if (dict["loc_strategy"] == null){
                 console.log("Place ID:" + rest_place_id + ", Category: " + rest_cat);
                 openNav_Restaurant(rest_place_id,rest_cat, gon.lad_name, lat, long);
                 console.log("Sent to openNav");
+                // If selected a location with strategy and agg points
             } else {
                 openNav(rest_place_id, lat, long);
             }
-            // If selected a restaurant
             
         }
     }
@@ -362,7 +417,19 @@
     
 
 %body#stylediv
-%div#semantic_analysis{ :style => "position: absolute; margin: auto;padding: 10px; top: 130px; left: 10%; width: 450px;" }
-    .semantic_analysis#semantic_analysis
+%div#review_display{ :style => "position: absolute; margin: auto;padding: 10px; top: 340px; left: 50px; width: 350px;" }
+    .card#card_select{:style => "width: 100%;"}
+        .card-body
+            %h5 Reviews
+            .reviews#reviews
+                %h6 Displaying reviews of restaurants in cluster...
+%div#semantic{ :style => "position: absolute; margin: auto;padding: 10px; top: 340px; right: 150px; width: 450px;" }
+    .card#card_select{:style => "width: 100%;"}
+        .card-body
+            %h5 Example Aspect-based semantic analysis for first review
+            .semantic_analysis#semantic_analysis
+                %br
+                %h6 Analyzing reviews of same category restaurant in cluster...
+                
 -# Side panel for google maps
 #mySidebar.sidebar

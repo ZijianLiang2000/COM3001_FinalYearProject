@@ -226,19 +226,7 @@ class MapsController < ApplicationController
     gon.loc_strategy = loc_strategy
     gon.price_avg = price_avg
     gon.rating_avg = rating_avg
-
-    #  work with levelling these param in ruby
-  #   switch(true){
-  #     case(price_avg == 0): price_avg_lvl = "Free"; break;
-  #     case(price_avg > 0 && price_avg < 1.0): price_avg_lvl = "Between Free and Inexpensive"; break;
-  #     case (price_avg == 1): price_avg_lvl = "Inexpensive"; break;
-  #     case(price_avg > 1.0 && price_avg < 2.0): price_avg_lvl = "Between Inexpensive and Moderate"; break;
-  #     case (price_avg == 2): price_avg_lvl = "Moderate"; break;
-  #     case(price_avg > 2.0 && price_avg < 3.0): price_avg_lvl = "Between Moderate and Expensive"; break;
-  #     case (price_avg == 3): price_avg_lvl = "Expensive"; break;
-  #     case(price_avg > 3.0 && price_avg < 4.0): price_avg_lvl = "Between Expensive and Very Expensive"; break;
-  #     case (price_avg == 4): price_avg_lvl = "Very Expensive"; break;
-  # }
+    gon.google_api_key = ENV["GOOGLE_API_KEY"]
 
   end
 
@@ -262,7 +250,7 @@ class MapsController < ApplicationController
   def get_rest_detail_in_cluster
     puts("get restaurant detail in cluster")
     
-    same_cat_place_id = (params[:same_cat_place_id])
+    place_id = (params[:place_id])
     max_index = 0
 
     i = 0
@@ -270,42 +258,42 @@ class MapsController < ApplicationController
     reviews = []
 
     # obtain restaurant place id
-    if same_cat_place_id.length() > 3
-      same_cat_place_id = same_cat_place_id[1..3]
+    if place_id.length() > 3
+      place_id = place_id[1..3]
     end
 
-    # for place_id in same_cat_place_id
-    #   p "place_id: " + place_id.to_s
-    #   reviews.append(data=[])
+    for place_id in place_id
+      p "place_id: " + place_id.to_s
+      reviews.append(data=[])
 
-    #   detail_result = request_api(
-    #     "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{place_id}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,reviews"
-    #   )
+      detail_result = request_api(
+        "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{place_id}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,reviews"
+      )
 
-    #   puts(detail_result["result"]["name"])
-    #   puts(detail_result["result"]["reviews"])
+      puts(detail_result["result"]["name"])
+      puts(detail_result["result"]["reviews"])
 
-    #   # Simulation of retreiving results of details
-    #   begin  
-    #     reviews[i] = {}
-    #     reviews[i].store("name", detail_result["result"]["name"])
-    #     reviews[i].store("place_id", place_id)
-    #     # Retreive 1 to 5 reviews for each restaurant
-    #     reviews[i].store("reviews", detail_result["result"]["reviews"])
+      # Simulation of retreiving results of details
+      begin  
+        reviews[i] = {}
+        reviews[i].store("name", detail_result["result"]["name"])
+        reviews[i].store("place_id", place_id)
+        # Retreive 1 to 5 reviews for each restaurant
+        reviews[i].store("reviews", detail_result["result"]["reviews"])
 
 
-    #   i += 1
-    #   end
+      i += 1
+      end
       
       # store retreived data as session
       # Save json to file for development purpose not wasting api quota
-      # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json","w") do |f|
-      #   f.write(reviews.to_json)
-      # end
+      File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json","w") do |f|
+        f.write(reviews.to_json)
+      end
 
       reviews = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json"))
     
-    # end
+    end
     
     # store retreived data as session
     puts("Done filling in restaurant data")
@@ -333,11 +321,13 @@ class MapsController < ApplicationController
     res = Net::HTTP.get_response(uri)
     puts res.body if res.is_a?(Net::HTTPSuccess)
 
-    puts(res)
-    result = res.body
+    
+    result = JSON.parse(res.body)
+    puts("Parsed json result:")
+    puts(result["data"]["0"][0])
 
     p "Done Semantic"
-    render json: { response: [result] }
+    render json: { response: result }
   end
 
 
@@ -394,14 +384,34 @@ class MapsController < ApplicationController
     #nearby_places = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\nearby_locations_temp_fs.json"))
     #puts(nearby_places["results"].length())
 
-    session[:rest_details_arr] = rest_details_arr
+    # session[:rest_details_arr] = rest_details_arr
     
-    rest_details_arr = session[:rest_details_arr]
+    # rest_details_arr = session[:rest_details_arr]
 
     puts("Done filling in restaurant data")
     render json: { response: rest_details_arr }
   end
 
+  def result_page
+    @place_id = params[:place_id]
+    @lat=params[:lat]
+    @long=params[:long]
+    @lad_name=params[:lad_name]
+    @loc_strategy=params[:loc_strategy]
+
+    p @place_id
+    p @lat
+    p @long
+    p @lad_name
+    p @loc_strategy
+
+    gon.place_id = @place_id
+    gon.lat=@lat
+    gon.long=@long
+    gon.lad_name=@lad_name
+    gon.loc_strategy=@loc_strategy
+    
+  end
 
   def nearby_result
     require 'json'

@@ -37,4 +37,7 @@ Rails.application.routes.draw do
 
   get 'absa_reviews' => 'maps#absa_reviews'
   post 'absa_reviews' => 'maps#absa_reviews'
+
+  get 'result_page' => 'maps#result_page'
+  post 'result_page' => 'maps#result_page'
 end

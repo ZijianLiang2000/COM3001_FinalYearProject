@@ -107,7 +107,7 @@
         // Google map frame
         '<div class="holder"><iframe id="map_frame"' +
         ' width="450"' +
-        ' height="705"' +
+        ' height="805"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
@@ -253,7 +253,7 @@
                 // Google map frame
                 '<div class="holder"><iframe id="map_frame"' +
                 ' width="450"' +
-                ' height="705"' +
+                ' height="810"' +
                 ' style="border:0"' +
                 ' loading="lazy"' +
                 ' allowfullscreen' +
@@ -268,7 +268,11 @@
                 '<h6 class="card-subtitle mb-2 text-muted"> Average Price Level: '+ price_avg_lvl +'</h6>' +
                 '<h6 class="card-subtitle mb-2 text-muted"> '+ sum_rest_num +' Restaurant(s) </h6>' +
                 '<h6 class="card-subtitle mb-2 text-muted"> '+ curr_rest_num +' Direct Competitors (' + rest_cat_arr[parseInt(rest_cat)] + ') </h6>' +
-                '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </h6>'
+                '<h6 class="card-subtitle mb-2 text-muted"> '+ (sum_rest_num - curr_rest_num) +' Indirect Competitors </h6>' +
+                '<form class="button_to" method="post" action="/nearby_result?name='+gon.lad_name+'&lat='+lat+'&lng='+long+'&map=Cluster">' +
+                '<input class="btn btn-primary" id="nearby_search" type="submit" value="Feature Locations nearby" />' +
+                '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
+                '</form>';
                 
                 cat_tag = {"Italian Restaurant" : "ITA",
                 "Indian Restaurant" : "IND",
@@ -312,9 +316,10 @@
                 
                 innerHtml = innerHtml + '<form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+  clicked_id + '&place_id_arr='+ place_id_arr + '&loc_strategy='+ gon.loc_strategy + '&price_avg='+price_avg+'&rating_avg='+rating_avg+'">';
                 innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />';
-                innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form>';
+                innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form></div></div></body>';
                 
-                '</div></div></body>'
+                
+                
                 
 
                 document.getElementById("mySidebar").innerHTML=innerHtml;
@@ -556,11 +561,11 @@
 
         console.log("info_arr");
         console.log(info_arr);
- 
 
         innerHtml = innerHtml + '<br><br><form class="button_to" method="post" action="/location_in_cluster?&rest_cat='+ gon.rest_cat +'&lad_name='+ gon.lad_name +'&lsoa_code='+ gon.lsoa11_code + '&cluster='+ sorted[i]  + '&place_id_arr='+ info_arr + '&loc_strategy='+ gon.loc_strategy +'">';
         innerHtml = innerHtml + '<input class="btn btn-success" id="select_cluster" type="submit" value="Select Cluster" />';
         innerHtml = innerHtml + '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" /></form></div></div><br><br>';
+
 
         }
 

@@ -1,0 +1,9 @@
+-# Enable gon to work, so that ENV variables can be passed to js
+= include_gon
+
+
+.title{:style => "margin: auto; padding: 10px;"}
+    = back_link
+    %h1{:style => "color: white;"} Congratulations! 
+    %h3{:style => "color: white;"} You have selected a restaurant location in #{@lad_name} 
+    %h6{:style => "color: rgb(249, 243, 238);"} Near (#{@lat},#{@long})

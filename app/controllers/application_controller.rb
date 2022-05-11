@@ -41,6 +41,10 @@ class ApplicationController < ActionController::Base
             puts('Current path is location_in_cluster view')
             progress = "90"
             puts(progress)
+        when current_path.include?('result_page')
+            puts('Current path is result_page view')
+            progress = "100"
+            puts(progress)
     
         else
         puts("Selected Other paths")
