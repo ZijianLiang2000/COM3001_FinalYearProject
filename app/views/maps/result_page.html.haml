@@ -12,11 +12,34 @@
     %h6{:style => "color: rgb(249, 243, 238);"} Near (#{@lat},#{@long})
     %br
     %br
-    %form.button_to{:action => "/nearby_result", :name => @name, :lat => @lat, :lng => @long, :map => "Result", :method => "post"}
+
+    -# @lad_reco_percentage=params[:lad_reco_percentage]
+    -# @lad_reco_val=params[:lad_reco_val]
+    -# @lad_ranking=params[:lad_ranking]
+    -# @lsoa_reco_percentage=params[:lsoa_reco_percentage]
+    -# @lsoa_reco_val=params[:lsoa_reco_val]
+    -# @lsoa_ranking=params[:lsoa_ranking]
+
+
+    %h6{:style => "color: rgb(249, 243, 238);"} Local Authority District Recommendation Percentage: #{@lad_reco_percentage}%
+    %h6{:style => "color: rgb(249, 243, 238);"} Local Authority District Recommendation Value: #{@lad_reco_val}
+    %h6{:style => "color: rgb(249, 243, 238);"} Local Authority District Ranking: #{@lad_ranking}
+    %br
+    %h6{:style => "color: rgb(249, 243, 238);"} Lower Layer Super Output Recommendation Percentage: #{@lsoa_reco_percentage}%
+    %h6{:style => "color: rgb(249, 243, 238);"} Lower Layer Super Output Recommendation Value: #{@lsoa_reco_val}
+    %h6{:style => "color: rgb(249, 243, 238);"} Lower Layer Super Output Ranking: #{@lsoa_ranking}
+
+    %br
+    %br
+    %form.button_to{:action => "/nearby_result", :method => "post"}
 
         %input#nearby_search.btn.btn-primary{:type => "submit", :value => "Feature Locations nearby"}
 
         %input{:name => "authenticity_token", :type => "hidden", :value =>  @form_token }
+        %input{:name => "name", :type => "hidden", :value =>  @lad_name }
+        %input{:name => "map", :type => "hidden", :value =>  @lat }
+        %input{:name => "lng", :type => "hidden", :value =>  @long }
+        %input{:name => "map", :type => "hidden", :value =>  "Result" }
     %br
     %br
     = button_to "Home", root_path, :class => "btn btn-success btn-success", method: :get

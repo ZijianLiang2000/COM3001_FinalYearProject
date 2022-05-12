@@ -38,19 +38,19 @@ class ApplicationController < ActionController::Base
             puts(progress)
         when current_path.include?('lad_heatmap')
             puts('Current path is lad_heatmap view')
-            progress = "40"
+            progress = "25"
             puts(progress)
         when current_path.include?('lsoa_heatmap')
             puts('Current path is lsoa_heatmap view')
-            progress = "60"
+            progress = "50"
             puts(progress)
         when current_path.include?('rest_cluster')
             puts('Current path is rest_cluster view')
-            progress = "80"
+            progress = "60"
             puts(progress)
         when current_path.include?('location_in_cluster')
             puts('Current path is location_in_cluster view')
-            progress = "90"
+            progress = "80"
             puts(progress)
         when current_path.include?('result_page')
             puts('Current path is result_page view')

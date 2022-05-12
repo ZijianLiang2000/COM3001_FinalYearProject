@@ -42,7 +42,7 @@
         innerHtml = '<head><style>' +
         // Header part
         ".holder .card{position: absolute;top: 10px;left: 10px;width: 100%;} " +
-        '.holder #select_area{position: absolute;bottom: 60px; left: 30%;}'+
+        '.holder #select_area{position: absolute;bottom: 160px; left: 30%;}'+
         '</style></head>' +
         '<body>' + 
         // Close Button
@@ -50,7 +50,7 @@
         // Google map frame
         '<div class="holder"><iframe id="map_frame"' +
         ' width="450"' +
-        ' height="950"' +
+        ' height="1000"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
@@ -58,7 +58,9 @@
         '</iframe>' +
 
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/result_page?rest_cat='+ gon.rest_cat +'&lsoa_code='+gon.lsoa11_code+'&place_id='+rest_place_id+'&lat='+ lat + '&long='+ lng +'&lad_name='+ gon.lad_name +'&loc_strategy='+ gon.loc_strategy +'">'+
+        '<form class="button_to" method="post" action="/result_page?rest_cat='+ gon.rest_cat +'&lsoa_code='+gon.lsoa11_code+'&place_id='+rest_place_id+'&lat='+ lat + '&long='+ lng +'&lad_name='+ gon.lad_name +'&loc_strategy='+ gon.loc_strategy +
+        '&lad_reco_percentage='+gon.lad_reco_percentage+'&lad_reco_val='+gon.lad_reco_val+'&lad_ranking='+gon.lad_ranking +
+        '&lsoa_reco_percentage='+gon.lsoa_reco_percentage+'&lsoa_reco_val='+gon.lsoa_reco_val+'&lsoa_ranking='+gon.lsoa_ranking+'">' +
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + gon.lad_name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +       
         '</form>' +
@@ -100,7 +102,7 @@
         
         innerHtml = '<head><style>' +
         // Header part
-        "'.holder #select_restaurant{position: absolute;bottom: 60px; left: 30%;}'" +
+        "' #select_restaurant{position: absolute;bottom: 60px; left: 30%;}'" +
         '</style></head>' +
         '<body>' + 
         // Close Button
@@ -108,15 +110,13 @@
         // Google map frame
         '<div class="holder"><iframe id="map_frame"' +
         ' width="450"' +
-        ' height="800"' +
+        ' height="1000"' +
         ' style="border:0"' +
         ' loading="lazy"' +
         ' allowfullscreen' +
         src +
         '</iframe>' +
-        // Card to display information about district
-        '<input class="btn btn-success" id="select_area" type="submit" value="More about restaurant" />' +
-        '</body>'
+        '</body>';
 
 
         document.getElementById("mySidebar").innerHTML=innerHtml;
@@ -152,6 +152,9 @@
     }
 
     function applyOptions() {
+
+            document.getElementById("review_display").style.display="none";
+            document.getElementById("semantic").style.display="none";
 
             for(var place_id in gon.place_id_arr) {
                 console.log(gon.place_id_arr[place_id]);
@@ -201,6 +204,9 @@
         workbook = viz.getWorkbook();
         update_weight_to_tableau();
         getUnderlyingData();
+
+        document.getElementById("review_display").style.display="block";
+        document.getElementById("semantic").style.display="block";
         viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onMarksSelection);
     }
 
@@ -335,7 +341,7 @@
                                 console.log(msg["response"]["data"]["0"]["3"]); //json output
 
                                 msg = msg["response"]["data"]["0"]
-
+                                
                                 document.getElementById("semantic_analysis").innerHTML = "Example Review: <p>"+ review_texts +"<p>"
 
                                 for(let k = 0; k<4; k++){

@@ -1,42 +1,28 @@
-.container
-  .row
-    .col-lg-12.mt-5
-      .mx-auto.mt-5{:style => "width: 400px; color: white;"}
-        = form_with(url: nearby_result_path, method: 'get', local: true) do |f|
-          .form-group
-            %h1 Exploring Locations
-            = label_tag :name, 'Location Name'
-            = text_field_tag :name, nil, placeholder: 'eg. London', class: 'form-control'
 
-            = label_tag :categories, 'Location Categories'
-            - cat_options = [["Arts and Entertainment","10000"], ["Business and Professional Services","11000"],["Community and Government","12000"],["Dining and Drinking", "13000"],["Event","14000"],["Health and Medicine", "15000"],["Landmarks and Outdoors", "16000"],["Retail","17000"],["Sports and Recreation","18000"],["Travel and Transportation", "19000"]]
-            = f.select(:categories, cat_options, {required: "required"}, class: "form-select w-100%")
+.login{:style => "color: white; margin: auto;width: 100%;padding: 50px;"}
+  %h2 Location Exploration
+  %br
+  %br
+  .card#card_select{:style => "color: black;margin: auto;padding: 10px;"}
+    .card-body
+      .parent
+        .child-float-left-child{:style => "float: left; padding-top: 100px;"}
+          = form_with(url: nearby_result_path, method: 'get', local: true) do |f|
+            .form-group
+              %h1 Exploring Locations
+              = label_tag :name, 'Location Name'
+              = text_field_tag :name, nil, placeholder: 'eg. London', class: 'form-control'
+              %br
+              = label_tag :categories, 'Location Categories'
+              - cat_options = [["Arts and Entertainment","10000"], ["Business and Professional Services","11000"],["Community and Government","12000"],["Dining and Drinking", "13000"],["Event","14000"],["Health and Medicine", "15000"],["Landmarks and Outdoors", "16000"],["Retail","17000"],["Sports and Recreation","18000"],["Travel and Transportation", "19000"]]
+              = f.select(:categories, cat_options, {required: "required"}, class: "form-select w-100%")
 
-          %br
-          = button_tag 'Search', class: 'btn btn-success btn-block'
-          %br
-          %br
-          %h1 High Street Explorer
-    %iframe{:src => "https://www.ordnancesurvey.co.uk/demos/high-streets/high-streets/index.html", :style => "height:753px; width:1834px; border:none; margin-top: 30px;", :title => "High streets"}
-
--# .container
--#   .row
--#     .col-lg-12.mt-5
--#       .mx-auto.mt-5{:style => "width: 400px"}
--#         = form_with(url: google_result_path, method: 'get', local: true) do
--#           .form-group
--#             %h1 Google Maps Search
--#             = label_tag :address, 'Postcode Address'
--#             = text_field_tag :address, nil, placeholder: 'Eg. GU1 4BU', class: 'form-control'
-
--#             = label_tag :keyword, 'Restaurant Type'
--#             = text_field_tag :keyword, nil, placeholder: 'Eg. Thai', class: 'form-control'
-
--#             = label_tag :dist_radius, 'Radius (m)'
--#             = number_field_tag :dist_radius, 50000, placeholder: 'Eg. 25,000', min: 1, max: 50000, class: 'form-control'
-
--#           %br
--#           = button_tag 'Search', class: 'btn btn-success btn-block'
+            %br
+            = button_tag 'Search', class: 'btn btn-success btn-block'
+            %br
+            %br
+        .child-float-left-child{:style => "float: left; margin-left: 100px;"}
+          %iframe{:src => "https://www.ordnancesurvey.co.uk/demos/high-streets/high-streets/index.html#7.59/51.921/-1.548", :style => "height:753px; width:1200px; border:none; margin-top: 30px;", :title => "High streets"}
 
 %br
 %br

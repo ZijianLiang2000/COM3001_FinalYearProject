@@ -35,7 +35,20 @@ class MapsController < ApplicationController
     map_style = params[:map_style]
     rest_cat = params[:rest_cat]
     #  convert passed weight_arr to array
-    weight_arr = params[:weight_arr].split(',')
+    lad_reco_percentage=params[:reco_percentage]
+    lad_reco_val=params[:reco_val]
+    lad_ranking=params[:ranking]
+    weight_arr = (params[:weight_arr].split(','))
+
+
+
+    gon.lad_reco_percentage = lad_reco_percentage.to_f
+    gon.lad_reco_val = lad_reco_val.to_f
+    gon.lad_ranking = lad_ranking.to_f
+
+    p lad_reco_percentage
+    p lad_reco_val
+    p lad_ranking
 
     puts("weight_arr is: ")
     puts(weight_arr)
@@ -52,6 +65,9 @@ class MapsController < ApplicationController
       @lad_name = name
       @lad20_code = lad20_code
       @weight_arr = weight_arr
+      @lad_reco_percentage = lad_reco_percentage
+      @lad_reco_val = lad_reco_val
+      @lad_ranking = lad_ranking
       
 
       # Find LSOA areas under LAD Name from csv
@@ -86,6 +102,17 @@ class MapsController < ApplicationController
     acceptance_select = params[:acceptance_value]
     rent_min = params[:rent_min]
     rent_max = params[:rent_max]
+
+    # Current user - see if first time access
+    gon.accessed = false
+    # Find if current user ever have history data
+    if UserRestLocDatum.where(user_id: current_user).length > 0
+      gon.accessed = true
+    else
+      gon.accessed = false
+    end
+
+    p ("Accessed before? - " + gon.accessed.to_s)
     
     puts("Rent min: " + rent_min.to_s)
     puts("Rent max: " + rent_max.to_s)
@@ -173,6 +200,12 @@ class MapsController < ApplicationController
     rest_cat = params[:rest_cat]
     price_seg_val = params[:price_seg_val]
     loc_strategy = params[:loc_strategy]
+    lad_reco_percentage=params[:lad_reco_percentage]
+    lad_reco_val=params[:lad_reco_val]
+    lad_ranking=params[:lad_ranking]
+    lsoa_reco_percentage=params[:lsoa_reco_percentage]
+    lsoa_reco_val=params[:lsoa_reco_val]
+    lsoa_ranking=params[:lsoa_ranking]
 
     puts("received LSOA name: " + name)
     puts("received LSOA code: " + code)
@@ -190,6 +223,12 @@ class MapsController < ApplicationController
     gon.lad_name = lad_name
     gon.price_seg_val = price_seg_val
     gon.loc_strategy = loc_strategy
+    gon.lad_reco_percentage = lad_reco_percentage.to_f
+    gon.lad_reco_val = lad_reco_val.to_f
+    gon.lad_ranking = lad_ranking.to_f
+    gon.lsoa_reco_percentage = lsoa_reco_percentage.to_f
+    gon.lsoa_reco_val = lsoa_reco_val.to_f
+    gon.lsoa_ranking = lsoa_ranking.to_f
 
   end
 
@@ -203,6 +242,12 @@ class MapsController < ApplicationController
     loc_strategy = params[:loc_strategy]
     price_avg = params[:price_avg]
     rating_avg = params[:rating_avg]
+    lad_reco_percentage=params[:lad_reco_percentage]
+    lad_reco_val=params[:lad_reco_val]
+    lad_ranking=params[:lad_ranking]
+    lsoa_reco_percentage=params[:lsoa_reco_percentage]
+    lsoa_reco_val=params[:lsoa_reco_val]
+    lsoa_ranking=params[:lsoa_ranking]
 
     puts("Received params: " + rest_cat + ", " + lad_name + ", " + lsoa11_code)
 
@@ -232,6 +277,12 @@ class MapsController < ApplicationController
     gon.price_avg = price_avg
     gon.rating_avg = rating_avg
     gon.google_api_key = ENV["GOOGLE_API_KEY"]
+    gon.lad_reco_percentage = lad_reco_percentage.to_f
+    gon.lad_reco_val = lad_reco_val.to_f
+    gon.lad_ranking = lad_ranking.to_f
+    gon.lsoa_reco_percentage = lsoa_reco_percentage.to_f
+    gon.lsoa_reco_val = lsoa_reco_val.to_f
+    gon.lsoa_ranking = lsoa_ranking.to_f
 
   end
 
@@ -408,6 +459,12 @@ class MapsController < ApplicationController
     @loc_strategy=params[:loc_strategy]
     @rest_cat=params[:rest_cat]
     @form_token = form_authenticity_token
+    @lad_reco_percentage=params[:lad_reco_percentage].to_f.round(2) * 100
+    @lad_reco_val=params[:lad_reco_val]
+    @lad_ranking=params[:lad_ranking]
+    @lsoa_reco_percentage=params[:lsoa_reco_percentage].to_f.round(2) * 100
+    @lsoa_reco_val=params[:lsoa_reco_val]
+    @lsoa_ranking=params[:lsoa_ranking]
 
     p @place_id
     p @lat
@@ -425,7 +482,7 @@ class MapsController < ApplicationController
     gon.loc_strategy=@loc_strategy
 
     # Algorithm to calculate score
-
+    avg_score = (((@lad_reco_percentage.to_f + @lsoa_reco_percentage.to_f)/2)).round(2)
 
     # Save relationship between restaurant location history and current user
     @user = current_user
@@ -437,7 +494,7 @@ class MapsController < ApplicationController
     user_loc_datum.long=@long
     user_loc_datum.rest_cat=@rest_cat
     # Not sure if needed score or not
-    user_loc_datum.score=1
+    user_loc_datum.score=avg_score
     user_loc_datum.user_id = @user.id
     
     user_loc_datum.save!

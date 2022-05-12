@@ -1,32 +1,47 @@
-.login{:style => "color: white; margin: auto;width: 50%;padding: 50px;"}
+.login{:style => "color: white; margin: auto;width: 60%;padding: 50px;"}
   %h2 My History
-
+  %br
+  %br
   - count = 1
   - rest_cat_arr = ["Italian Restaurant","Indian Restaurant","Japanese Restaurant","Thai Restaurant","British Restaurant","Chinese Restaurant","Vegetarian","Cafe","Pub"]
   - @user_rest_loc_datum.each do|user_rest_loc_datum|
-    %h2 Location Selection #{count}
-    %p
-      %h5 Local Authority District Name: #{user_rest_loc_datum.lad_name}
-    %p
-      %h5 Lower Layer Super Output Name: #{user_rest_loc_datum.lsoa_code}
-    %p
-      %h5 Geocode
-      Latitude:
-      = user_rest_loc_datum.lat
-      Longitude:
-      = user_rest_loc_datum.long
-      %h5 Restaurant category:
-      #{rest_cat_arr[(user_rest_loc_datum.rest_cat).to_i]}
-      -# %h5 Evaluation Result:
-      -# = user_rest_loc_datum.score
-      %h5 User:
-      = user_rest_loc_datum.user.email
-      %h5 Date:
-      = user_rest_loc_datum.created_at
+    .card#card_select{:style => "color: black;margin: auto;padding: 10px;"}
+      .card-body
+        .parent
+          %h2 Location Selection #{count}
+          .child-float-left-child{:style => "float: left;"}
+            %p
+              %h5 Local Authority District Name: #{user_rest_loc_datum.lad_name}
+            %p
+              %h5 Lower Layer Super Output Name: #{user_rest_loc_datum.lsoa_code}
+            %p
+              %h5 Geocode
+              Latitude:
+              = user_rest_loc_datum.lat
+              Longitude:
+              = user_rest_loc_datum.long
+              %h5 Restaurant category:
+              #{rest_cat_arr[(user_rest_loc_datum.rest_cat).to_i]}
+              -# %h5 Evaluation Result:
+              -# = user_rest_loc_datum.score
+              %h5 User:
+              = user_rest_loc_datum.user.email
+              %h5 Date:
+              = user_rest_loc_datum.created_at
+              %h5 Overall Score:
+              = user_rest_loc_datum.score
+          .child-float-left-child{:style => "float: left; margin-left: 100px;"}
+            = form_with(url: nearby_result_path, method: 'get', local: true) do |f|
+              .form-group
+                %iframe{:src => "https://www.google.com/maps/embed/v1/view?key=#{ENV["GOOGLE_API_KEY"]}&center=#{user_rest_loc_datum.lat},#{user_rest_loc_datum.long}&zoom=18&maptype=satellite", :style => "height:360px; width:460px; border:none; margin-top: 30px;", :title => "High streets"}
+                %br
+                %br
+                = button_tag 'Nearby Locations', class: 'btn btn-success btn-block'
+                - count += 1
+                %br
+                
 
+        -# = link_to 'Edit', edit_user_rest_loc_datum_path(@user_rest_loc_datum)
     %br
-
-    - count += 1
-
-    -# = link_to 'Edit', edit_user_rest_loc_datum_path(@user_rest_loc_datum)
+    %br
   = back_link

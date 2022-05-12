@@ -72,6 +72,11 @@
         </ul></small></p></div>
         </div>`;
 
+        // If user already have history selection, do not show tips anymore
+        if(gon.accessed == true){
+            document.getElementById("tips").style.display = "none";
+        }
+
         var lad_option = document.getElementById("lad_option");
         lad_option.style.display = "none";
 
@@ -89,7 +94,7 @@
         document.getElementById("card_select").style="width: 18rem;"
     }
 
-    function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size, featured_norm_val) {
+    function openNav(name, code, lat,lng,population,count, rest_cat_val, sum_rest_num, curr_rest_num,area_size, featured_norm_val, reco_percentage, reco_val, ranking) {
 
         // Load weight_arr after updated to pass to lsoa
         var weight_arr = window["weight_arr"]
@@ -98,6 +103,7 @@
         console.log("Number of selected type restaurant in lad:" + curr_rest_num);
         console.log("Number of all restaurant in lad:" + sum_rest_num);
         console.log("LAD Code: " + code);
+        console.log("Reco_vals: " + String(reco_percentage) + String(reco_val) +  String(ranking));
         
         total = 0
         for(var k in count) {
@@ -139,7 +145,7 @@
         src +
         '</iframe>' +
         // Button to select a location, post params of location to controller
-        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&lad='+ code +'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'&weight_arr='+weight_arr+'">'+
+        '<form class="button_to" method="post" action="/lsoa_heatmap?name='+name+'&lad='+ code +'&map_style='+ map_style + '&rest_cat='+ parseInt(rest_cat_val) +'&weight_arr=' + weight_arr +'&reco_percentage='+reco_percentage+'&reco_val='+reco_val+'&ranking='+ranking+'">'+
         '<input class="btn btn-success" id="select_area" type="submit" value="Select ' + name + '" />' +
         '<input type="hidden" name="authenticity_token" value="' + gon.form_token + '" />' +
         '</form>' +
@@ -1463,21 +1469,30 @@
         var employment_normalized = [dict["AGG(Employment_normalized)"], "Overall Employment"];
         var same_cat_normalized = [dict["AGG(Same_cat_normalized)"], "Amount of same category restaurants"];
         var diff_cat_normalized = [dict["AGG(Diff_cat_normalized)"], "Amount of different category restaurants"];
+        var reco_percentage = [dict["AGG(Reco_Percentage)"], "Recommendation Percentage"];
+        var reco_val = [dict["AGG(Recommendation Value)"], "Recommendation Value"];
+        var ranking = [dict["AGG(Ranking)"], "Ranking"];
 
         // loopable array for normalization
         var normalized_arr = [pop_dense_norm, income_norm, house_price_norm, weekly_rent_norm, Asian_percentage_normalized, Black_percentage_normalized,
-        White_percentage_normalized, Mixed_percentage_normalized, Other_percentage_normalized, employment_normalized, same_cat_normalized, diff_cat_normalized];
+        White_percentage_normalized, Mixed_percentage_normalized, Other_percentage_normalized, employment_normalized, same_cat_normalized, diff_cat_normalized, reco_percentage];
 
-        // add these normalized value if they have featureable values
-        var featured_norm_val = [];
+        // Load all featured normalized value to array if they are better than most others
+        featured_norm_val = []
 
         for(let i = 0; i<normalized_arr.length;i++){
-            // values other than house price and rent price, the higher the better
-            if(normalized_arr[i][0]>0.8 && normalized_arr[i][1] != "House Price" && normalized_arr[i][1] != "Weekly Rent"){
+            // values other than house price and rent price, the higher the better, reco_percentage require higher barrier
+            if(normalized_arr[i][0]>0.8 && normalized_arr[i][1] != "House Price" && normalized_arr[i][1] != "Weekly Rent" && normalized_arr[i][1] != "Recommendation Percentage"){
                 featured_norm_val.push(normalized_arr[i]);
                 console.log("Values larger than 0.8 among all areas");
                 console.log(normalized_arr[i][1]);
-                
+            }
+
+            // For reco_percentage
+            if(normalized_arr[i][0]>0.993 && normalized_arr[i][1] != "House Price" && normalized_arr[i][1] != "Weekly Rent" && normalized_arr[i][1] == "Recommendation Percentage"){
+                featured_norm_val.push(normalized_arr[i]);
+                console.log("Values larger than 0.8 among all areas");
+                console.log(normalized_arr[i][1]);
             }
 
             // house price and rent price, the lower the better
@@ -1500,6 +1515,11 @@
             }
         }
 
+        console.log("RECO_VALS")
+        console.log(reco_percentage);
+        console.log(reco_val);
+        console.log(ranking);
+
         res_count = new Array();
         var dataview_value = $('#dataview').val();
         // only Google API when one mark is selected
@@ -1515,7 +1535,7 @@
                     // Returning a json format of count
                     res_count = msg.response;
                     console.log("Response: " + res_count)
-                    openNav(name,code, lat,lng,population,res_count,rest_cat_value, sum_rest_num, curr_rest_num,area_size, featured_norm_val);
+                    openNav(name,code, lat,lng,population,res_count,rest_cat_value, sum_rest_num, curr_rest_num,area_size, featured_norm_val, reco_percentage[0], reco_val[0], ranking[0]);
                 },
                 error: function() {
                     alert('Unavailable to retreive restaurant amount in this area');
