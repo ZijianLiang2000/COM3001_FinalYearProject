@@ -345,14 +345,15 @@
 
                             },
                             error: function() {
-                                alert('Unavailable to retreive restaurant detailed info at this moment');
+                                alert('Unavailable to retreive restaurant review semantic analysis at this moment');
+                                document.getElementById("semantic").style.display = "none";
                             }
                     
                         });
 
                 },
                 error: function() {
-                    alert('Unavailable to retreive restaurant review semantic analysis currently');
+                    alert('Unavailable to retreive restaurant reviews currently');
                 }
             
             });
