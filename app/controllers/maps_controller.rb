@@ -271,30 +271,30 @@ class MapsController < ApplicationController
       p "place_id: " + place_id.to_s
       reviews.append(data=[])
 
-      # detail_result = request_api(
-      #   "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{place_id}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,reviews"
-      # )
+      detail_result = request_api(
+        "https://maps.googleapis.com/maps/api/place/details/json?placeid=#{place_id}&key=#{ENV["GOOGLE_API_KEY"]}&fields=name,price_level,reviews"
+      )
 
-      # puts(detail_result["result"]["name"])
-      # puts(detail_result["result"]["reviews"])
+      puts(detail_result["result"]["name"])
+      puts(detail_result["result"]["reviews"])
 
-      # # Simulation of retreiving results of details
-      # begin  
-      #   reviews[i] = {}
-      #   reviews[i].store("name", detail_result["result"]["name"])
-      #   reviews[i].store("place_id", place_id)
-      #   # Retreive 1 to 5 reviews for each restaurant
-      #   reviews[i].store("reviews", detail_result["result"]["reviews"])
+      # Simulation of retreiving results of details
+      begin  
+        reviews[i] = {}
+        reviews[i].store("name", detail_result["result"]["name"])
+        reviews[i].store("place_id", place_id)
+        # Retreive 1 to 5 reviews for each restaurant
+        reviews[i].store("reviews", detail_result["result"]["reviews"])
 
 
-      # i += 1
-      # end
+      i += 1
+      end
       
-      # # store retreived data as session for development use
-      # # Save json to file for development purpose not wasting api quota
-      # File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json","w") do |f|
-      #   f.write(reviews.to_json)
-      # end
+      # store retreived data as session for development use
+      # Save json to file for development purpose not wasting api quota
+      File.open("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json","w") do |f|
+        f.write(reviews.to_json)
+      end
 
       reviews = JSON.parse(File.read("E:\\zl00628_COM3001_Project\\Loreco\\app\\assets\\get_rest_detail_in_cluster.json"))
     
@@ -407,6 +407,7 @@ class MapsController < ApplicationController
     @lsoa_code=params[:lsoa_code]
     @loc_strategy=params[:loc_strategy]
     @rest_cat=params[:rest_cat]
+    @form_token = form_authenticity_token
 
     p @place_id
     p @lat
