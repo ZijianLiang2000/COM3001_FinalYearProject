@@ -1,4 +1,4 @@
-.login{:style => "color: white; margin: auto;width: 60%;padding: 50px;"}
+.login{:style => "color: white; margin: auto;width: 80%;padding: 50px;"}
   %h2 My History
   %br
   %br
@@ -8,8 +8,8 @@
     .card#card_select{:style => "color: black;margin: auto;padding: 10px;"}
       .card-body
         .parent
-          %h2 Location Selection #{count}
-          .child-float-left-child{:style => "float: left;"}
+          .child-float-left-child{:style => "float: left; width:500px;"}
+            %h2 Location Selection #{count}
             %p
               %h5 Local Authority District Name: #{user_rest_loc_datum.lad_name}
             %p
@@ -30,13 +30,19 @@
               = user_rest_loc_datum.created_at
               %h5 Overall Score:
               = user_rest_loc_datum.score
-          .child-float-left-child{:style => "float: left; margin-left: 100px;"}
+          .child-float-left-child{:style => "float: left; margin-left: 100px; width:500px;"}
             = form_with(url: nearby_result_path, method: 'get', local: true) do |f|
               .form-group
-                %iframe{:src => "https://www.google.com/maps/embed/v1/view?key=#{ENV["GOOGLE_API_KEY"]}&center=#{user_rest_loc_datum.lat},#{user_rest_loc_datum.long}&zoom=18&maptype=satellite", :style => "height:360px; width:460px; border:none; margin-top: 30px;", :title => "High streets"}
+                %iframe{:src => "https://www.google.com/maps/embed/v1/view?key=#{ENV["GOOGLE_API_KEY"]}&center=#{user_rest_loc_datum.lat},#{user_rest_loc_datum.long}&zoom=18&maptype=satellite", :style => "height:460px; width:700px; border:none; margin-top: 30px;", :title => "High streets"}
                 %br
                 %br
-                = button_tag 'Nearby Locations', class: 'btn btn-success btn-block'
+                %form.button_to{:action => "/nearby_result", :method => "post"}
+                  %input#nearby_search.btn.btn-primary{:type => "submit", :value => "Feature Locations nearby"}
+                  %input{:name => "authenticity_token", :type => "hidden", :value =>  @form_token }
+                  %input{:name => "name", :type => "hidden", :value =>  user_rest_loc_datum.lad_name }
+                  %input{:name => "lat", :type => "hidden", :value =>  @lat }
+                  %input{:name => "lng", :type => "hidden", :value =>  @long }
+                  %input{:name => "map", :type => "hidden", :value =>  "History" }
                 - count += 1
                 %br
                 
