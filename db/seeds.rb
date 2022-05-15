@@ -158,4 +158,13 @@ ActiveRecord::Base.transaction do
   restaurant_column_values.clear()
 end
 
+# Generate map scopes and style
+# Lad - Heatmap
+# LSOA - Heatmap
+# Lad - Densitymap
+# LSOA - Densitymap
+
+Map.new()
+
+
 puts "DONE!!"
