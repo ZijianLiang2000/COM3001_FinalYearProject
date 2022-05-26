@@ -1,4 +1,4 @@
-# README
+# LORECO: Using web technologies to create an application recommending locations for a restaurant
 
 This README would normally document whatever steps are necessary to get the
 application up and running.
