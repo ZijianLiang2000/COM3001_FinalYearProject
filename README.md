@@ -35,9 +35,13 @@ FOURSQUARE_CLIENT_SECRET: [YOUR FOURSQUARE CLIENT ID]
 (All previous steps are performed in [terminal 1])
 
 In case the instructions does not function for rake:db migrate when installing the files, the table should be all dropped and re-created first through:
+
 rake db:drop:all
+
 rake db:create:all
+
 rake db:migrate
+
 rake db:seed
 
 7.	Open a new window for terminal [call it terminal 2], and change directory into “flask-restful-heroku” under the Loreco directory through command “cd flask-restful-heroku”.
