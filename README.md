@@ -36,7 +36,7 @@ FOURSQUARE_CLIENT_SECRET: [YOUR FOURSQUARE CLIENT ID]
 
 In case the instructions does not function for rake:db migrate when installing the files, the table should be all dropped and re-created first through:
 
-rake db:drop:all
+rake db:drop:_unsafe
 
 rake db:create:all
 
