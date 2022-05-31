@@ -18,7 +18,7 @@ To have the Rails application installed locally, please install the correspondin
 2.	Change directory to “Loreco” and modify the path in the “Gemfile” for the line from the absolute path used in local machine development environment to the absolute path or relative path copied for the directory of “backpedal-master” in the “gem_mod” folder.
 
 gem 'backpedal', :path => "E:\\zl00628_COM3001_Project\\gem_mod\\backpedal-master" 
-## This path needs to be changed to your own path to the dir.
+This path needs to be changed to your own path to the dir.
 
 3.	Install all gems in the gemfile through running “bundle install”
 4.	In the generated “application.yml” file under the config folder, add the API credentials to allow Foursquare and Google Maps API to be used.
